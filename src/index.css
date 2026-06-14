@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+/* ============================================================
+   全局 / 主题变量
+   ============================================================ */
+/* 默认：暖奶油浅色主题（纸面阅读感） */
+:root {
+  --akg-bg: #faf7f2;
+  --akg-text: #2d2215;
+  --akg-text-dim: rgba(45, 34, 21, 0.52);
+
+  /* 毛玻璃面板（暖白） */
+  --glass-bg: rgba(255, 252, 248, 0.6);
+  --glass-bg-strong: rgba(255, 252, 248, 0.82);
+  --glass-border: rgba(45, 34, 21, 0.1);
+  --glass-border-strong: rgba(45, 34, 21, 0.16);
+  --glass-highlight: rgba(255, 255, 255, 0.7);
+  --glass-shadow: 0 4px 24px rgba(80, 50, 20, 0.1);
+  --glass-blur: 20px;
+}
+
+/* 深色主题（深空方案，可一键切换） */
+[data-theme="dark"] {
+  --akg-bg: radial-gradient(120% 120% at 50% 0%, #141d33 0%, #070a14 70%);
+  --akg-text: #eef3ff;
+  --akg-text-dim: rgba(238, 243, 255, 0.6);
+
+  --glass-bg: rgba(18, 26, 45, 0.55);
+  --glass-bg-strong: rgba(16, 23, 41, 0.78);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-strong: rgba(255, 255, 255, 0.2);
+  --glass-highlight: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Roboto, Helvetica,
+    Arial, sans-serif;
+  color: var(--akg-text);
+  background: var(--akg-bg);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+}
+
+/* ============================================================
+   液态玻璃工具类
+   放在 @layer components 里，让 Tailwind utilities（absolute/relative 等）
+   能正常覆盖 position，避免未分层 CSS 优先级高于工具类的问题
+   ============================================================ */
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    position: relative;
+  }
+
+  .glass-strong {
+    background: var(--glass-bg-strong);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    border: 1px solid var(--glass-border-strong);
+    box-shadow: var(--glass-shadow);
+    position: relative;
+  }
+
+  /* 顶部高光弧，强化玻璃质感 */
+  .glass-highlight::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      to bottom,
+      var(--glass-highlight),
+      transparent 40%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+/* ============================================================
+   滚动条美化
+   ============================================================ */
+.akg-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 196, 0.6) transparent;
+}
+.akg-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.akg-scroll::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 196, 0.55);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.akg-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 196, 0.8);
+  background-clip: padding-box;
+}
+.akg-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ============================================================
+   动画
+   ============================================================ */
+@keyframes akg-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.akg-fade-in {
+  animation: akg-fade-in 0.2s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

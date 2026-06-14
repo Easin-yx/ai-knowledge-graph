@@ -1,0 +1,332 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { graphData } from "./data/graph";
+import type { KnowledgeNode } from "./types";
+import { useTheme } from "./hooks/useTheme";
+import { useIsMobile } from "./hooks/useMediaQuery";
+import { Header } from "./components/Header";
+import { GraphCanvas, type GraphCanvasHandle } from "./components/GraphCanvas";
+import { NodeDetailPanel } from "./components/NodeDetailPanel";
+import { BottomSheet } from "./components/BottomSheet";
+import { LegendBar, LegendFab } from "./components/Legend";
+import type { Neighbor } from "./components/NodeDetailContent";
+
+export default function App() {
+  const { theme, toggleTheme } = useTheme();
+  const isMobile = useIsMobile();
+
+  const [selectedNode, setSelectedNode] = useState<KnowledgeNode | null>(null);
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+
+  const graphRef = useRef<GraphCanvasHandle>(null);
+
+  const nodeById = useMemo(() => {
+    const map = new Map<string, KnowledgeNode>();
+    for (const n of graphData.nodes) map.set(n.id, n);
+    return map;
+  }, []);
+
+  // ── 渐进式展开：完整图谱的邻接表 ──
+  const adjacency = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    for (const n of graphData.nodes) map.set(n.id, new Set());
+    for (const e of graphData.edges) {
+      map.get(e.source)?.add(e.target);
+      map.get(e.target)?.add(e.source);
+    }
+    return map;
+  }, []);
+
+  // 种子节点：每个连通分量中度数最高者（默认学习起点，自动适配未来扩展）
+  const seeds = useMemo(() => {
+    const degree = (id: string) => adjacency.get(id)?.size ?? 0;
+    const visited = new Set<string>();
+    const result: string[] = [];
+    for (const n of graphData.nodes) {
+      if (visited.has(n.id)) continue;
+      const comp: string[] = [];
+      const queue = [n.id];
+      visited.add(n.id);
+      while (queue.length) {
+        const cur = queue.shift()!;
+        comp.push(cur);
+        for (const nb of adjacency.get(cur) ?? []) {
+          if (!visited.has(nb)) {
+            visited.add(nb);
+            queue.push(nb);
+          }
+        }
+      }
+      comp.sort((a, b) => degree(b) - degree(a));
+      // 优先以 LLM 作为默认入口/中心：它向下连原理层(Transformer)、向上连应用层(Agent/RAG)，居于知识链枢纽
+      const llmInComp = comp.find((id) => id === "llm");
+      if (llmInComp) {
+        result.push(llmInComp);
+      } else {
+        result.push(comp[0]);
+      }
+    }
+    return result;
+  }, [adjacency]);
+
+  // 已展开的节点（点击后浮现其邻居）
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(
+    () => new Set(seeds)
+  );
+
+  // 可见节点 = 从种子出发 BFS，只穿过"已展开"节点向外延伸
+  // 这样收回父节点时，整条子树自动从可见集消失，无需手动清理孤儿节点
+  const visibleIds = useMemo(() => {
+    const visible = new Set<string>(seeds);
+    const queue = [...seeds];
+    while (queue.length) {
+      const cur = queue.shift()!;
+      if (!expandedIds.has(cur)) continue;
+      for (const nb of adjacency.get(cur) ?? []) {
+        if (!visible.has(nb)) {
+          visible.add(nb);
+          queue.push(nb);
+        }
+      }
+    }
+    return visible;
+  }, [expandedIds, adjacency, seeds]);
+
+  const visibleData = useMemo(
+    () => ({
+      nodes: graphData.nodes.filter((n) => visibleIds.has(n.id)),
+      edges: graphData.edges.filter(
+        (e) => visibleIds.has(e.source) && visibleIds.has(e.target)
+      ),
+    }),
+    [visibleIds]
+  );
+
+  // 仍有未显示邻居的可见节点（画"可展开"提示环）
+  const expandableIds = useMemo(() => {
+    const s = new Set<string>();
+    for (const id of visibleIds) {
+      for (const nb of adjacency.get(id) ?? []) {
+        if (!visibleIds.has(nb)) {
+          s.add(id);
+          break;
+        }
+      }
+    }
+    return s;
+  }, [visibleIds, adjacency]);
+
+  // 当前选中节点的相邻节点 + 关系
+  const neighbors = useMemo<Neighbor[]>(() => {
+    if (!selectedNode) return [];
+    const result: Neighbor[] = [];
+    const seen = new Set<string>();
+    for (const e of graphData.edges) {
+      if (e.source === selectedNode.id) {
+        const n = nodeById.get(e.target);
+        if (n && !seen.has(n.id)) {
+          seen.add(n.id);
+          result.push({ node: n, relation: e.label, direction: "out" });
+        }
+      } else if (e.target === selectedNode.id) {
+        const n = nodeById.get(e.source);
+        if (n && !seen.has(n.id)) {
+          seen.add(n.id);
+          result.push({ node: n, relation: e.label, direction: "in" });
+        }
+      }
+    }
+    return result;
+  }, [selectedNode, nodeById]);
+
+  // 种子集合（不可收回）
+  const seedSet = useMemo(() => new Set(seeds), [seeds]);
+
+  // 选中节点聚焦时让其落在未被面板/抽屉遮挡的区域
+  const focusInset = useMemo(
+    () => (isMobile ? { bottom: 0.6 * window.innerHeight } : { right: 360 }),
+    [isMobile]
+  );
+
+  const expandNode = useCallback((id: string) => {
+    setExpandedIds((prev) => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  }, []);
+
+  // 收回某节点：从已展开集合中移除（种子不可收），其子树随 visibleIds BFS 自动消失
+  const collapseNode = useCallback(
+    (id: string) => {
+      if (seedSet.has(id)) return;
+      setExpandedIds((prev) => {
+        if (!prev.has(id)) return prev;
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    },
+    [seedSet]
+  );
+
+  // 点击节点：再点已选中节点 = 收回；否则展开 + 选中 + 聚焦到未遮挡区
+  const handleSelectNode = useCallback(
+    (node: KnowledgeNode | null) => {
+      if (node && selectedNode?.id === node.id) {
+        collapseNode(node.id);
+        setSelectedNode(null);
+        return;
+      }
+      setSelectedNode(node);
+      if (node) {
+        // 有隐藏邻居 → 展开会触发力导向重排，聚焦延后到布局稳定
+        const willReheat = expandableIds.has(node.id);
+        expandNode(node.id);
+        graphRef.current?.focusNode(node.id, focusInset, willReheat);
+      }
+    },
+    [selectedNode, collapseNode, expandNode, focusInset, expandableIds]
+  );
+
+  // 详情面板内点击相邻节点：展开 + 切换选中 + 平滑聚焦
+  const handleSelectNeighbor = useCallback(
+    (node: KnowledgeNode) => {
+      setSelectedNode(node);
+      const willReheat = expandableIds.has(node.id);
+      expandNode(node.id);
+      graphRef.current?.focusNode(node.id, focusInset, willReheat);
+    },
+    [expandNode, focusInset, expandableIds]
+  );
+
+  const handleClose = useCallback(() => setSelectedNode(null), []);
+
+  // 收起当前选中节点的子树并关闭详情卡（供详情卡内"收起此节点"按钮使用）
+  const handleCollapseSelected = useCallback(() => {
+    if (!selectedNode) return;
+    collapseNode(selectedNode.id);
+    setSelectedNode(null);
+  }, [selectedNode, collapseNode]);
+
+  // 收起全部，回到起点
+  const handleCollapseAll = useCallback(() => {
+    setExpandedIds(new Set(seeds));
+    setSelectedNode(null);
+    window.setTimeout(() => graphRef.current?.resetView(), 450);
+  }, [seeds]);
+
+  const canReset = expandedIds.size > seeds.length;
+  const canCollapseSelected = selectedNode ? !seedSet.has(selectedNode.id) : false;
+
+  // Esc 关闭详情面板
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedNode(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  return (
+    <div className="relative h-full w-full overflow-hidden">
+      {/* 弥散光背景 — 暖色浅色主题下作为知识领域的柔和分区 */}
+      {theme === "light" && <AuraBackground />}
+
+      <GraphCanvas
+        ref={graphRef}
+        data={visibleData}
+        theme={theme}
+        selectedId={selectedNode?.id ?? null}
+        hoveredId={hoveredNode}
+        expandableIds={expandableIds}
+        onSelectNode={handleSelectNode}
+        onHoverNode={setHoveredNode}
+      />
+
+      <Header
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        onReset={handleCollapseAll}
+        canReset={canReset}
+      />
+
+      {/* 图例 */}
+      <LegendBar />
+      <LegendFab />
+
+      {/* 详情：桌面端右侧面板 / 移动端底部抽屉 */}
+      {isMobile ? (
+        <BottomSheet
+          node={selectedNode}
+          neighbors={neighbors}
+          onClose={handleClose}
+          onSelectNeighbor={handleSelectNeighbor}
+          onCollapse={handleCollapseSelected}
+          canCollapse={canCollapseSelected}
+        />
+      ) : (
+        <NodeDetailPanel
+          node={selectedNode}
+          neighbors={neighbors}
+          onClose={handleClose}
+          onSelectNeighbor={handleSelectNeighbor}
+          onCollapse={handleCollapseSelected}
+          canCollapse={canCollapseSelected}
+        />
+      )}
+    </div>
+  );
+}
+
+/** 弥散光背景：四团柔和色斑，作为不同知识领域的视觉分区氛围 */
+function AuraBackground() {
+  const blobs: React.CSSProperties[] = [
+    {
+      width: 520,
+      height: 520,
+      top: "-12%",
+      left: "2%",
+      background:
+        "radial-gradient(circle, rgba(126,170,223,0.20) 0%, transparent 70%)",
+    },
+    {
+      width: 560,
+      height: 560,
+      top: "12%",
+      right: "-8%",
+      background:
+        "radial-gradient(circle, rgba(212,130,74,0.18) 0%, transparent 70%)",
+    },
+    {
+      width: 460,
+      height: 460,
+      bottom: "-6%",
+      left: "22%",
+      background:
+        "radial-gradient(circle, rgba(155,126,200,0.16) 0%, transparent 70%)",
+    },
+    {
+      width: 340,
+      height: 340,
+      bottom: "10%",
+      right: "12%",
+      background:
+        "radial-gradient(circle, rgba(91,170,138,0.15) 0%, transparent 70%)",
+    },
+  ];
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 overflow-hidden"
+    >
+      {blobs.map((style, i) => (
+        <div
+          key={i}
+          className="absolute rounded-full"
+          style={{ filter: "blur(28px)", ...style }}
+        />
+      ))}
+    </div>
+  );
+}
