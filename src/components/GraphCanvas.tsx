@@ -20,8 +20,8 @@ import {
   GRAPH_COLORS_LIGHT,
   NODE_RADIUS,
   NODE_RADIUS_HOVER,
-  NODE_TYPE_STYLES,
   OPACITY,
+  type NodeTypeStyle,
 } from "../constants/theme";
 
 type LinkExtra = { id: string; label: string; directed?: boolean };
@@ -50,6 +50,10 @@ interface GraphCanvasProps {
   expandableIds: Set<string>;
   onSelectNode: (node: KnowledgeNode | null) => void;
   onHoverNode: (id: string | null) => void;
+  /** 当前地图的类型→配色映射，找不到 type 时回退到 typeOrder[0] 对应样式 */
+  typeStyles: Record<string, NodeTypeStyle>;
+  /** 类型展示顺序；typeOrder[0] 作为找不到类型时的安全兜底 */
+  typeOrder: string[];
 }
 
 function linkEndId(end: GraphLink["source"]): string {
@@ -68,6 +72,8 @@ export const GraphCanvas = forwardRef<GraphCanvasHandle, GraphCanvasProps>(
       expandableIds,
       onSelectNode,
       onHoverNode,
+      typeStyles,
+      typeOrder,
     },
     ref
   ) {
@@ -342,7 +348,8 @@ export const GraphCanvas = forwardRef<GraphCanvasHandle, GraphCanvasProps>(
         const id = String(node.id ?? "");
         const x = node.x ?? 0;
         const y = node.y ?? 0;
-        const style = NODE_TYPE_STYLES[node.type] ?? NODE_TYPE_STYLES.concept;
+        const fallbackStyle = typeStyles[typeOrder[0]];
+        const style = typeStyles[node.type] ?? fallbackStyle;
         const alpha = getNodeAlpha(id);
         const isActive = id === selectedId || id === hoveredId;
         const r = isActive ? NODE_RADIUS_HOVER : NODE_RADIUS;
@@ -401,7 +408,7 @@ export const GraphCanvas = forwardRef<GraphCanvasHandle, GraphCanvasProps>(
 
         ctx.restore();
       },
-      [getNodeAlpha, selectedId, hoveredId, colors, expandableIds]
+      [getNodeAlpha, selectedId, hoveredId, colors, expandableIds, typeStyles, typeOrder]
     );
 
     // 点击热区（放大，便于移动端点击）

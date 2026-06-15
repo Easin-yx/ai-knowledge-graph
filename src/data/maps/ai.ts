@@ -1,4 +1,5 @@
-import type { GraphData } from "../types";
+import type { GraphData, KnowledgeMap } from "../../types";
+import type { NodeTypeStyle } from "../../constants/theme";
 
 // ============================================================
 // AI 知识图谱 — 第一版数据
@@ -17,7 +18,7 @@ const AIAYN_SOURCE = {
   url: "https://arxiv.org/abs/1706.03762",
 };
 
-export const graphData: GraphData = {
+const aiGraphData: GraphData = {
   nodes: [
     // ─────────────────────────────────────────
     // 架构节点 (architecture)
@@ -651,6 +652,204 @@ export const graphData: GraphData = {
       },
     },
 
+    // ─────────────────────────────────────────
+    // 批次 5 扩充 — 架构 (architecture)
+    // ─────────────────────────────────────────
+    {
+      id: "dit",
+      label: "Diffusion Transformer (DiT)",
+      type: "architecture",
+      details: {
+        zh_label: "扩散 Transformer",
+        summary: "用 Transformer 替换扩散模型中原有的 U-Net 去噪骨干，实现更强的扩展性与生成质量，是 Sora 等顶级视频模型的核心架构。",
+        analogy: "像公司把原来靠科层式「逐级转发文件」的传统流程（U-Net）升级成了能全局协调、任何两个人都能直接对话的数字化协作系统（Transformer）：做同样的去噪工作，新系统理解得更透、配合得更默契、规模越大越能发挥优势。",
+        notes: "论文：Scalable Diffusion Models with Transformers（Peebles & Xie, 2022）。核心改动：把 U-Net 的卷积层全部替换为多头自注意力 + 前馈网络的 Transformer Block，并引入 adaLN-Zero（自适应层归一化）注入时间步与类别条件。优势：参数越多效果提升越平稳，天然适合多模态输入，与 LLM 共享架构便于联合训练。Sora 将 DiT 扩展到时空 patch 维度（即 Video DiT）。",
+        key_concepts: ["U-Net 替代", "adaLN-Zero", "规模可扩展", "Sora 骨干"],
+        source: { type: "paper", title: "Scalable Diffusion Models with Transformers", year: 2022, authors: ["Peebles", "Xie"], url: "https://arxiv.org/abs/2212.09748" },
+      },
+    },
+    {
+      id: "latent_diffusion",
+      label: "Latent Diffusion",
+      type: "architecture",
+      details: {
+        zh_label: "潜空间扩散",
+        summary: "不在像素空间直接做加噪与去噪，而是先用 VAE 把高分辨率内容压缩到低维潜空间，在潜空间完成整个扩散过程后再解码还原，大幅降低计算成本。",
+        analogy: "像员工不在一份几百页的原始档案上逐字逐页修改，而是先让档案专员（VAE 编码器）把档案浓缩成一份精炼摘要，所有的修改讨论都在摘要层面进行，最后再由档案专员（VAE 解码器）把修改好的摘要还原成完整档案——工作量省了一个数量级，档案质量几乎不打折。",
+        notes: "论文：High-Resolution Image Synthesis with Latent Diffusion Models（Rombach et al., 2022），即 Stable Diffusion 的理论基础。潜空间维度通常是像素空间的 1/64～1/256，使扩散的每步计算量急剧减少。条件信息（文本/图像）通过 Cross-Attention 注入 U-Net/DiT 的每一层。视频生成中，Video VAE 将时序维度一并压缩，进一步降低时空计算成本。",
+        key_concepts: ["VAE 压缩", "潜空间操作", "计算高效", "Stable Diffusion 基础"],
+        source: { type: "paper", title: "High-Resolution Image Synthesis with Latent Diffusion Models", year: 2022, authors: ["Rombach", "Blattmann", "Lorenz", "Esser", "Ommer"], url: "https://arxiv.org/abs/2112.10752" },
+      },
+    },
+
+    // ─────────────────────────────────────────
+    // 批次 5 扩充 — 技术 (technique)
+    // ─────────────────────────────────────────
+    {
+      id: "denoising",
+      label: "Denoising",
+      type: "technique",
+      details: {
+        zh_label: "去噪过程",
+        summary: "扩散模型推理阶段的核心操作：从纯高斯噪声出发，模型每一步预测并去除当前噪声，经过 T 步迭代逐步还原出清晰的图像或视频。",
+        analogy: "像员工接手一份被人涂满乱码、几乎面目全非的草稿：他不是直接重写，而是一轮一轮地「洗」——先把最明显的乱码擦掉、再纠正笔迹、再填补内容，几十轮下来，草稿就越来越清晰，最终变成一份完整成品。",
+        notes: "训练目标：在每个噪声级别 t 上，模型学习预测「这一步该去掉什么样的噪声」。推理时无需真实数据，只需从标准高斯分布采样后反复调用模型。常用采样算法：DDPM（1000 步）、DDIM（50 步，可确定性采样）、DPM-Solver（20 步以内）。步数越少速度越快，但质量略降；步数越多质量越高，但耗时增加。",
+        key_concepts: ["T 步迭代", "噪声预测", "DDPM/DDIM", "采样算法"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "video_vae",
+      label: "Video VAE",
+      type: "technique",
+      details: {
+        zh_label: "视频变分自编码器",
+        summary: "把视频的时间和空间两个维度同步压缩进低维潜空间的变分自编码器，是视频生成系统的「时空压缩引擎」，让扩散模型在高效的潜空间内操作完整视频序列。",
+        analogy: "像档案员把一部记录完整的长篇录像（高分辨率多帧视频）同时从两个维度浓缩：既把每帧的画面细节压成摘要（空间压缩），也把「时间线上发生了什么」一并归纳进去（时序压缩）。后续所有改稿、审阅都在这份「双重摘要」上进行，最后档案员再把通过审核的摘要还原回完整录像。",
+        notes: "与图像 VAE 相比，Video VAE 在编解码时引入了时间维度卷积或时空注意力，以建模帧间的时序连续性。典型压缩比：空间 8×8、时间 4×，即 4 帧压成 1 帧潜向量。是解决 temporal consistency 的关键手段之一：潜空间本身的时序连续性约束了解码后视频的帧间一致。代表实现：Stable Video Diffusion（SVD）VAE、CogVideoX VAE、Wan VAE。",
+        key_concepts: ["时空压缩", "潜空间视频", "帧间连续", "编解码对称"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "spatiotemporal_attention",
+      label: "Spatiotemporal Attention",
+      type: "technique",
+      details: {
+        zh_label: "时空注意力",
+        summary: "在时间和空间两个维度上联合建模注意力，使模型能同时感知单帧内的空间关系与跨帧的运动规律，是保证时间一致性的核心机制。",
+        analogy: "像一位专门「查穿帮」的质检员：她不只看每张定格画面里场景布置对不对（空间注意力），还要一边翻页一边盯着同一个演员、同一件道具在不同帧之间有没有对上（时间注意力）。两种眼力同时开着，前后穿帮就逃不掉了。",
+        notes: "实现方式主要有两种：① 全时空注意力（Full 3D Attention）：将时间和空间的 token 打平统一计算，建模能力最强但计算成本与序列长度的平方成正比；② 因式分解时空注意力（Factorized Attention）：先在每帧内做空间注意力，再跨帧做时间注意力，显著降低计算量，是大多数实用模型的选择（如 VideoCrafter、CogVideoX）。DiT 架构中时空注意力可直接通过扩展 patch 序列的时间维度来实现。",
+        key_concepts: ["3D 注意力", "因式分解", "跨帧建模", "运动感知"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "classifier_free_guidance",
+      label: "Classifier-Free Guidance",
+      type: "technique",
+      details: {
+        zh_label: "无分类器引导",
+        summary: "训练时随机丢弃条件信息让模型同时学习有条件和无条件生成，推理时将两者的差值按引导系数放大，在不依赖额外分类器的前提下精确控制生成内容向文本描述靠拢的程度。",
+        analogy: "像员工做方案时同时准备两版：一版是「严格按领导要求来」，一版是「完全自由发挥」。最终交付时，主管不直接选哪一版，而是把两版的差异放大一定倍数叠加进去——调得越猛，成品越贴近需求、越有「领导风格」，但创意空间也越小；调小一点则更有惊喜，但可能跑题。这个「倍数旋钮」就是引导系数（guidance scale）。",
+        notes: "公式：ε̃(x, c) = ε(x, ∅) + w · (ε(x, c) − ε(x, ∅))，其中 c 为条件（文本），∅ 为空条件，w 为引导系数。w=1 时退化为有条件生成，w 越大文本贴合度越高但多样性越低，典型取值 7.5。训练时以 10%～20% 概率将条件替换为空，使同一模型能处理两种情况。无需为不同任务训练专属分类器，是 DALL·E 2、Stable Diffusion、Sora 等几乎所有主流生成模型的标配手段。",
+        key_concepts: ["引导系数 w", "有/无条件混合", "文本贴合度", "多样性权衡"],
+        source: { type: "paper", title: "Classifier-Free Diffusion Guidance", year: 2022, authors: ["Ho", "Salimans"], url: "https://arxiv.org/abs/2207.12598" },
+      },
+    },
+    {
+      id: "text_encoder",
+      label: "Text Encoder",
+      type: "technique",
+      details: {
+        zh_label: "文本编码器",
+        summary: "把用户输入的自然语言描述编码成高维语义向量，通过 Cross-Attention 注入扩散模型每一层，充当视频/图像生成的「文本条件信号」。",
+        analogy: "像公司里的需求翻译专员：老板用大白话提需求，她负责把需求翻译成一份标准化的「数字工单」——用机器能精确读懂的格式说清楚要做什么、突出哪些要点、什么不能改。工单质量直接决定后续制作部门能不能做出符合老板意图的成品。",
+        notes: "常用模型：CLIP Text Encoder（对比学习预训练，擅长与图像特征空间对齐，但上下文建模较弱）、T5-XXL（纯文本生成式预训练，长文本语义理解强，被 Imagen、Sora 等采用）、CLIP + T5 双编码器融合（同时获得两者优势）。编码后的序列向量通过 Cross-Attention 机制注入 U-Net/DiT 的各层，使去噪方向受文本引导。文本编码质量是制约生成效果上限的关键因素之一。",
+        key_concepts: ["CLIP / T5", "语义向量", "Cross-Attention 注入", "条件信号"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "spacetime_patch",
+      label: "Spacetime Patch",
+      type: "technique",
+      details: {
+        zh_label: "时空 patch",
+        summary: "将视频沿空间（高宽）和时间（帧数）两个维度切分成固定大小的三维小块，作为 Transformer 的 token 输入，使同一套架构能统一处理图像和视频。",
+        analogy: "像把一段录像的每一帧先切成邮票大小的小格，再把相邻几帧同一位置的小格叠成一个「时间小砖块」，最后把所有小砖块像词典条目一样排成一列，交给大脑逐一读取和理解——视频就这样变成了大脑能处理的「词块序列」。",
+        notes: "Sora 的核心设计之一：论文将可变分辨率、可变时长的视频统一表示为时空 patch 序列，使模型无需为不同尺寸单独设计。典型 patch 大小：空间 2×2 像素块、时间 1 帧或多帧。patch 数量直接决定序列长度，进而决定计算量。与 ViT（图像 Transformer）把图像切成空间 patch 的思路一脉相承，只是额外引入了时间维度。",
+        key_concepts: ["三维切块", "统一序列化", "可变时长/分辨率", "ViT 扩展"],
+        source: { type: "blog", title: "OpenAI Sora Technical Report", url: "https://openai.com/research/video-generation-models-as-world-simulators" },
+      },
+    },
+
+    // ─────────────────────────────────────────
+    // 批次 5 扩充 — 概念 (concept)
+    // ─────────────────────────────────────────
+    {
+      id: "image_to_video",
+      label: "Image-to-Video",
+      type: "concept",
+      details: {
+        zh_label: "图生视频",
+        summary: "以单张静态图像为起点，生成与图像内容、风格、主体身份连贯一致的动态视频序列，是文生视频的重要衍生形态。",
+        analogy: "像员工拿到一张已经定稿的产品效果图，被要求「让这张图动起来」：他必须在完整保留原图中产品外观、品牌色和场景风格的前提下，合理推演出接下来几秒会发生什么动作，交付一段和效果图「血脉相连」的视频成品。",
+        notes: "与文生视频的核心区别：图生视频的「锚点」是图像而非文字，模型必须从图像中提取主体的外观、姿态、场景上下文作为第一帧约束，再生成后续帧。常见应用场景：让静态图片中的人物/动物产生自然动作、将概念图动态化、老照片动起来。代表能力：可灵（Kling）、Stable Video Diffusion（SVD）、Runway Gen-3 均支持图生视频模式。难点：维持第一帧与后续帧的主体一致性（即 temporal consistency 的特殊版本）。",
+        key_concepts: ["第一帧约束", "主体一致", "静态图动态化", "文生视频衍生"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "motion_control",
+      label: "Motion Control",
+      type: "concept",
+      details: {
+        zh_label: "运动/镜头控制",
+        summary: "通过显式的控制信号（运动轨迹、光流、摄像机参数、关键帧等）精确指定视频中物体运动路径和镜头运动方式，让生成视频从「随机动」变成「按指定方向动」。",
+        analogy: "像导演在拍摄前拿着分镜图向数字员工下达精确指令：不只告诉他「拍一个产品展示视频」，还要指定「开头镜头从左下角向右上角缓慢推进，第三秒产品旋转 90 度，最后镜头拉远到全景」。有了这份「运镜说明书」，员工不再自由发挥，而是按既定路径制作，产出和导演脑子里的画面高度一致。",
+        notes: "控制方式分两类：① 物体运动控制：通过稀疏轨迹点、关键帧绑定或光流图指定特定物体的运动方向和速度；② 镜头运动控制：通过摄像机外参（平移、旋转、焦距变化等）指定拍摄视角的运动，如推、拉、摇、移、旋转、变焦。代表实现：DragNUWA、CameraCtrl、MotionCtrl，以及可灵的「运镜控制」功能。是视频生成从「生成式」走向「创作工具」的关键能力跃升。",
+        key_concepts: ["轨迹控制", "镜头运动", "光流约束", "创作工具化"],
+        source: { type: "conversation" },
+      },
+    },
+
+    // ─────────────────────────────────────────
+    // 批次 5 扩充 — 产品 (product)
+    // ─────────────────────────────────────────
+    {
+      id: "stable_diffusion",
+      label: "Stable Diffusion",
+      type: "product",
+      details: {
+        zh_label: "Stable Diffusion",
+        summary: "Stability AI 基于潜空间扩散模型（Latent Diffusion）推出的开源文生图模型，以高质量、可本地部署、高度可定制著称，是图像生成大规模普及的里程碑产品。",
+        analogy: "像图像部门里最早「开放简历」的明星数字员工：不但自己产出质量出众，还把自己的培训方案（模型权重）和工作手册（代码）全部公开，任何团队都能免费招募、基于他的基础再定向培训出专属岗位，是后来各种视频数字员工的「祖师爷」。",
+        notes: "发布于 2022 年，基于 Rombach et al. 的 LDM 论文。U-Net 作为去噪骨干，CLIP 作为文本编码器，VAE 实现像素↔潜空间互转。开源生态极为繁荣：社区基于此训练了大量风格 LoRA、ControlNet 插件、InPainting 模型。衍生版本：SDXL（更大分辨率）、SD 3.0（DiT 骨干）。对视频生成的意义：其 VAE 和潜空间扩散框架被 Stable Video Diffusion（SVD）直接沿用，成为视频生成的基础设施。",
+        key_concepts: ["开源", "潜空间扩散", "LoRA / ControlNet", "社区生态"],
+        source: { type: "blog", title: "Stable Diffusion", url: "https://stability.ai/stable-diffusion" },
+      },
+    },
+    {
+      id: "runway",
+      label: "Runway Gen-3",
+      type: "product",
+      details: {
+        zh_label: "Runway Gen-3",
+        summary: "Runway 推出的商业级文生视频模型（Gen-3 Alpha），面向创意行业，以精准的运镜控制、高度的电影级画质和多模态输入（文本+图像+视频）为核心竞争力。",
+        analogy: "像影视制作公司专门引进的高端数字员工：只接高端定制单，给他一句导演台词他就能产出有电影质感的镜头，对构图、光影和运动细节的把握远超普通员工；当然用他的成本也更高，不适合拿来做一般短平快的物料。",
+        notes: "Runway 是创意 AI 领域先行者，Gen-1 于 2023 年推出，Gen-3 Alpha 于 2024 年发布。支持 Text-to-Video、Image-to-Video、Video-to-Video 三种模式，最长可生成 10 秒高清视频。特色功能：Motion Brush（手绘运动方向）、Camera Control（精确镜头运动指令）。用户群以专业内容创作者、广告导演、视觉艺术家为主。",
+        key_concepts: ["电影级画质", "Camera Control", "专业创作者", "多模态输入"],
+        source: { type: "blog", title: "Runway Gen-3 Alpha", url: "https://runwayml.com/research/introducing-gen-3-alpha" },
+      },
+    },
+    {
+      id: "pika",
+      label: "Pika",
+      type: "product",
+      details: {
+        zh_label: "Pika",
+        summary: "Pika Labs 推出的面向消费者的文生视频与图生视频产品，以极低的使用门槛、丰富的动效控制模板和快速出片为亮点，是普通创作者入门视频生成的首选工具之一。",
+        analogy: "像一位适合初学者的入门级影视数字员工：上手几乎不需要培训，操作界面像点外卖一样简单，适合普通员工快速出短平快的动效和创意小视频；他虽然达不到高端制作水准，但对于日常宣传物料和社交媒体内容来说已经够用。",
+        notes: "Pika 1.0 于 2023 年底发布，主打易用性。核心功能：修改视频中的局部元素（Modify Region）、调整长宽比、控制运动强度（Motion Score）、口型同步（Lip Sync）。Pika 2.0 引入更长时长和更高分辨率支持。主要面向 TikTok、Instagram 等社交媒体内容创作者和设计师，与 Runway 形成高低端互补格局。",
+        key_concepts: ["消费者友好", "动效模板", "局部编辑", "社交媒体内容"],
+        source: { type: "blog", title: "Pika Labs", url: "https://pika.art/" },
+      },
+    },
+    {
+      id: "hailuo",
+      label: "Hailuo Video",
+      type: "product",
+      details: {
+        zh_label: "海螺视频",
+        summary: "MiniMax 推出的海螺视频（Hailuo Video），国内代表性文生视频产品之一，以人物面部表情、肢体动作的高真实感和中文语义理解见长，在人物演绎类场景下表现突出。",
+        analogy: "像国内团队专门培养的「人物演绎专家」数字员工：她特别擅长让视频里的人脸表情自然、肢体动作流畅，比通用型员工在「演好一个角色」这件事上专注得多；加上熟悉中文语境，老板用中文下指令她也能精准理解，不需要再绕道翻译。",
+        notes: "由 MiniMax 于 2024 年推出，采用扩散 + Transformer 技术路线，支持文生视频与图生视频。主要优势：人脸渲染与情感表达优于多数竞品，尤其适合数字人、影视角色、广告代言人类场景；在对中文提示词的语义理解上也有本土化优势。海外版本在国际上以「Hailuo AI」品牌运营，与可灵（Kling）同为国内视频生成头部产品。",
+        key_concepts: ["人物演绎", "中文语义", "MiniMax", "国产模型"],
+        source: { type: "blog", title: "海螺视频 Hailuo Video", url: "https://hailuoai.video/" },
+      },
+    },
+
     // ═════════════════════════════════════════
     // 批次 6 — 工具平台簇
     // ═════════════════════════════════════════
@@ -1058,6 +1257,160 @@ export const graphData: GraphData = {
       label: "存在问题",
     },
 
+    // ─── 批次 5 扩充 — DiT / 潜空间扩散 ───────────
+    {
+      id: "transformer__被借鉴于__dit",
+      source: "transformer",
+      target: "dit",
+      label: "被借鉴于",
+    },
+    {
+      id: "diffusion_model__改进为__dit",
+      source: "diffusion_model",
+      target: "dit",
+      label: "改进为",
+    },
+    {
+      id: "sora__采用__dit",
+      source: "sora",
+      target: "dit",
+      label: "采用",
+    },
+    {
+      id: "diffusion_model__优化为__latent_diffusion",
+      source: "diffusion_model",
+      target: "latent_diffusion",
+      label: "优化为",
+    },
+    {
+      id: "latent_diffusion__依赖__video_vae",
+      source: "latent_diffusion",
+      target: "video_vae",
+      label: "依赖",
+    },
+    {
+      id: "diffusion_model__核心步骤__denoising",
+      source: "diffusion_model",
+      target: "denoising",
+      label: "核心步骤",
+    },
+
+    // ─── 批次 5 扩充 — 文本条件链 ──────────────────
+    {
+      id: "text_to_video__依赖__text_encoder",
+      source: "text_to_video",
+      target: "text_encoder",
+      label: "依赖",
+    },
+    {
+      id: "text_encoder__复用__embedding",
+      source: "text_encoder",
+      target: "embedding",
+      label: "复用",
+    },
+    {
+      id: "text_to_video__使用__classifier_free_guidance",
+      source: "text_to_video",
+      target: "classifier_free_guidance",
+      label: "使用",
+    },
+
+    // ─── 批次 5 扩充 — Sora 时空 patch ────────────
+    {
+      id: "sora__使用__spacetime_patch",
+      source: "sora",
+      target: "spacetime_patch",
+      label: "使用",
+    },
+    {
+      id: "spacetime_patch__基于__token",
+      source: "spacetime_patch",
+      target: "token",
+      label: "基于",
+    },
+
+    // ─── 批次 5 扩充 — 时间一致性解决方案 ──────────
+    {
+      id: "temporal_consistency__解决方案__spatiotemporal_attention",
+      source: "temporal_consistency",
+      target: "spatiotemporal_attention",
+      label: "解决方案",
+    },
+    {
+      id: "temporal_consistency__解决方案__video_vae",
+      source: "temporal_consistency",
+      target: "video_vae",
+      label: "解决方案",
+    },
+
+    // ─── 批次 5 扩充 — 衍生形态与代表产品 ──────────
+    {
+      id: "text_to_video__衍生形态__image_to_video",
+      source: "text_to_video",
+      target: "image_to_video",
+      label: "衍生形态",
+    },
+    {
+      id: "text_to_video__依赖__motion_control",
+      source: "text_to_video",
+      target: "motion_control",
+      label: "依赖",
+    },
+    {
+      id: "diffusion_model__代表产品__stable_diffusion",
+      source: "diffusion_model",
+      target: "stable_diffusion",
+      label: "代表产品",
+    },
+    {
+      id: "latent_diffusion__代表产品__stable_diffusion",
+      source: "latent_diffusion",
+      target: "stable_diffusion",
+      label: "代表产品",
+    },
+    {
+      id: "text_to_video__代表产品__runway",
+      source: "text_to_video",
+      target: "runway",
+      label: "代表产品",
+    },
+    {
+      id: "text_to_video__代表产品__pika",
+      source: "text_to_video",
+      target: "pika",
+      label: "代表产品",
+    },
+    {
+      id: "text_to_video__代表产品__hailuo",
+      source: "text_to_video",
+      target: "hailuo",
+      label: "代表产品",
+    },
+    {
+      id: "image_to_video__代表产品__runway",
+      source: "image_to_video",
+      target: "runway",
+      label: "代表产品",
+    },
+    {
+      id: "image_to_video__代表产品__kling",
+      source: "image_to_video",
+      target: "kling",
+      label: "代表产品",
+    },
+    {
+      id: "motion_control__应用于__runway",
+      source: "motion_control",
+      target: "runway",
+      label: "应用于",
+    },
+    {
+      id: "motion_control__应用于__kling",
+      source: "motion_control",
+      target: "kling",
+      label: "应用于",
+    },
+
     // ═══ 批次 6 — 工具平台簇 ═════════════════════
     {
       id: "ai_agent__搭建于__coze",
@@ -1092,4 +1445,61 @@ export const graphData: GraphData = {
       directed: false,
     },
   ],
+};
+
+// ============================================================
+// AI 图类型 → 色系映射（液态玻璃风格）
+//   concept 蓝 / architecture 橙 / technique 紫
+//   dataset 绿 / framework 灰 / product 青
+// ============================================================
+const aiTypeStyles: Record<string, NodeTypeStyle> = {
+  concept: {
+    base: "#7eaadf",
+    glow: "rgba(126, 170, 223, 0.30)",
+    label: "概念",
+  },
+  architecture: {
+    base: "#d4824a",
+    glow: "rgba(212, 130, 74, 0.30)",
+    label: "架构",
+  },
+  technique: {
+    base: "#9b7ec8",
+    glow: "rgba(155, 126, 200, 0.30)",
+    label: "技术",
+  },
+  dataset: {
+    base: "#5baa8a",
+    glow: "rgba(91, 170, 138, 0.30)",
+    label: "数据集",
+  },
+  framework: {
+    base: "#9a9488",
+    glow: "rgba(154, 148, 136, 0.30)",
+    label: "框架",
+  },
+  product: {
+    base: "#4fb0c6",
+    glow: "rgba(79, 176, 198, 0.30)",
+    label: "产品",
+  },
+};
+
+const aiTypeOrder: string[] = [
+  "architecture",
+  "product",
+  "concept",
+  "technique",
+  "dataset",
+  "framework",
+];
+
+export const aiMap: KnowledgeMap = {
+  id: "ai",
+  label: "AI 知识图谱",
+  subtitle: "可视化 AI 知识网络",
+  data: aiGraphData,
+  typeStyles: aiTypeStyles,
+  typeOrder: aiTypeOrder,
+  preferredSeed: "llm",
 };

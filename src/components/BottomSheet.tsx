@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import type { KnowledgeNode } from "../types";
+import type { NodeTypeStyle } from "../constants/theme";
 import { NodeDetailContent, type Neighbor } from "./NodeDetailContent";
 
 interface BottomSheetProps {
@@ -10,6 +11,8 @@ interface BottomSheetProps {
   onSelectNeighbor: (node: KnowledgeNode) => void;
   onCollapse: () => void;
   canCollapse: boolean;
+  typeStyles: Record<string, NodeTypeStyle>;
+  typeOrder: string[];
 }
 
 type Snap = "default" | "full";
@@ -21,6 +24,8 @@ export function BottomSheet({
   onSelectNeighbor,
   onCollapse,
   canCollapse,
+  typeStyles,
+  typeOrder,
 }: BottomSheetProps) {
   const open = node !== null;
   const [snap, setSnap] = useState<Snap>("default");
@@ -121,6 +126,8 @@ export function BottomSheet({
               onSelectNeighbor={onSelectNeighbor}
               onCollapse={onCollapse}
               canCollapse={canCollapse}
+              typeStyles={typeStyles}
+              typeOrder={typeOrder}
             />
           )}
         </div>

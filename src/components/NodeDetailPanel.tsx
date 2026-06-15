@@ -1,4 +1,5 @@
 import type { KnowledgeNode } from "../types";
+import type { NodeTypeStyle } from "../constants/theme";
 import { NodeDetailContent, type Neighbor } from "./NodeDetailContent";
 
 interface NodeDetailPanelProps {
@@ -8,6 +9,8 @@ interface NodeDetailPanelProps {
   onSelectNeighbor: (node: KnowledgeNode) => void;
   onCollapse: () => void;
   canCollapse: boolean;
+  typeStyles: Record<string, NodeTypeStyle>;
+  typeOrder: string[];
 }
 
 export function NodeDetailPanel({
@@ -17,6 +20,8 @@ export function NodeDetailPanel({
   onSelectNeighbor,
   onCollapse,
   canCollapse,
+  typeStyles,
+  typeOrder,
 }: NodeDetailPanelProps) {
   const open = node !== null;
 
@@ -47,6 +52,8 @@ export function NodeDetailPanel({
             onSelectNeighbor={onSelectNeighbor}
             onCollapse={onCollapse}
             canCollapse={canCollapse}
+            typeStyles={typeStyles}
+            typeOrder={typeOrder}
           />
         )}
       </div>

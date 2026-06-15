@@ -1,5 +1,5 @@
 import type { KnowledgeNode, NodeSource } from "../types";
-import { NODE_TYPE_STYLES } from "../constants/theme";
+import type { NodeTypeStyle } from "../constants/theme";
 
 interface Neighbor {
   node: KnowledgeNode;
@@ -13,6 +13,8 @@ interface NodeDetailContentProps {
   onSelectNeighbor: (node: KnowledgeNode) => void;
   onCollapse?: () => void;
   canCollapse?: boolean;
+  typeStyles: Record<string, NodeTypeStyle>;
+  typeOrder: string[];
 }
 
 export function NodeDetailContent({
@@ -21,9 +23,12 @@ export function NodeDetailContent({
   onSelectNeighbor,
   onCollapse,
   canCollapse,
+  typeStyles,
+  typeOrder,
 }: NodeDetailContentProps) {
   const { details } = node;
-  const style = NODE_TYPE_STYLES[node.type] ?? NODE_TYPE_STYLES.concept;
+  const fallbackStyle = typeStyles[typeOrder[0]];
+  const style = typeStyles[node.type] ?? fallbackStyle;
 
   return (
     <div className="flex flex-col gap-5">
@@ -102,8 +107,7 @@ export function NodeDetailContent({
         <Section title={`关联节点 · ${neighbors.length}`}>
           <ul className="flex flex-col gap-1.5">
             {neighbors.map(({ node: n, relation, direction }) => {
-              const nStyle =
-                NODE_TYPE_STYLES[n.type] ?? NODE_TYPE_STYLES.concept;
+              const nStyle = typeStyles[n.type] ?? fallbackStyle;
               return (
                 <li key={n.id}>
                   <button

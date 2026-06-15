@@ -1,40 +1,44 @@
 import { useState } from "react";
-import { NODE_TYPE_ORDER, NODE_TYPE_STYLES } from "../constants/theme";
+import type { NodeTypeStyle } from "../constants/theme";
 
-const items = NODE_TYPE_ORDER.map((type) => ({
-  type,
-  ...NODE_TYPE_STYLES[type],
-}));
+interface LegendProps {
+  styles: Record<string, NodeTypeStyle>;
+  order: string[];
+}
 
-function LegendDots() {
+function LegendDots({ styles, order }: LegendProps) {
   return (
     <ul className="flex flex-wrap items-center gap-x-4 gap-y-2">
-      {items.map((item) => (
-        <li key={item.type} className="flex items-center gap-2">
-          <span
-            className="h-3 w-3 rounded-full ring-1 ring-white/40"
-            style={{ backgroundColor: item.base }}
-          />
-          <span className="text-xs text-[var(--akg-text)]">{item.label}</span>
-        </li>
-      ))}
+      {order.map((type) => {
+        const item = styles[type];
+        if (!item) return null;
+        return (
+          <li key={type} className="flex items-center gap-2">
+            <span
+              className="h-3 w-3 rounded-full ring-1 ring-white/40"
+              style={{ backgroundColor: item.base }}
+            />
+            <span className="text-xs text-[var(--akg-text)]">{item.label}</span>
+          </li>
+        );
+      })}
     </ul>
   );
 }
 
 /** 桌面端：底部常驻图例栏 */
-export function LegendBar() {
+export function LegendBar({ styles, order }: LegendProps) {
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-3 z-10 hidden justify-center px-4 md:flex">
       <div className="glass glass-highlight pointer-events-auto rounded-2xl px-5 py-2.5">
-        <LegendDots />
+        <LegendDots styles={styles} order={order} />
       </div>
     </div>
   );
 }
 
 /** 移动端：右下角浮动按钮，点击弹出图例 */
-export function LegendFab() {
+export function LegendFab({ styles, order }: LegendProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -45,17 +49,21 @@ export function LegendFab() {
             节点类型
           </p>
           <ul className="flex flex-col gap-2">
-            {items.map((item) => (
-              <li key={item.type} className="flex items-center gap-2">
-                <span
-                  className="h-3 w-3 rounded-full ring-1 ring-white/40"
-                  style={{ backgroundColor: item.base }}
-                />
-                <span className="text-sm text-[var(--akg-text)]">
-                  {item.label}
-                </span>
-              </li>
-            ))}
+            {order.map((type) => {
+              const item = styles[type];
+              if (!item) return null;
+              return (
+                <li key={type} className="flex items-center gap-2">
+                  <span
+                    className="h-3 w-3 rounded-full ring-1 ring-white/40"
+                    style={{ backgroundColor: item.base }}
+                  />
+                  <span className="text-sm text-[var(--akg-text)]">
+                    {item.label}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}

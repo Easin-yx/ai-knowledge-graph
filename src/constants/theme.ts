@@ -1,11 +1,6 @@
-import type { NodeType } from "../types";
-
 // ============================================================
-// 节点类型 → 色系映射（液态玻璃风格）
-// PRD 色系方向：
-//   concept      蓝色系   architecture 橙色系
-//   technique    紫色系   dataset      绿色系
-//   framework    灰色系   product      青色系
+// 节点类型 → 色系映射（液态玻璃风格）的样式契约。
+// 具体的「类型 → 配色」表与展示顺序下沉到各知识地图（src/data/maps/*）。
 //
 // 每个类型提供：
 //   base   - 节点核心填充色（HEX）
@@ -18,49 +13,6 @@ export interface NodeTypeStyle {
   glow: string;
   label: string;
 }
-
-export const NODE_TYPE_STYLES: Record<NodeType, NodeTypeStyle> = {
-  concept: {
-    base: "#7eaadf",
-    glow: "rgba(126, 170, 223, 0.30)",
-    label: "概念",
-  },
-  architecture: {
-    base: "#d4824a",
-    glow: "rgba(212, 130, 74, 0.30)",
-    label: "架构",
-  },
-  technique: {
-    base: "#9b7ec8",
-    glow: "rgba(155, 126, 200, 0.30)",
-    label: "技术",
-  },
-  dataset: {
-    base: "#5baa8a",
-    glow: "rgba(91, 170, 138, 0.30)",
-    label: "数据集",
-  },
-  framework: {
-    base: "#9a9488",
-    glow: "rgba(154, 148, 136, 0.30)",
-    label: "框架",
-  },
-  product: {
-    base: "#4fb0c6",
-    glow: "rgba(79, 176, 198, 0.30)",
-    label: "产品",
-  },
-};
-
-// 类型在图例 / 筛选中的展示顺序
-export const NODE_TYPE_ORDER: NodeType[] = [
-  "architecture",
-  "product",
-  "concept",
-  "technique",
-  "dataset",
-  "framework",
-];
 
 // ============================================================
 // 图谱画布配色 — 按主题区分

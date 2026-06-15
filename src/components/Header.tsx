@@ -1,33 +1,127 @@
-import { GITHUB_URL, SITE_TITLE, SITE_TITLE_EN } from "../constants/site";
+import { useEffect, useState } from "react";
+import { GITHUB_URL } from "../constants/site";
 import type { Theme } from "../hooks/useTheme";
+import type { KnowledgeMap } from "../types";
 
 interface HeaderProps {
   theme: Theme;
   onToggleTheme: () => void;
   onReset: () => void;
+  onExpandAll: () => void;
   canReset: boolean;
+  canExpandAll: boolean;
+  maps: KnowledgeMap[];
+  activeMapId: string;
+  onSwitchMap: (id: string) => void;
 }
 
-export function Header({ theme, onToggleTheme, onReset, canReset }: HeaderProps) {
+export function Header({
+  theme,
+  onToggleTheme,
+  onReset,
+  onExpandAll,
+  canReset,
+  canExpandAll,
+  maps,
+  activeMapId,
+  onSwitchMap,
+}: HeaderProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const iconButtonClass =
     "flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--glass-border)] bg-white/5 text-[var(--akg-text)] transition hover:bg-white/10 active:scale-95";
 
+  const activeMap = maps.find((m) => m.id === activeMapId);
+  const canSwitchMap = maps.length > 1;
+
+  const handleSwitch = (id: string) => {
+    onSwitchMap(id);
+    setMenuOpen(false);
+  };
+
+  useEffect(() => {
+    if (!menuOpen) {
+      return;
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-start justify-between px-3 pt-3 sm:px-4 sm:pt-4">
-      {/* 左上岛：logo + 标题（小屏只留 logo） */}
-      <div className="glass glass-highlight pointer-events-auto flex min-w-0 items-center gap-3 rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3">
-        <LogoMark />
-        <div className="hidden min-w-0 sm:block">
-          <h1 className="truncate text-[15px] font-semibold tracking-tight sm:text-base">
-            {SITE_TITLE}
-          </h1>
-          <p className="truncate text-xs text-[var(--akg-text-dim)]">
-            {SITE_TITLE_EN} · 可视化 AI 知识网络
-          </p>
-        </div>
+      {/* 左上岛：字标 + 当前地图下拉切换器 */}
+      <div className="relative pointer-events-auto">
+        <button
+          type="button"
+          onClick={() => setMenuOpen((prev) => !prev)}
+          aria-haspopup="menu"
+          aria-expanded={menuOpen}
+          disabled={!canSwitchMap}
+          className="glass glass-highlight flex min-w-0 items-center gap-2.5 rounded-2xl px-3 py-2.5 transition active:scale-[0.99] sm:gap-3 sm:px-4 sm:py-3"
+        >
+          <Wordmark theme={theme} />
+          {canSwitchMap && (
+            <>
+              <span className="h-6 w-px bg-[var(--glass-border)]" />
+              <span className="flex min-w-0 items-center gap-1.5">
+                <span className="truncate text-[13px] font-semibold tracking-tight sm:text-sm">
+                  {activeMap ? activeMap.label : "知识图谱"}
+                </span>
+                <ChevronDownIcon open={menuOpen} />
+              </span>
+            </>
+          )}
+        </button>
+
+        {menuOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              aria-hidden="true"
+              onClick={() => setMenuOpen(false)}
+            />
+            <div
+              role="menu"
+              className="glass glass-highlight absolute left-0 top-full z-50 mt-2 flex w-64 max-w-[80vw] flex-col gap-0.5 rounded-2xl p-1.5"
+            >
+              {maps.map((m) => {
+                const active = m.id === activeMapId;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={active}
+                    onClick={() => handleSwitch(m.id)}
+                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left transition active:scale-[0.98] ${
+                      active
+                        ? "bg-white/12 text-[var(--akg-text)]"
+                        : "text-[var(--akg-text)] hover:bg-white/8"
+                    }`}
+                  >
+                    <span className="flex min-w-0 flex-1 flex-col">
+                      <span className="truncate text-sm font-medium">
+                        {m.label}
+                      </span>
+                      <span className="truncate text-xs text-[var(--akg-text-dim)]">
+                        {m.subtitle}
+                      </span>
+                    </span>
+                    {active && <CheckIcon />}
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
       </div>
 
-      {/* 右上岛：主题切换 + GitHub + 重置 */}
+      {/* 右上岛：主题切换 + GitHub + 全部展开 + 全部收回 */}
       <div className="glass glass-highlight pointer-events-auto flex items-center gap-1.5 rounded-2xl px-2 py-2 sm:gap-2 sm:px-2.5">
         <button
           type="button"
@@ -48,6 +142,17 @@ export function Header({ theme, onToggleTheme, onReset, canReset }: HeaderProps)
         >
           <GitHubIcon />
         </a>
+        {canExpandAll && (
+          <button
+            type="button"
+            onClick={onExpandAll}
+            aria-label="展开全部节点"
+            title="展开全部节点"
+            className={iconButtonClass}
+          >
+            <ExpandAllIcon />
+          </button>
+        )}
         {canReset && (
           <button
             type="button"
@@ -64,20 +169,75 @@ export function Header({ theme, onToggleTheme, onReset, canReset }: HeaderProps)
   );
 }
 
-function LogoMark() {
+function Wordmark({ theme }: { theme: Theme }) {
+  const src = `${import.meta.env.BASE_URL}${
+    theme === "dark" ? "i.xin-light.svg" : "i.xin.svg"
+  }`;
   return (
-    <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#2a3a63] to-[#0e1426] shadow-inner">
-      <svg width="22" height="22" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-        <g stroke="#7d8bb0" strokeWidth="3" opacity="0.7">
-          <line x1="32" y1="18" x2="17" y2="42" />
-          <line x1="32" y1="18" x2="47" y2="42" />
-          <line x1="17" y1="42" x2="47" y2="42" />
-        </g>
-        <circle cx="32" cy="18" r="8" fill="#ff9f4a" />
-        <circle cx="17" cy="42" r="7" fill="#4aa3ff" />
-        <circle cx="47" cy="42" r="7" fill="#b07bff" />
-      </svg>
-    </span>
+    <img
+      src={src}
+      alt="iXin"
+      className="h-7 w-[92px] shrink-0 object-cover sm:h-9 sm:w-[124px]"
+      style={{ objectPosition: "center 46%" }}
+    />
+  );
+}
+
+function ChevronDownIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={`shrink-0 text-[var(--akg-text-dim)] transition-transform ${
+        open ? "rotate-180" : ""
+      }`}
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className="shrink-0 text-[var(--akg-text)]"
+    >
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+
+function ExpandAllIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+    </svg>
   );
 }
 

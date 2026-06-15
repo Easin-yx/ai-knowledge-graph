@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { graphData } from "./data/graph";
+import { KNOWLEDGE_MAPS } from "./data/maps";
 import type { KnowledgeNode } from "./types";
 import { useTheme } from "./hooks/useTheme";
 import { useIsMobile } from "./hooks/useMediaQuery";
@@ -14,6 +14,12 @@ export default function App() {
   const { theme, toggleTheme } = useTheme();
   const isMobile = useIsMobile();
 
+  const [activeMapId, setActiveMapId] = useState<string>(KNOWLEDGE_MAPS[0].id);
+  const activeMap = useMemo(
+    () => KNOWLEDGE_MAPS.find((m) => m.id === activeMapId) ?? KNOWLEDGE_MAPS[0],
+    [activeMapId]
+  );
+
   const [selectedNode, setSelectedNode] = useState<KnowledgeNode | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
@@ -21,27 +27,27 @@ export default function App() {
 
   const nodeById = useMemo(() => {
     const map = new Map<string, KnowledgeNode>();
-    for (const n of graphData.nodes) map.set(n.id, n);
+    for (const n of activeMap.data.nodes) map.set(n.id, n);
     return map;
-  }, []);
+  }, [activeMap]);
 
   // ── 渐进式展开：完整图谱的邻接表 ──
   const adjacency = useMemo(() => {
     const map = new Map<string, Set<string>>();
-    for (const n of graphData.nodes) map.set(n.id, new Set());
-    for (const e of graphData.edges) {
+    for (const n of activeMap.data.nodes) map.set(n.id, new Set());
+    for (const e of activeMap.data.edges) {
       map.get(e.source)?.add(e.target);
       map.get(e.target)?.add(e.source);
     }
     return map;
-  }, []);
+  }, [activeMap]);
 
-  // 种子节点：每个连通分量中度数最高者（默认学习起点，自动适配未来扩展）
+  // 种子节点：优先使用 activeMap.preferredSeed，否则取各连通分量度数最高节点
   const seeds = useMemo(() => {
     const degree = (id: string) => adjacency.get(id)?.size ?? 0;
     const visited = new Set<string>();
     const result: string[] = [];
-    for (const n of graphData.nodes) {
+    for (const n of activeMap.data.nodes) {
       if (visited.has(n.id)) continue;
       const comp: string[] = [];
       const queue = [n.id];
@@ -57,24 +63,30 @@ export default function App() {
         }
       }
       comp.sort((a, b) => degree(b) - degree(a));
-      // 优先以 LLM 作为默认入口/中心：它向下连原理层(Transformer)、向上连应用层(Agent/RAG)，居于知识链枢纽
-      const llmInComp = comp.find((id) => id === "llm");
-      if (llmInComp) {
-        result.push(llmInComp);
+      const preferred = activeMap.preferredSeed;
+      const preferredInComp = preferred ? comp.find((id) => id === preferred) : null;
+      if (preferredInComp) {
+        result.push(preferredInComp);
       } else {
         result.push(comp[0]);
       }
     }
     return result;
-  }, [adjacency]);
+  }, [adjacency, activeMap]);
 
   // 已展开的节点（点击后浮现其邻居）
   const [expandedIds, setExpandedIds] = useState<Set<string>>(
     () => new Set(seeds)
   );
 
+  // 切换地图时重置选中/悬停/展开，并同步 expandedIds 为新图 seeds
+  useEffect(() => {
+    setSelectedNode(null);
+    setHoveredNode(null);
+    setExpandedIds(new Set(seeds));
+  }, [activeMapId, seeds]);
+
   // 可见节点 = 从种子出发 BFS，只穿过"已展开"节点向外延伸
-  // 这样收回父节点时，整条子树自动从可见集消失，无需手动清理孤儿节点
   const visibleIds = useMemo(() => {
     const visible = new Set<string>(seeds);
     const queue = [...seeds];
@@ -93,12 +105,12 @@ export default function App() {
 
   const visibleData = useMemo(
     () => ({
-      nodes: graphData.nodes.filter((n) => visibleIds.has(n.id)),
-      edges: graphData.edges.filter(
+      nodes: activeMap.data.nodes.filter((n) => visibleIds.has(n.id)),
+      edges: activeMap.data.edges.filter(
         (e) => visibleIds.has(e.source) && visibleIds.has(e.target)
       ),
     }),
-    [visibleIds]
+    [visibleIds, activeMap]
   );
 
   // 仍有未显示邻居的可见节点（画"可展开"提示环）
@@ -120,7 +132,7 @@ export default function App() {
     if (!selectedNode) return [];
     const result: Neighbor[] = [];
     const seen = new Set<string>();
-    for (const e of graphData.edges) {
+    for (const e of activeMap.data.edges) {
       if (e.source === selectedNode.id) {
         const n = nodeById.get(e.target);
         if (n && !seen.has(n.id)) {
@@ -136,7 +148,7 @@ export default function App() {
       }
     }
     return result;
-  }, [selectedNode, nodeById]);
+  }, [selectedNode, nodeById, activeMap]);
 
   // 种子集合（不可收回）
   const seedSet = useMemo(() => new Set(seeds), [seeds]);
@@ -180,7 +192,6 @@ export default function App() {
       }
       setSelectedNode(node);
       if (node) {
-        // 有隐藏邻居 → 展开会触发力导向重排，聚焦延后到布局稳定
         const willReheat = expandableIds.has(node.id);
         expandNode(node.id);
         graphRef.current?.focusNode(node.id, focusInset, willReheat);
@@ -202,7 +213,7 @@ export default function App() {
 
   const handleClose = useCallback(() => setSelectedNode(null), []);
 
-  // 收起当前选中节点的子树并关闭详情卡（供详情卡内"收起此节点"按钮使用）
+  // 收起当前选中节点的子树并关闭详情卡
   const handleCollapseSelected = useCallback(() => {
     if (!selectedNode) return;
     collapseNode(selectedNode.id);
@@ -216,7 +227,19 @@ export default function App() {
     window.setTimeout(() => graphRef.current?.resetView(), 450);
   }, [seeds]);
 
+  // 展开全部：把所有节点纳入展开集合，画布在重排结束后自动适配视角
+  const handleExpandAll = useCallback(() => {
+    setExpandedIds(new Set(activeMap.data.nodes.map((n) => n.id)));
+    setSelectedNode(null);
+  }, [activeMap]);
+
+  // 切换地图
+  const handleSwitchMap = useCallback((id: string) => {
+    setActiveMapId(id);
+  }, []);
+
   const canReset = expandedIds.size > seeds.length;
+  const canExpandAll = visibleIds.size < activeMap.data.nodes.length;
   const canCollapseSelected = selectedNode ? !seedSet.has(selectedNode.id) : false;
 
   // Esc 关闭详情面板
@@ -233,7 +256,9 @@ export default function App() {
       {/* 弥散光背景 — 暖色浅色主题下作为知识领域的柔和分区 */}
       {theme === "light" && <AuraBackground />}
 
+      {/* key={activeMapId} 保证切换地图时整体重挂，清除节点缓存/didFitRef */}
       <GraphCanvas
+        key={activeMapId}
         ref={graphRef}
         data={visibleData}
         theme={theme}
@@ -242,18 +267,25 @@ export default function App() {
         expandableIds={expandableIds}
         onSelectNode={handleSelectNode}
         onHoverNode={setHoveredNode}
+        typeStyles={activeMap.typeStyles}
+        typeOrder={activeMap.typeOrder}
       />
 
       <Header
         theme={theme}
         onToggleTheme={toggleTheme}
         onReset={handleCollapseAll}
+        onExpandAll={handleExpandAll}
         canReset={canReset}
+        canExpandAll={canExpandAll}
+        maps={KNOWLEDGE_MAPS}
+        activeMapId={activeMapId}
+        onSwitchMap={handleSwitchMap}
       />
 
       {/* 图例 */}
-      <LegendBar />
-      <LegendFab />
+      <LegendBar styles={activeMap.typeStyles} order={activeMap.typeOrder} />
+      <LegendFab styles={activeMap.typeStyles} order={activeMap.typeOrder} />
 
       {/* 详情：桌面端右侧面板 / 移动端底部抽屉 */}
       {isMobile ? (
@@ -264,6 +296,8 @@ export default function App() {
           onSelectNeighbor={handleSelectNeighbor}
           onCollapse={handleCollapseSelected}
           canCollapse={canCollapseSelected}
+          typeStyles={activeMap.typeStyles}
+          typeOrder={activeMap.typeOrder}
         />
       ) : (
         <NodeDetailPanel
@@ -273,6 +307,8 @@ export default function App() {
           onSelectNeighbor={handleSelectNeighbor}
           onCollapse={handleCollapseSelected}
           canCollapse={canCollapseSelected}
+          typeStyles={activeMap.typeStyles}
+          typeOrder={activeMap.typeOrder}
         />
       )}
     </div>
