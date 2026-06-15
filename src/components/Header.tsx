@@ -62,7 +62,7 @@ export function Header({
           aria-haspopup="menu"
           aria-expanded={menuOpen}
           disabled={!canSwitchMap}
-          className="glass glass-highlight flex min-w-0 items-center gap-2.5 rounded-2xl px-3 py-2.5 transition active:scale-[0.99] sm:gap-3 sm:px-4 sm:py-3"
+          className="glass glass-highlight flex h-12 min-w-0 items-center gap-2 rounded-2xl px-3 transition active:scale-[0.99] sm:gap-2.5 sm:px-3.5"
         >
           <Wordmark theme={theme} />
           {canSwitchMap && (
@@ -122,7 +122,7 @@ export function Header({
       </div>
 
       {/* 右上岛：主题切换 + GitHub + 全部展开 + 全部收回 */}
-      <div className="glass glass-highlight pointer-events-auto flex items-center gap-1.5 rounded-2xl px-2 py-2 sm:gap-2 sm:px-2.5">
+      <div className="glass glass-highlight pointer-events-auto flex h-12 items-center gap-1.5 rounded-2xl px-2 sm:gap-2 sm:px-2.5">
         <button
           type="button"
           onClick={onToggleTheme}
@@ -177,7 +177,7 @@ function Wordmark({ theme }: { theme: Theme }) {
     <img
       src={src}
       alt="iXin"
-      className="h-7 w-[92px] shrink-0 object-cover sm:h-9 sm:w-[124px]"
+      className="h-7 w-[92px] shrink-0 object-cover sm:h-8 sm:w-[110px]"
       style={{ objectPosition: "center 46%" }}
     />
   );

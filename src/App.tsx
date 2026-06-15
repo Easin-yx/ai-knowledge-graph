@@ -8,6 +8,7 @@ import { GraphCanvas, type GraphCanvasHandle } from "./components/GraphCanvas";
 import { NodeDetailPanel } from "./components/NodeDetailPanel";
 import { BottomSheet } from "./components/BottomSheet";
 import { LegendBar, LegendFab } from "./components/Legend";
+import { SearchBox, type SearchBoxHandle } from "./components/SearchBox";
 import type { Neighbor } from "./components/NodeDetailContent";
 
 export default function App() {
@@ -24,6 +25,10 @@ export default function App() {
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
   const graphRef = useRef<GraphCanvasHandle>(null);
+  const searchRef = useRef<SearchBoxHandle>(null);
+
+  // 搜索命中后：先揭示到目标的最短路径，路径稳定可见后再聚焦（见下方 effect）
+  const [pendingFocusId, setPendingFocusId] = useState<string | null>(null);
 
   const nodeById = useMemo(() => {
     const map = new Map<string, KnowledgeNode>();
@@ -84,6 +89,7 @@ export default function App() {
     setSelectedNode(null);
     setHoveredNode(null);
     setExpandedIds(new Set(seeds));
+    setPendingFocusId(null);
   }, [activeMapId, seeds]);
 
   // 可见节点 = 从种子出发 BFS，只穿过"已展开"节点向外延伸
@@ -200,6 +206,78 @@ export default function App() {
     [selectedNode, collapseNode, expandNode, focusInset, expandableIds]
   );
 
+  // 从种子集合到目标节点的最短路径（含两端），用于揭示被折叠的深层节点
+  const findPathFromSeeds = useCallback(
+    (targetId: string): string[] => {
+      if (seedSet.has(targetId)) {
+        return [targetId];
+      }
+      const parent = new Map<string, string>();
+      const visited = new Set<string>(seeds);
+      const queue = [...seeds];
+      while (queue.length) {
+        const cur = queue.shift()!;
+        if (cur === targetId) {
+          break;
+        }
+        for (const nb of adjacency.get(cur) ?? []) {
+          if (!visited.has(nb)) {
+            visited.add(nb);
+            parent.set(nb, cur);
+            queue.push(nb);
+          }
+        }
+      }
+      if (!visited.has(targetId)) {
+        return [];
+      }
+      const path: string[] = [];
+      let node: string | undefined = targetId;
+      while (node) {
+        path.push(node);
+        node = parent.get(node);
+      }
+      return path;
+    },
+    [seeds, seedSet, adjacency]
+  );
+
+  // 搜索命中：展开通往目标的整条路径，选中目标，并登记待聚焦
+  const revealAndFocusNode = useCallback(
+    (nodeId: string) => {
+      const target = nodeById.get(nodeId);
+      if (!target) {
+        return;
+      }
+      const path = findPathFromSeeds(nodeId);
+      if (path.length === 0) {
+        return;
+      }
+      setExpandedIds((prev) => {
+        const next = new Set(prev);
+        for (const id of path) {
+          next.add(id);
+        }
+        return next;
+      });
+      setSelectedNode(target);
+      setPendingFocusId(nodeId);
+    },
+    [nodeById, findPathFromSeeds]
+  );
+
+  // 待聚焦节点一旦随路径揭示变为可见，等力导向重排稳定后精确对准
+  useEffect(() => {
+    if (!pendingFocusId) {
+      return;
+    }
+    if (!visibleIds.has(pendingFocusId)) {
+      return;
+    }
+    graphRef.current?.focusNode(pendingFocusId, focusInset, true);
+    setPendingFocusId(null);
+  }, [pendingFocusId, visibleIds, focusInset]);
+
   // 详情面板内点击相邻节点：展开 + 切换选中 + 平滑聚焦
   const handleSelectNeighbor = useCallback(
     (node: KnowledgeNode) => {
@@ -242,10 +320,16 @@ export default function App() {
   const canExpandAll = visibleIds.size < activeMap.data.nodes.length;
   const canCollapseSelected = selectedNode ? !seedSet.has(selectedNode.id) : false;
 
-  // Esc 关闭详情面板
+  // Esc 关闭详情面板；Cmd/Ctrl+K 唤起搜索
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setSelectedNode(null);
+      if (e.key === "Escape") {
+        setSelectedNode(null);
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        searchRef.current?.open();
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -281,6 +365,16 @@ export default function App() {
         maps={KNOWLEDGE_MAPS}
         activeMapId={activeMapId}
         onSwitchMap={handleSwitchMap}
+      />
+
+      {/* 搜索：桌面端顶部浮岛 / 移动端左下浮动按钮 */}
+      <SearchBox
+        ref={searchRef}
+        nodes={activeMap.data.nodes}
+        typeStyles={activeMap.typeStyles}
+        typeOrder={activeMap.typeOrder}
+        onPick={revealAndFocusNode}
+        mobileHidden={Boolean(selectedNode)}
       />
 
       {/* 图例 */}

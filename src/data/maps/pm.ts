@@ -283,10 +283,137 @@ const pmGraphData: GraphData = {
       type: "model",
       details: {
         zh_label: "KANO Model",
-        summary: "将产品功能分为：必备型（没有就不行）、期望型（有则好）、兴奋型（超出预期）三类，指导需求优先级。",
-        analogy: "像餐厅：干净卫生是必备（没有就不来）、口味好是期望（越好越满意）、送个小礼物是兴奋（意外之喜）。",
-        notes: "实操：① 优先补全必备型，避免用户流失；② 稳定提升期望型以超越竞品；③ 在资源富余时加入兴奋型制造口碑。",
-        key_concepts: ["必备型", "期望型", "兴奋型", "满意度曲线"],
+        summary:
+          "由日本学者狩野纪昭提出，将需求（功能属性）按「满足后对用户满意度的影响」分类，以此判断需求该不该做、先做哪个。",
+        analogy:
+          "像餐厅：干净卫生是必备（没有就不来）、口味好是期望（越好越满意）、送小礼物是兴奋（意外之喜）、桌布什么颜色多数人无差异、强行劝酒则是反向（越做越烦）。",
+        notes:
+          "为什么需要它：用户提的需求一大堆，但「满足它」对满意度的影响完全不同——有的不做就流失，有的做了也没人夸。KANO 帮你区分这五种情况。\n" +
+          "完整五类（点开下方关联节点逐个看）：必备型、期望型、兴奋型、无差异型、反向型。\n" +
+          "怎么定类：用「KANO 问卷」对每个功能问正反两题，再用 Better-Worse 系数把它归入五类之一。\n" +
+          "怎么用：① 必备型必须补全（守底线，否则流失）；② 期望型持续投入（拉满意度、压竞品）；③ 兴奋型资源富余时做（造口碑）；④ 无差异型坚决砍；⑤ 反向型不仅不做还要避免。\n" +
+          "动态演化：兴奋型会随时间退化为期望型、再退化为必备型（如手机指纹解锁，从惊喜变成标配），所以 KANO 要定期重做。",
+        key_concepts: [
+          "必备型",
+          "期望型",
+          "兴奋型",
+          "无差异型",
+          "反向型",
+          "满意度曲线",
+          "KANO问卷",
+          "Better-Worse系数",
+          "需求动态演化",
+        ],
+        source: PM_SOURCE,
+      },
+    },
+    {
+      id: "must_be_need",
+      label: "必备型需求",
+      type: "model",
+      details: {
+        zh_label: "Must-be",
+        summary: "用户默认就该有的基本需求：做好了用户不会夸，没做好用户立刻不满甚至流失。",
+        analogy: "像酒店有热水：有了你不会专门表扬，没有你直接差评退房。",
+        notes: "满意度曲线上是「上凸饱和」：从无到有提升巨大，做到及格线后再投入收益递减。是产品的底线，必须优先补全。",
+        key_concepts: ["基本需求", "底线", "不做就流失", "边际递减"],
+        source: PM_SOURCE,
+      },
+    },
+    {
+      id: "performance_need",
+      label: "期望型需求",
+      type: "model",
+      details: {
+        zh_label: "Performance",
+        summary: "做得越多、越好，用户越满意；做得差用户就越不满。是和竞品拉开差距的主战场。",
+        analogy: "像外卖配送速度：越快用户越爽、越慢越火大，满意度跟它几乎成正比。",
+        notes: "满意度曲线上近似一条「斜线」：投入与满意度正相关。资源应持续投在这里以超越竞品。",
+        key_concepts: ["线性相关", "竞争力", "持续投入", "差异化"],
+        source: PM_SOURCE,
+      },
+    },
+    {
+      id: "attractive_need",
+      label: "兴奋型需求",
+      type: "model",
+      details: {
+        zh_label: "Attractive",
+        summary: "用户没预期、做了就有惊喜的需求；不做用户也不会不满，做了能制造口碑。",
+        analogy: "像点外卖送了张手写感谢卡：没有你不会失望，有了你会想发朋友圈。",
+        notes: "满意度曲线上是「下凸爆发」：少量投入就能换来满意度大幅跳升。资源富余时用来打差异化、造话题。",
+        key_concepts: ["超出预期", "惊喜感", "口碑", "差异化亮点"],
+        source: PM_SOURCE,
+      },
+    },
+    {
+      id: "indifferent_need",
+      label: "无差异型需求",
+      type: "model",
+      details: {
+        zh_label: "Indifferent",
+        summary: "做不做用户都无感的需求，对满意度几乎没有影响，是最该被砍掉的部分。",
+        analogy: "像 App 设置页里一个没人会改的冷门开关：加了没人用，去了没人发现。",
+        notes: "满意度曲线上几乎是「水平线」。识别并砍掉它们能省下资源投到必备型和期望型上。",
+        key_concepts: ["无感", "可砍", "资源浪费", "优先级最低"],
+        source: PM_SOURCE,
+      },
+    },
+    {
+      id: "reverse_need",
+      label: "反向型需求",
+      type: "model",
+      details: {
+        zh_label: "Reverse",
+        summary: "做了反而引起用户反感的需求：你以为是优化，用户却觉得是打扰。",
+        analogy: "像每次打开 App 都强制弹推荐弹窗：你以为在导流，用户只想关掉卸载。",
+        notes: "满意度曲线方向「相反」：功能越多满意度越低。不仅不做，还要主动识别并移除已有的反向设计。",
+        key_concepts: ["越做越烦", "负向体验", "需移除", "认知偏差"],
+        source: PM_SOURCE,
+      },
+    },
+    {
+      id: "kano_questionnaire",
+      label: "KANO 问卷",
+      type: "process",
+      details: {
+        summary: "KANO 的落地方法：对每个功能问一正一反两题，根据用户回答把功能归入五类之一。",
+        analogy: "像体检：同一个指标正反各测一次，交叉对比才能判断你属于哪种「体质」。",
+        notes:
+          "正向问题：「如果有这个功能，你感觉如何？」反向问题：「如果没有这个功能，你感觉如何？」\n" +
+          "每题五选项（喜欢/理应如此/无所谓/勉强接受/不喜欢），把正反答案查 KANO 二维评价表即可定类。\n" +
+          "汇总多人结果时用 Better-Worse 系数定位功能。",
+        key_concepts: ["正向问题", "反向问题", "二维评价表", "样本统计"],
+        source: PM_SOURCE,
+      },
+    },
+    {
+      id: "better_worse",
+      label: "Better-Worse 系数",
+      type: "model",
+      details: {
+        zh_label: "Better-Worse Coefficient",
+        summary: "把 KANO 问卷结果量化成两个系数，定位某功能能提升满意（Better）或避免不满（Worse）的程度。",
+        analogy: "像给每个功能贴两个分数标签：一个说「做了能加多少分」，一个说「不做会扣多少分」。",
+        notes:
+          "Better（增加满意系数）越接近 1，做了越能提升满意，偏兴奋/期望型；\n" +
+          "Worse（消除不满系数）绝对值越接近 1，不做越招致不满，偏必备/期望型。\n" +
+          "把功能按两系数画在四象限里，就能直观排出优先级。",
+        key_concepts: ["增加满意系数", "消除不满系数", "四象限定位", "量化排序"],
+        source: PM_SOURCE,
+      },
+    },
+    {
+      id: "satisfaction_curve",
+      label: "满意度曲线",
+      type: "model",
+      details: {
+        summary: "KANO 的核心图示：横轴是功能「充足程度」，纵轴是用户「满意度」，不同需求类型呈现不同形状的曲线。",
+        analogy: "同样多加一勺料，必备型只是从难吃到及格，兴奋型却能从惊喜到封神——曲线形状决定了投入回报。",
+        notes:
+          "必备型：上凸饱和（先陡后平）；期望型：近似过原点的斜线；兴奋型：下凸爆发（先平后陡）；\n" +
+          "无差异型：贴近水平线；反向型：向下倾斜。看懂这张图就看懂了 KANO 为什么这样分类。",
+        key_concepts: ["功能充足度", "满意度", "非线性", "边际效用"],
         source: PM_SOURCE,
       },
     },
@@ -296,8 +423,55 @@ const pmGraphData: GraphData = {
       type: "model",
       details: {
         summary: "评估需求实现的商业价值与开发成本之比，是资源有限时做出取舍的核心判断框架。",
-        notes: "简单公式：性价比 = 用户价值 × 商业价值 / 实现成本。高价值低成本的需求优先；低价值高成本的坚决砍掉。",
+        notes: "简单公式：性价比 = 用户价值 × 商业价值 / 实现成本。高价值低成本的需求优先；低价值高成本的坚决砍掉。\n注意：公式是定性判断框架，并非真的做乘除；落地时用 RICE 打分或价值/成本四象限把它变成可排序的方法。",
         key_concepts: ["价值评估", "资源分配", "ROI", "取舍决策"],
+        source: PM_SOURCE,
+      },
+    },
+    {
+      id: "user_value",
+      label: "用户价值",
+      type: "model",
+      details: {
+        summary: "衡量需求对用户的重要程度，由痛点强度、使用频率、覆盖面、可替代性综合判断。",
+        analogy: "像看一道菜值不值得点：有多想吃（痛点）、多久吃一次（频率）、多少人爱吃（覆盖面）、别处有没有（可替代性）。",
+        notes: "用户价值 ≈ 痛点强度 × 使用频率 × 覆盖人数。高频刚需 > 低频弱需；不做就流失的需求价值更高。",
+        key_concepts: ["痛点强度", "使用频率", "覆盖面", "可替代性"],
+        source: PM_SOURCE,
+      },
+    },
+    {
+      id: "business_value",
+      label: "商业价值",
+      type: "model",
+      details: {
+        summary: "衡量需求对业务的贡献，包括直接变现、拉新留存等间接价值，以及卡住护城河的战略价值。",
+        notes: "用户价值高不等于商业价值高：免费功能可能用户很爱却不赚钱。PM 的工作是找到两者的交集。",
+        key_concepts: ["变现能力", "增长贡献", "战略价值", "成本节省"],
+        source: PM_SOURCE,
+      },
+    },
+    {
+      id: "implementation_cost",
+      label: "实现成本",
+      type: "model",
+      details: {
+        summary: "完成需求所需的研发、协作、维护与机会成本的总和，不只是开发工时。",
+        notes: "机会成本才是取舍的本质：做了 A 就做不了 B。上线后的长期维护负担同样要计入。",
+        key_concepts: ["研发工时", "技术难度", "机会成本", "维护成本"],
+        source: PM_SOURCE,
+      },
+    },
+    {
+      id: "rice",
+      label: "RICE 模型",
+      type: "model",
+      details: {
+        zh_label: "RICE Scoring",
+        summary: "用 Reach × Impact × Confidence / Effort 给需求打分排序，是性价比公式的可量化实现。",
+        analogy: "把「感觉值得做」翻译成一个能比大小的分数，让需求排队不再靠拍脑袋。",
+        notes: "Reach 覆盖人数；Impact 单用户影响；Confidence 对前两者的信心（打折系数）；Effort 投入工时。分数越高越优先。",
+        key_concepts: ["Reach", "Impact", "Confidence", "Effort"],
         source: PM_SOURCE,
       },
     },
@@ -866,9 +1040,124 @@ const pmGraphData: GraphData = {
       label: "支撑",
     },
     {
+      id: "must_be_need__构成__kano",
+      source: "must_be_need",
+      target: "kano",
+      label: "构成",
+    },
+    {
+      id: "performance_need__构成__kano",
+      source: "performance_need",
+      target: "kano",
+      label: "构成",
+    },
+    {
+      id: "attractive_need__构成__kano",
+      source: "attractive_need",
+      target: "kano",
+      label: "构成",
+    },
+    {
+      id: "indifferent_need__构成__kano",
+      source: "indifferent_need",
+      target: "kano",
+      label: "构成",
+    },
+    {
+      id: "reverse_need__构成__kano",
+      source: "reverse_need",
+      target: "kano",
+      label: "构成",
+    },
+    {
+      id: "kano_questionnaire__支撑__kano",
+      source: "kano_questionnaire",
+      target: "kano",
+      label: "支撑",
+    },
+    {
+      id: "kano_questionnaire__产出__better_worse",
+      source: "kano_questionnaire",
+      target: "better_worse",
+      label: "产出",
+    },
+    {
+      id: "better_worse__定类__kano",
+      source: "better_worse",
+      target: "kano",
+      label: "定类",
+    },
+    {
+      id: "satisfaction_curve__刻画__kano",
+      source: "satisfaction_curve",
+      target: "kano",
+      label: "刻画",
+    },
+    {
+      id: "attractive_need__退化__performance_need",
+      source: "attractive_need",
+      target: "performance_need",
+      label: "退化",
+    },
+    {
+      id: "performance_need__退化__must_be_need",
+      source: "performance_need",
+      target: "must_be_need",
+      label: "退化",
+    },
+    {
+      id: "kano__对比__cost_benefit",
+      source: "kano",
+      target: "cost_benefit",
+      label: "对比",
+      directed: false,
+    },
+    {
+      id: "maslow__关联__kano",
+      source: "maslow",
+      target: "kano",
+      label: "关联",
+    },
+    {
       id: "cost_benefit__支撑__requirement_filter",
       source: "cost_benefit",
       target: "requirement_filter",
+      label: "支撑",
+    },
+    {
+      id: "user_value__构成__cost_benefit",
+      source: "user_value",
+      target: "cost_benefit",
+      label: "构成",
+    },
+    {
+      id: "business_value__构成__cost_benefit",
+      source: "business_value",
+      target: "cost_benefit",
+      label: "构成",
+    },
+    {
+      id: "implementation_cost__构成__cost_benefit",
+      source: "implementation_cost",
+      target: "cost_benefit",
+      label: "构成",
+    },
+    {
+      id: "rice__量化__cost_benefit",
+      source: "rice",
+      target: "cost_benefit",
+      label: "量化",
+    },
+    {
+      id: "user_value__关联__kano",
+      source: "user_value",
+      target: "kano",
+      label: "关联",
+    },
+    {
+      id: "business_value__支撑__brd",
+      source: "business_value",
+      target: "brd",
       label: "支撑",
     },
     {
