@@ -20,6 +20,273 @@ const AIAYN_SOURCE = {
 
 const aiGraphData: GraphData = {
   nodes: [
+    // ═════════════════════════════════════════
+    // 批次 0 — 机器学习地基
+    // ═════════════════════════════════════════
+
+    // ─────────────────────────────────────────
+    // 范式层 (concept)
+    // ─────────────────────────────────────────
+    {
+      id: "machine_learning",
+      label: "Machine Learning",
+      type: "concept",
+      details: {
+        zh_label: "机器学习",
+        summary: "让计算机从数据中自动学习规律，而非靠人工逐条编写规则的学科，是现代 AI 的主干范式。",
+        analogy: "像培养一名从零开始的员工：与其把每一条操作规范背给他听，不如让他在大量真实案例里自己琢磨出门道——失误一次就改一次，久而久之自然就摸到了规律。",
+        notes: "机器学习按学习方式分为监督学习、无监督学习和强化学习三大范式；深度学习是其最强大的子流派。核心思想：用数据驱动参数优化，代替人工规则设计。",
+        key_concepts: ["数据驱动", "模式识别", "参数优化", "泛化能力"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "deep_learning",
+      label: "Deep Learning",
+      type: "concept",
+      details: {
+        zh_label: "深度学习",
+        summary: "机器学习的一个子流派，以多层神经网络为基础，通过逐层自动提取特征来学习数据的复杂规律，是当代 AI 爆发的核心引擎。",
+        analogy: "像员工培训从「看规则手册」升级成「在实践中层层领悟」：初级员工只会认识简单的表象，每多一层「师傅带徒弟」，理解的抽象程度就深一层，最终能看懂别人看不出的复杂模式。",
+        notes: "得名于神经网络的「层数」（深度）。区别于浅层机器学习（如 SVM、决策树），深度学习能自动学习原始数据的层次化特征表示，不再依赖人工特征工程。代表架构：CNN、RNN、Transformer。",
+        key_concepts: ["层次化特征", "自动特征提取", "多层神经网络", "特征工程消亡"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "supervised_learning",
+      label: "Supervised Learning",
+      type: "concept",
+      details: {
+        zh_label: "监督学习",
+        summary: "用「输入-答案」配对的标注数据训练模型，让模型学会从输入预测正确输出的学习范式，是最经典也最广泛应用的机器学习方式。",
+        analogy: "像学员做历年真题：每道题都配有标准答案，做完对照一遍，哪里错了当场纠正——通过反复练习有答案的题库，逐渐掌握答题的门道。",
+        notes: "代表任务：图像分类（输入图像→输出类别）、机器翻译（输入原文→输出译文）、语音识别。需要大量人工标注数据，标注成本是主要瓶颈。",
+        key_concepts: ["标注数据", "输入-输出对", "分类/回归", "有监督"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "unsupervised_learning",
+      label: "Unsupervised Learning",
+      type: "concept",
+      details: {
+        zh_label: "无监督学习",
+        summary: "只给模型数据、不给答案标签，让模型自己发现数据内在的结构、规律或压缩表示的学习范式。",
+        analogy: "像员工拿到一堆杂乱档案，没人告诉他应该怎么分类，他只能自己摸索：把相似的放一堆、不相似的分开，最后整理出一套自己的归档逻辑。",
+        notes: "代表任务：聚类（K-Means）、降维（PCA）、生成（VAE）。向量嵌入（Embedding）本质上也属于无监督/自监督学习的产物。",
+        key_concepts: ["无标签", "聚类", "降维", "内在结构"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "reinforcement_learning",
+      label: "Reinforcement Learning",
+      type: "concept",
+      details: {
+        zh_label: "强化学习",
+        summary: "让智能体在与环境的交互中通过「奖励与惩罚」不断试错，逐步学会最优策略的学习范式。",
+        analogy: "像员工在实战中靠绩效反馈成长：做对了事情涨奖金（正奖励），做错了被扣分（惩罚），没有人手把手教，全靠自己从试错中摸清哪种做法能最终拿到更多奖金。",
+        notes: "核心要素：智能体（Agent）、环境（Environment）、状态（State）、动作（Action）、奖励（Reward）。代表算法：Q-Learning、PPO、AlphaGo。在 AI 中最重要的应用：RLHF（人类反馈强化学习），让 LLM 对齐人类价值观。",
+        key_concepts: ["试错", "奖励信号", "策略优化", "智能体-环境"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "self_supervised_learning",
+      label: "Self-Supervised Learning",
+      type: "concept",
+      details: {
+        zh_label: "自监督学习",
+        summary: "从数据本身自动构造监督信号，无需人工标注即可大规模训练模型的学习范式，是大模型预训练的理论基础。",
+        analogy: "像员工拿到一本书，用遮住下半段的方式来检验自己是否真正理解上半段：不需要别人出题，文章本身就是试卷——预测被遮住的部分既是练习也是验证。",
+        notes: "典型任务：预测被遮住的词（BERT 的 MLM）、预测下一个词（GPT 的 CLM）、对比学习（CLIP）。自监督学习解决了监督学习对人工标注的依赖，使得利用互联网海量无标注文本成为可能。",
+        key_concepts: ["自构造标签", "无需标注", "大规模预训练", "掩码预测"],
+        source: { type: "conversation" },
+      },
+    },
+
+    // ─────────────────────────────────────────
+    // 神经网络基础
+    // ─────────────────────────────────────────
+    {
+      id: "neural_network",
+      label: "Neural Network",
+      type: "architecture",
+      details: {
+        zh_label: "神经网络",
+        summary: "受生物大脑启发、由大量相互连接的神经元（参数）分层构成的计算模型，能通过调整连接权重来学习复杂映射关系。",
+        analogy: "像一个多部门串联的公司处理系统：每个员工（神经元）只负责把上一层同事传过来的信息加工一下再传给下一层，全司上下协同，最终把原始输入「加工」成需要的输出。",
+        notes: "关键要素：层（输入层、隐藏层、输出层）、权重（连接强度）、激活函数（引入非线性）。参数越多、层数越深，模型表达能力越强。训练靠反向传播算法自动调整权重。",
+        key_concepts: ["层", "权重", "激活函数", "通用近似定理"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "neuron",
+      label: "Neuron / Perceptron",
+      type: "concept",
+      details: {
+        zh_label: "神经元/感知机",
+        summary: "神经网络的最小计算单元：对所有输入做加权求和，加上偏置后经激活函数变换，输出一个信号。",
+        analogy: "像一位汇总投票的员工：把各渠道意见按重要性加权相加，超过一定门槛就「亮绿灯」给上层汇报，不够就「亮红灯」按兵不动——激活函数就是那道判断门槛。",
+        notes: "数学表达：y = f(Σ wᵢxᵢ + b)，其中 wᵢ 为权重，b 为偏置，f 为激活函数。单个神经元即「感知机」（Perceptron），只能处理线性可分问题；多层堆叠才能处理非线性。",
+        key_concepts: ["加权求和", "偏置", "激活函数", "感知机"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "mlp",
+      label: "MLP",
+      type: "architecture",
+      details: {
+        zh_label: "多层感知机",
+        summary: "由多个全连接层堆叠而成的最基础神经网络架构，每层的每个神经元都与下一层所有神经元相连，通过非线性激活实现任意函数近似。",
+        analogy: "像一条多道工序的全员协作流水线：每道工序（层）的所有员工都要把各自的处理结果交给下一道工序的每一位同事——信息全量流通、充分加工，是最「朴素」的神经网络形态。",
+        notes: "MLP = Multi-Layer Perceptron。Transformer 中的 Feed-Forward Network（FFN）本质上就是一个两层 MLP（中间带 ReLU/SwiGLU）。局限：对图像效率低，被 CNN 取代；对序列效率低，被 RNN/Transformer 取代。",
+        key_concepts: ["全连接", "多层堆叠", "通用近似", "非线性"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "activation_function",
+      label: "Activation Function",
+      type: "technique",
+      details: {
+        zh_label: "激活函数",
+        summary: "神经元输出端的非线性变换函数，使神经网络能拟合任意复杂的函数关系，而非只能做线性变换。",
+        analogy: "像员工汇报时的「判断过滤器」：不是把所有输入原样往上传，而是经过自己的判断——低于门槛的直接忽略或压缩，高于门槛的才放大传出——正是这道「主观判断」让整套系统具备了分析非线性问题的能力。",
+        notes: "没有激活函数，多层神经网络等价于单层线性变换，无论堆多少层都无法拟合非线性。常用函数：Sigmoid（早期，梯度消失）、ReLU（max(0,x)，目前最常用）、GELU（Transformer 常用）、Swish（SwiGLU 基础）。",
+        key_concepts: ["非线性", "ReLU", "GELU", "梯度消失问题"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "backpropagation",
+      label: "Backpropagation",
+      type: "technique",
+      details: {
+        zh_label: "反向传播",
+        summary: "利用链式法则从输出层反向逐层计算损失函数对每个参数的梯度，是神经网络参数更新的核心算法。",
+        analogy: "像质检部门发现产品有缺陷后的「反向追责」：从成品（输出）一层层往前查是哪道工序出了多大的问题，每道工序都收到一份「你应该负多少责任」的报告，然后据此调整操作——下次同样工序就不会犯同样的错。",
+        notes: "反向传播 = 链式法则在计算图上的高效应用。配合梯度下降优化器，构成神经网络训练的完整闭环：正向传播计算损失 → 反向传播计算梯度 → 优化器更新参数。1986 年由 Rumelhart、Hinton、Williams 推广至神经网络。",
+        key_concepts: ["链式法则", "梯度", "计算图", "参数更新"],
+        source: { type: "paper", title: "Learning representations by back-propagating errors", year: 1986, authors: ["Rumelhart", "Hinton", "Williams"] },
+      },
+    },
+    {
+      id: "gradient_descent",
+      label: "Gradient Descent",
+      type: "technique",
+      details: {
+        zh_label: "梯度下降",
+        summary: "沿损失函数梯度的反方向迭代更新参数，使损失逐步降低直到收敛的优化算法，是神经网络训练的基础优化方案。",
+        analogy: "像员工在山地里蒙眼找谷底：每一步都往脚下最陡的下坡方向迈一步（梯度的反方向），步子大小就是学习率——步子太大容易跨过谷底在对面坡乱弹，步子太小迟迟找不到出路，找好节奏才能稳稳走到最低点。",
+        notes: "θ_new = θ_old - α·∇L(θ)，其中 α 为学习率。变体：批量梯度下降（全数据）、随机梯度下降（SGD，每次一个样本）、小批量梯度下降（Mini-batch，实践最常用）。Adam、RMSProp 等自适应优化器都是梯度下降的改进版本。",
+        key_concepts: ["学习率", "梯度方向", "收敛", "SGD"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "loss_function",
+      label: "Loss Function",
+      type: "technique",
+      details: {
+        zh_label: "损失函数",
+        summary: "衡量模型预测结果与真实答案之间差距的函数，是整个训练过程的优化目标，损失越小意味着模型越准确。",
+        analogy: "像绩效考核的扣分表：把员工产出和标准答案逐条对比，差距越大扣分越多；训练的目标就是让这张扣分表的总分越来越低，最终成为「零差错」员工。",
+        notes: "常见损失函数：交叉熵损失（分类任务）、均方误差 MSE（回归任务）、负对数似然（语言建模）。损失函数的梯度经反向传播传递给所有参数，是优化的信号源头。选择合适的损失函数对训练效果至关重要。",
+        key_concepts: ["优化目标", "交叉熵", "MSE", "预测误差"],
+        source: { type: "conversation" },
+      },
+    },
+
+    // ─────────────────────────────────────────
+    // 训练通识
+    // ─────────────────────────────────────────
+    {
+      id: "overfitting",
+      label: "Overfitting",
+      type: "concept",
+      details: {
+        zh_label: "过拟合",
+        summary: "模型在训练集上表现极好、但在未见过的新数据上表现差的现象，本质是模型「死记硬背」了训练样本而非学到通用规律。",
+        analogy: "像只会刷原题的应试型员工：历年考题背得滚瓜烂熟，但换一道从未见过的新题型就束手无策，因为他记住的是「这题怎么答」而非真正理解了背后的原理。",
+        notes: "过拟合的反面是欠拟合（模型太简单，连训练集都学不好）。核心诊断：训练损失低而验证损失高。缓解手段：正则化（L1/L2/Dropout）、数据增强、早停（Early Stopping）、使用更大的数据集。",
+        key_concepts: ["泛化能力", "训练/验证差距", "死记硬背", "欠拟合"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "regularization",
+      label: "Regularization",
+      type: "technique",
+      details: {
+        zh_label: "正则化",
+        summary: "在训练目标中加入对模型复杂度的惩罚项，防止过拟合、提升模型泛化到新数据能力的一类技术总称。",
+        analogy: "像给员工的绩效考核加「行为规范」扣分项：不只看他历史题答得多满，还要看他是否「记忆超标」（参数过大），绩效公式同时惩罚两项，逼他学会真正融会贯通而不是死记。",
+        notes: "常见形式：L2 正则化（权重衰减 Weight Decay，给大权重额外惩罚）、L1 正则化（产生稀疏权重）、Dropout（训练时随机丢弃神经元）、标签平滑（Label Smoothing，已在图谱中）。深度学习中 Weight Decay 和 Dropout 最为常用。",
+        key_concepts: ["权重衰减", "Dropout", "L1/L2", "泛化"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "dataset_split",
+      label: "Dataset Split",
+      type: "concept",
+      details: {
+        zh_label: "训练/验证/测试集",
+        summary: "把数据分成训练集（拟合参数）、验证集（调超参数与检测过拟合）、测试集（最终无偏评估）三份，确保评估结果真实可信。",
+        analogy: "像把题库分成三摞：第一摞反复练习（训练集），第二摞随时测试自己、调整学习策略（验证集），第三摞封存起来只在最后大考时打开（测试集）——如果拿大考题练过手，最终成绩就失去了参考价值。",
+        notes: "常见分割比例：60/20/20 或 70/15/15。验证集不参与参数更新，但超参数会根据验证集结果调整，因此验证集上的表现仍有信息泄露风险；测试集应做到「只用一次」。小数据集可用交叉验证（Cross-Validation）。",
+        key_concepts: ["训练集", "验证集", "测试集", "信息泄露"],
+        source: { type: "conversation" },
+      },
+    },
+
+    // ═════════════════════════════════════════
+    // 批次 0.5 — 经典神经网络（承上启下）
+    // ═════════════════════════════════════════
+    {
+      id: "cnn",
+      label: "CNN",
+      type: "architecture",
+      details: {
+        zh_label: "卷积神经网络",
+        summary: "利用卷积核在输入（图像/序列）上滑动提取局部特征、并逐层抽象的神经网络，是图像识别和计算机视觉的支柱架构。",
+        analogy: "像视觉审阅员用固定大小的放大镜，从左到右、从上到下逐块扫描一份设计图：每次只看一小块局部，把发现的特征（边缘、纹理、形状）记录下来；多块记录汇总后再去看更高层次的结构，一层层抽象直到认出完整的内容。",
+        notes: "核心思想：局部感受野 + 权重共享（同一卷积核扫全图，参数量大幅减少）+ 平移不变性。典型应用：图像分类（ResNet）、目标检测（YOLO）、图像分割（U-Net）。扩散模型原始版本中的 U-Net 骨干即基于 CNN；后被 DiT（Transformer）取代。",
+        key_concepts: ["卷积核", "局部感受野", "权重共享", "U-Net"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "rnn",
+      label: "RNN",
+      type: "architecture",
+      details: {
+        zh_label: "循环神经网络",
+        summary: "通过在时间步之间传递隐藏状态来建模序列数据的神经网络，是 Transformer 出现前 NLP 任务的主流架构。",
+        analogy: "像员工逐字阅读一份冗长报告，每读完一句都把关键记忆「攥在手里」传给下一句处理：隐藏状态就是那只不断更新的「记忆之手」，读到哪里，手里就攥着截至此处的综合印象。",
+        notes: "优点：天然处理变长序列，参数共享。致命缺陷：梯度在长序列中传播会消失或爆炸，导致「长距离遗忘」——开头说的事，几十步后模型就忘了。LSTM 通过门控机制缓解了这一问题，但最终仍被 Transformer 彻底取代（后者靠注意力机制一步到位捕获任意距离的依赖）。",
+        key_concepts: ["隐藏状态", "序列建模", "梯度消失", "长距离遗忘"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "lstm",
+      label: "LSTM",
+      type: "architecture",
+      details: {
+        zh_label: "长短期记忆网络",
+        summary: "RNN 的改进版本，通过「输入门、遗忘门、输出门」三个门控单元有选择地记忆或遗忘信息，显著缓解了标准 RNN 的长距离梯度消失问题。",
+        analogy: "像员工阅读长文时学会了有选择地做笔记：遗忘门决定「这条旧记录还有没有价值」，输入门决定「这条新信息值不值得记下来」，输出门决定「现在该把哪部分笔记拿出来用」——比起毫无选择地攥住所有记忆，有取舍地记录让他能把真正重要的内容保留到文章末尾。",
+        notes: "由 Hochreiter & Schmidhuber 于 1997 年提出。核心：细胞状态（Cell State）作为独立的「记忆高速公路」，梯度可以在其上近乎无损地流动。在 Transformer 问世之前，LSTM 是机器翻译、语音识别等序列任务的 SOTA 架构。",
+        key_concepts: ["门控机制", "细胞状态", "长距离依赖", "三门控"],
+        source: { type: "paper", title: "Long Short-Term Memory", year: 1997, authors: ["Hochreiter", "Schmidhuber"] },
+      },
+    },
+
     // ─────────────────────────────────────────
     // 架构节点 (architecture)
     // ─────────────────────────────────────────
@@ -298,6 +565,19 @@ const aiGraphData: GraphData = {
       },
     },
     {
+      id: "tokenizer",
+      label: "Tokenizer",
+      type: "concept",
+      details: {
+        zh_label: "分词器",
+        summary: "把原始文本按词表切分成 token 序列的组件，是文本送入模型前的第一道处理工序。",
+        analogy: "像把整篇文件按「词块」裁成一张张便签，员工才好逐块阅读和处理。",
+        notes: "主流算法：BPE（GPT 系）、WordPiece（BERT 系）、Unigram。词表大小与切分粒度直接影响序列长度、调用计费与多语言表现。",
+        key_concepts: ["BPE", "WordPiece", "词表", "子词切分"],
+        source: { type: "conversation" },
+      },
+    },
+    {
       id: "context_window",
       label: "Context Window",
       type: "concept",
@@ -373,6 +653,114 @@ const aiGraphData: GraphData = {
         notes: "RLHF = Reinforcement Learning from Human Feedback。流程：① 采集人类偏好数据；② 训练奖励模型；③ 用 PPO 等算法微调。是 ChatGPT「好用、听话」的关键。新兴替代：DPO、RLAIF。",
         key_concepts: ["奖励模型", "人类偏好", "PPO", "对齐"],
         source: { type: "conversation" },
+      },
+    },
+
+    // ═════════════════════════════════════════
+    // 批次 1.5 — 现代 LLM 内核（2017 原始 Transformer 之后的关键演进）
+    // ═════════════════════════════════════════
+    {
+      id: "decoder_only",
+      label: "Decoder-Only",
+      type: "architecture",
+      details: {
+        zh_label: "仅解码器架构",
+        summary: "丢掉原始 Transformer 的编码器、只保留解码器堆叠的架构，靠掩码自注意力逐个预测下一个 token，是当代主流 LLM（GPT、LLaMA 等）的通用骨架。",
+        analogy: "像把「先有人通读全文做摘要、再有人据此写作」的两人流程，精简成一位边读边写的全能员工：他只顺着已经写出的内容往下接，一个字一个字地续写，结构反而更简单、更适合规模化扩张。",
+        notes: "相比原始的 Encoder-Decoder，Decoder-only 训练目标统一为「预测下一个 token」（CLM），数据利用率高、易于规模化。三大范式对比：Encoder-only（BERT，擅理解）、Encoder-Decoder（T5，擅翻译/摘要）、Decoder-only（GPT，擅生成）。当代绝大多数对话大模型都收敛到 Decoder-only 路线。",
+        key_concepts: ["仅解码器", "因果语言建模", "vs BERT/T5", "规模化友好"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "rope",
+      label: "RoPE",
+      type: "technique",
+      details: {
+        zh_label: "旋转位置编码",
+        summary: "用旋转矩阵把位置信息「旋」进 query 和 key 向量，使注意力天然只依赖两个 token 的相对距离，并具备一定的长度外推能力。",
+        analogy: "像给钟表每个位置的指针拨到不同角度：两段内容隔多远，对应指针的夹角就差多少；模型一看夹角就知道彼此的相对远近，而不必死记每个位置的绝对编号。",
+        notes: "RoPE = Rotary Position Embedding（RoFormer 提出）。相比原始正弦绝对位置编码，它在每层注意力计算时即时注入相对位置，长文本表现更稳，是 LLaMA、Qwen、GLM 等主流模型的标配。配合 NTK / 位置插值等技巧可把训练时的窗口外推到更长。",
+        key_concepts: ["相对位置", "旋转矩阵", "长度外推", "RoFormer"],
+        source: { type: "paper", title: "RoFormer: Enhanced Transformer with Rotary Position Embedding", year: 2021, authors: ["Su", "Lu", "Pan", "Wen", "Liu"], url: "https://arxiv.org/abs/2104.09864" },
+      },
+    },
+    {
+      id: "rmsnorm",
+      label: "RMSNorm",
+      type: "technique",
+      details: {
+        zh_label: "均方根归一化",
+        summary: "只用向量的均方根做缩放、省去 LayerNorm 的均值中心化和偏置项的归一化方法，计算更省、训练更稳，是现代 LLM 的常用替代。",
+        analogy: "像给数据「调音量」时只按整体响度统一缩放，不再额外做「去掉直流偏置」那一步：省掉一道工序，效果几乎不打折，速度还更快。",
+        notes: "RMSNorm 去掉了 LayerNorm 中减均值的步骤，只除以均方根（RMS）再乘可学习增益，参数和计算量都更少。配合 Pre-Norm（归一化放在子层之前）能让深层 Transformer 训练更稳定。被 LLaMA 系列等广泛采用。",
+        key_concepts: ["均方根缩放", "省去均值中心化", "Pre-Norm", "LLaMA 标配"],
+        source: { type: "paper", title: "Root Mean Square Layer Normalization", year: 2019, authors: ["Zhang", "Sennrich"], url: "https://arxiv.org/abs/1910.07467" },
+      },
+    },
+    {
+      id: "swiglu",
+      label: "SwiGLU",
+      type: "technique",
+      details: {
+        zh_label: "门控前馈激活",
+        summary: "用 Swish 门控线性单元改造前馈网络，多引入一条「门控」支路逐元素调节信息流，比原始 ReLU FFN 表达力更强，是现代 LLM 前馈层的主流选择。",
+        analogy: "像给前馈层加了一道智能阀门：信息不再是「要么全过、要么砍掉」，而是每个维度都有一个旋钮按需调节流量，细腻得多，产出质量也更高。",
+        notes: "SwiGLU 属于 GLU（门控线性单元）家族，用 Swish 作为激活：FFN(x)=(Swish(xW)⊗xV)W₂。为保持参数量持平通常把隐藏维度按 2/3 缩放。被 LLaMA、PaLM 等采用，是「无脑能涨点」的工程改进之一。",
+        key_concepts: ["门控线性单元", "Swish 激活", "替代 ReLU FFN", "表达力增强"],
+        source: { type: "paper", title: "GLU Variants Improve Transformer", year: 2020, authors: ["Shazeer"], url: "https://arxiv.org/abs/2002.05202" },
+      },
+    },
+    {
+      id: "gqa",
+      label: "GQA / MQA",
+      type: "technique",
+      details: {
+        zh_label: "分组查询注意力",
+        summary: "让多个 query 头共享同一组 key/value 头，大幅压缩推理时 KV Cache 的显存占用，在多头注意力的质量和多查询注意力的高效之间取折中。",
+        analogy: "像原本每位审阅员（query 头）都要各自备一整套档案副本（K/V），太占地方；改成几位审阅员合用一套档案，仓库立刻腾空大半，审阅质量却几乎没下降。",
+        notes: "谱系：MHA（每个 query 头独享 K/V，质量高但 KV Cache 大）→ MQA（所有 query 头共享一组 K/V，最省但略掉点）→ GQA（分成若干组、每组共享，折中且接近 MHA 质量）。GQA 是 LLaMA-2/3 等长上下文模型的标配，直接决定长文本推理的显存与吞吐。",
+        key_concepts: ["K/V 头共享", "KV Cache 压缩", "MHA→MQA→GQA", "长上下文推理"],
+        source: { type: "paper", title: "GQA: Training Generalized Multi-Query Transformer Models", year: 2023, authors: ["Ainslie", "Lee-Thorp", "de Jong", "Zemlyanskiy", "Lebrón", "Sanghai"], url: "https://arxiv.org/abs/2305.13245" },
+      },
+    },
+    {
+      id: "kv_cache",
+      label: "KV Cache",
+      type: "technique",
+      details: {
+        zh_label: "键值缓存",
+        summary: "自回归生成时把已算过的历史 token 的 key/value 缓存下来，每生成一个新 token 只需计算它自己的部分，避免对整段前缀重复计算，是 LLM 推理提速的核心机制。",
+        analogy: "像员工边写长文边把前文要点记在便签上：每续写一句不必从头重读全文，瞄一眼便签就能接着写，越往后省下的重复功夫越多。",
+        notes: "KV Cache 把单步生成的复杂度从随序列长度平方降到线性，是流式输出能「逐字蹦出」的基础。代价是显存随上下文长度线性膨胀——这正是 GQA、量化、PagedAttention（vLLM）等技术要解决的瓶颈。",
+        key_concepts: ["历史 K/V 缓存", "避免重复计算", "显存随长度增长", "推理提速"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "flash_attention",
+      label: "FlashAttention",
+      type: "technique",
+      details: {
+        zh_label: "IO 感知注意力",
+        summary: "一种重写注意力计算顺序的 IO 感知算子：分块计算并融合算子，避免把巨大的注意力矩阵写回显存，在不改变数学结果的前提下显著提速并省显存。",
+        analogy: "像精明的员工处理大批文件：不把所有中间草稿都摊在桌上（显存）占地方，而是一小批一小批地在手边（高速缓存）算完即收，最终结果一模一样，桌面却始终清爽、干活还更快。",
+        notes: "瓶颈洞察：注意力慢不在算力而在显存读写（HBM IO）。FlashAttention 用分块（tiling）+ 在线 softmax + 算子融合把中间大矩阵留在片上 SRAM，省去对 N×N 矩阵的反复读写。是长上下文训练与推理的关键加速器，已成事实标准，并迭代到 v2/v3。",
+        key_concepts: ["IO 感知", "分块计算", "省显存", "结果等价"],
+        source: { type: "paper", title: "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness", year: 2022, authors: ["Dao", "Fu", "Ermon", "Rudra", "Ré"], url: "https://arxiv.org/abs/2205.14135" },
+      },
+    },
+    {
+      id: "moe",
+      label: "MoE",
+      type: "architecture",
+      details: {
+        zh_label: "混合专家",
+        summary: "把前馈层拆成多个「专家」子网络，由路由器为每个 token 只挑选少数专家激活，从而在总参数量暴涨的同时让单次计算量几乎不变。",
+        analogy: "像一家公司养着大量各有专长的顾问（专家），但每件事只派最对口的一两位上场：人才库规模巨大，单次出动的成本却很低，专业度还更高。",
+        notes: "MoE = Mixture of Experts。核心是稀疏激活：每个 token 经路由器（gating）选 Top-K 个专家（常 K=1 或 2）。优点是用更少算力换更大容量；难点是负载均衡（避免专家旱涝不均）和通信开销。代表：Switch Transformer、Mixtral，业界普遍认为 GPT-4 等顶级模型亦采用 MoE。",
+        key_concepts: ["稀疏激活", "专家路由", "参数量↑算力不变", "负载均衡"],
+        source: { type: "paper", title: "Switch Transformers: Scaling to Trillion Parameter Models", year: 2021, authors: ["Fedus", "Zoph", "Shazeer"], url: "https://arxiv.org/abs/2101.03961" },
       },
     },
 
@@ -892,6 +1280,478 @@ const aiGraphData: GraphData = {
         source: { type: "blog", title: "LangChain 官网", url: "https://www.langchain.com/" },
       },
     },
+
+    // ═════════════════════════════════════════
+    // 批次 7 — Loop Engineering 簇
+    // ═════════════════════════════════════════
+
+    // ─── 工程演进链 (technique) ──────────────────
+    {
+      id: "context_engineering",
+      label: "Context Engineering",
+      type: "technique",
+      details: {
+        zh_label: "上下文工程",
+        summary: "在提示工程之上的一次跃迁：核心不再是「怎么说」，而是给模型喂入足够、精准、组织良好的上下文信息（资料、记忆、检索结果），让它在充分的背景下作答。",
+        analogy: "像交代任务时不只把话说清楚，还顺手把相关的项目文档、历史记录、参考资料一并递到员工手上：他不必凭空猜测背景，手里有料，自然干得更准。",
+        notes: "四次工程跃迁的第二阶段（Prompt → Context → Harness → Loop）。核心能力是信息筛选与组织。RAG、长上下文、记忆管理都是上下文工程的具体手段。光把话说漂亮不够，还得给足信息。",
+        key_concepts: ["信息筛选", "上下文组织", "喂料", "信息科学"],
+        source: { type: "blog", title: "Prompt 该退环境了，未来属于 Loop Engineering" },
+      },
+    },
+    {
+      id: "harness_engineering",
+      label: "Harness Engineering",
+      type: "technique",
+      details: {
+        zh_label: "约束工程",
+        summary: "在上下文工程之上再进一步：给 Agent 设定规则、护栏与边界，约束先行，告诉它「你可以自由发挥，但这条线不能越」。",
+        analogy: "像给一匹烈马套上马具和缰绳：不是限制它奔跑，而是让它的力量沿着安全可控的方向释放——员工能自主，但公司的红线和规范必须先立好。",
+        notes: "四次跃迁的第三阶段，核心能力是系统设计与规则制定。Harness 是约束、是护栏，在 Loop Engineering 中专门负责「不能怎么做」的边界，是防止 Agent 钻验证器空子的关键一环。CLAUDE.md 中的规则约束、各类 Hook 校验都属于此范畴。",
+        key_concepts: ["约束先行", "护栏", "规则制定", "控制论"],
+        source: { type: "blog", title: "Prompt 该退环境了，未来属于 Loop Engineering" },
+      },
+    },
+    {
+      id: "loop_engineering",
+      label: "Loop Engineering",
+      type: "technique",
+      details: {
+        zh_label: "循环工程",
+        summary: "四次工程跃迁的最新阶段：不再为单次任务手写提示词，而是设计能自动驱动 Agent 的循环——定好目标与验证条件，让整个系统自己跑起来，无需人类一轮轮在场操控。",
+        analogy: "像把「老板盯着员工一句句改方案」的手工作坊，升级成一条全自动工业流水线：你只需定义目标、验收标准和失败处理，剩下的交给系统——晚上睡觉，醒来代码已改好、测试已通过、PR 已提交。",
+        notes: "由 OpenClaw 的 Peter、Claude Code 的 Boris 等人推动，Addy Osmani 正式梳理成概念。核心能力是目标定义与管理（管理学）。与任务制 Agent 的本质区别在于自治：人从「驱动循环的发动机」退位为「设计循环机制的管理者」。/loop、cron、Hook、GitHub Actions 都是其驱动方式。",
+        key_concepts: ["自动循环", "目标驱动", "无人值守", "管理学"],
+        source: { type: "blog", title: "Prompt 该退环境了，未来属于 Loop Engineering" },
+      },
+    },
+
+    // ─── Loop 五大组件 ───────────────────────────
+    {
+      id: "loop_trigger",
+      label: "Loop Trigger",
+      type: "technique",
+      details: {
+        zh_label: "定时任务/触发器",
+        summary: "Loop 的「心跳」：能自动启动循环的机制，可以是定时执行、也可以是事件触发，让 Agent 无需人类手动「踢一脚」就持续运转。",
+        analogy: "像给流水线装上自动开机的总闸和传感器：到点自动启动，或一有新订单（事件）就自动开工，不用工头每天早上手动去合闸。",
+        notes: "常见形式：/loop 命令按间隔自动执行、cron 定时调度、Hook 在 Agent 生命周期特定节点自动触发（如每次改完文件自动跑 lint）、GitHub Actions 关上电脑也在跑。没有触发器的 Agent 每次都得人工启动，那就不是 loop，仍是人在操控。",
+        key_concepts: ["心跳", "cron", "Hook", "事件触发"],
+        source: { type: "blog", title: "Prompt 该退环境了，未来属于 Loop Engineering" },
+      },
+    },
+    {
+      id: "worktree_isolation",
+      label: "Worktree Isolation",
+      type: "technique",
+      details: {
+        zh_label: "工作树隔离",
+        summary: "并行运行多个 Agent 时，给每个 Agent 一个独立的工作空间，各干各的互不干扰，完成后再合并，避免多个 Agent 同时改同一文件的冲突。",
+        analogy: "像几位设计师各自复制一份图层分头改，改完再统一合稿：而不是所有人挤在同一个图层上互相覆盖、谁也不打招呼，那样必然一团乱。",
+        notes: "源自 Git Worktree。是大规模并行 Agent（Boris 提到睡觉时有几千个 Agent 同时工作）的工程前提：隔离保证并发安全，合并阶段再处理整合。",
+        key_concepts: ["独立工作空间", "并发隔离", "Git Worktree", "无冲突合并"],
+        source: { type: "blog", title: "Prompt 该退环境了，未来属于 Loop Engineering" },
+      },
+    },
+    {
+      id: "knowledge_management",
+      label: "Knowledge Management",
+      type: "concept",
+      details: {
+        zh_label: "项目知识体系",
+        summary: "一整套沉淀、优化、审查项目知识（规范、架构、踩过的坑）的方法体系，让 Agent 每次启动就已经知道你的项目，而非每开新对话都从零开始。",
+        analogy: "像给数字员工建一套随时可查的公司知识库 + 入职手册：新来的（或失忆的）员工一上岗就能读到最新的规范和经验，而不是每天早上对着过期文档瞎干。",
+        notes: "单个 skill 不够，必须是体系化管理：CLAUDE.md 承载全局规则与约束、跨会话记忆记录悬而未决事项与文档路由、docs 体系沉淀完整知识。因 CLAUDE.md 和记忆有大小限制，需定期梳理审查（如「洁癖.skill」），剔除过期信息。在无人值守的 loop 中尤为关键：脏知识会让 Agent 基于错误前提决策，干得越快错得越多。",
+        key_concepts: ["CLAUDE.md", "跨会话记忆", "docs 体系", "知识审查"],
+        source: { type: "blog", title: "Prompt 该退环境了，未来属于 Loop Engineering" },
+      },
+    },
+    {
+      id: "mcp",
+      label: "MCP",
+      type: "framework",
+      details: {
+        zh_label: "模型上下文协议",
+        summary: "连接器协议：把 Agent 接到 GitHub、Linear、Slack、数据库等真实工作环境的标准化通道，让它从「只能看文件系统」升级为「能在真实工作流里干活」。",
+        analogy: "像给数字员工开通各个业务系统的账号和权限：光会读本地文件干不了多少事，接上公司的代码仓库、项目管理、沟通工具后，他才能真正从发现问题到解决问题到通知人类一条龙地闭环干活。",
+        notes: "MCP = Model Context Protocol（Anthropic 提出）。是 Loop 五大组件中的「连接器」，本质上是工具调用（Tool Use / Function Calling）的标准化扩展：用统一协议描述外部工具/数据源，使 Agent 能即插即用地接入各类服务，是构成真正闭环的能力底座。",
+        key_concepts: ["连接器", "标准化协议", "真实环境接入", "闭环"],
+        source: { type: "doc", title: "Model Context Protocol", url: "https://modelcontextprotocol.io/" },
+      },
+    },
+    {
+      id: "verifier_agent",
+      label: "Verifier Agent",
+      type: "concept",
+      details: {
+        zh_label: "验证子 Agent",
+        summary: "专门检查另一个 Agent 输出的独立 Agent：做事的和检查的必须分开，写代码的 Agent 不能自己给自己打分，否则一定会对自己太宽容。",
+        analogy: "像学生不能自己批自己的考卷：必须有另一位老师（甚至换一个更挑剔的）来阅卷，一个负责做、一个负责验，结果才可信。",
+        notes: "Loop 五大组件之一。实践中常用不同的模型来做验证器，以减少同源偏见。是「反馈及时」这一管理原则在 loop 中的落地：每一轮都有独立检查器告诉做事的 Agent 对不对、哪里要改。",
+        key_concepts: ["做检分离", "独立验证", "异源模型", "反馈机制"],
+        source: { type: "blog", title: "Prompt 该退环境了，未来属于 Loop Engineering" },
+      },
+    },
+
+    // ─── 灵魂与陷阱 (concept) ─────────────────────
+    {
+      id: "goal_definition",
+      label: "Goal Definition",
+      type: "concept",
+      details: {
+        zh_label: "目标定义",
+        summary: "Loop Engineering 的灵魂：把一个模糊的意图翻译成一组可衡量、可验证的完成条件——这才是核心竞争力，本质上是管理能力而非工程能力。",
+        analogy: "像给员工下任务的两种说法：「把这个功能做好」会让他一脸懵逼（你脑中的「好」和他的不是一回事）；而「接口响应降到 200ms 以下、错误率 0.1% 以内、下周三上线」给了可验证标准，产出偏差就小得多。对 AI 更是如此，因为 Agent 不会主动找你确认，只会自信地按自己的理解执行。",
+        notes: "对比示例：目标 A「把应用优化一下」会让 Agent 无法判断何时算完成，要么早停要么改到面目全非；目标 B「test/auth 全部测试通过、tsc --noEmit 零报错、npm run lint 零违规」清清楚楚。与管理学一脉相承：Drucker 的目标管理、Grove 的 OKR，核心都是「把模糊意图翻译成可验证条件」。好目标的三要素 = 目标清晰 + 资源充足（Skill/连接器/权限）+ 反馈及时（验证器）。",
+        key_concepts: ["可验证条件", "可衡量", "OKR/目标管理", "管理能力"],
+        source: { type: "blog", title: "Prompt 该退环境了，未来属于 Loop Engineering" },
+      },
+    },
+    {
+      id: "goodhart_law",
+      label: "Goodhart's Law",
+      type: "concept",
+      details: {
+        zh_label: "古德哈特定律",
+        summary: "当一个衡量指标变成了目标本身，它就不再是一个好的衡量指标——你考核什么，员工（或 Agent）就只做什么，其他东西可能全部退化。",
+        analogy: "像公司只考核「代码行数」，员工就拼命灌水写废话代码，真正的质量反而没人管了：指标一旦变成目标，就被人想方设法地满足，却背离了你真正想要的东西。",
+        notes: "管理学与经济学中的经典陷阱。在 AI Agent 身上被放大百倍，因为 Agent 比人更擅长钻规则空子、且毫无心理负担。这正是为什么好的目标定义不能只有「做完了」的标准，还必须配上「不能怎么做」的边界（Harness）。",
+        key_concepts: ["指标异化", "钻空子", "目标背离", "需边界约束"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "reward_hacking",
+      label: "Reward Hacking",
+      type: "concept",
+      details: {
+        zh_label: "验证器钻空子",
+        summary: "Agent 针对验证条件本身做优化，而非针对你真正的目标做优化：满足了字面验证，却背离了真实意图。",
+        analogy: "像 loop 条件是「让所有测试通过」，Agent 干脆把失败的测试直接删了——从验证条件看测试确实全过了，从你真正想要的结果看，它啥也没干。",
+        notes: "古德哈特定律在 AI Agent 上的具体表现，是 Loop Engineering 里最阴险的陷阱。根治之道：① 用 Harness 设定「不能怎么做」的边界；② 用独立验证子 Agent 交叉检查；③ 目标定义同时包含完成标准与边界条件，并准备失败降级方案。",
+        key_concepts: ["针对验证器优化", "删测试式作弊", "背离真实目标", "需护栏"],
+        source: { type: "blog", title: "Prompt 该退环境了，未来属于 Loop Engineering" },
+      },
+    },
+    {
+      id: "goal_command",
+      label: "/goal Command",
+      type: "technique",
+      details: {
+        zh_label: "目标命令",
+        summary: "Claude Code 的 /goal（Codex 中叫「追求目标」）：给定一个完成条件，Agent 就一轮轮自己干，每轮结束检查条件是否满足，是 Loop Engineering 骨架最直接的微观产品化体现。",
+        analogy: "像给员工一句「干到这三个指标全达标为止」，然后他自己反复迭代、每轮自检，达标才收工：你不用全程盯着，只需把验收线划清楚。",
+        notes: "用法看似直接（给完成条件，自己干到满足为止），但好不好用完全取决于目标定义的质量——同一工具、同一模型，模糊目标会让它早停或失控，精准目标则清清楚楚。是 goal_definition 在工具层的落地接口。",
+        key_concepts: ["完成条件", "自动迭代", "每轮自检", "微观产品化"],
+        source: { type: "blog", title: "Prompt 该退环境了，未来属于 Loop Engineering" },
+      },
+    },
+
+    // ═════════════════════════════════════════
+    // 批次 8 — LLM 训练与对齐补充
+    // ═════════════════════════════════════════
+    {
+      id: "instruction_tuning",
+      label: "Instruction Tuning",
+      type: "technique",
+      details: {
+        zh_label: "指令微调",
+        summary: "用大量「指令-回答」配对数据微调预训练模型，让它学会听懂并遵循人类指令，而非只会按概率续写文本。",
+        analogy: "像把一个博览群书、却只会自顾自背书的实习生，专门培训成「你交代什么他就做什么」的助理：训练素材全是「任务 + 标准做法」的范例，练多了他就养成了照指令办事的习惯。",
+        notes: "属于监督微调（SFT）中的指令式数据形态。代表工作：FLAN、InstructGPT。处于「预训练 → 指令微调 → RLHF 对齐」流水线的中段：预训练给知识，指令微调让模型「听懂话」，RLHF 再按人类偏好精修。",
+        key_concepts: ["指令-回答对", "SFT", "FLAN/InstructGPT", "遵循指令"],
+        source: { type: "paper", title: "Finetuned Language Models Are Zero-Shot Learners", year: 2021, authors: ["Wei", "Bosma", "Zhao", "Guu", "Yu", "Lester", "Du", "Dai", "Le"], url: "https://arxiv.org/abs/2109.01652" },
+      },
+    },
+    {
+      id: "lora",
+      label: "LoRA",
+      type: "technique",
+      details: {
+        zh_label: "低秩适配微调",
+        summary: "冻结预训练模型的原始权重，只在每层旁路注入一对低秩矩阵来学习任务增量，用不到 1% 的可训练参数实现接近全量微调的效果。",
+        analogy: "像不重新培训整个老员工、只给他配一本随身的「岗位便签本」：原有本事原封不动，新业务的要点都记在薄薄一本便签上，换个岗位换本便签即可，省时省力又不动根基。",
+        notes: "LoRA = Low-Rank Adaptation。参数高效微调（PEFT）家族的代表：可训练参数常不到全量的 1%，显存与存储大幅下降，且多套 LoRA 可针对不同任务热插拔。衍生：QLoRA（4-bit 量化 + LoRA），让单卡微调大模型成为可能。",
+        key_concepts: ["低秩矩阵", "冻结主干", "PEFT", "可热插拔"],
+        source: { type: "paper", title: "LoRA: Low-Rank Adaptation of Large Language Models", year: 2021, authors: ["Hu", "Shen", "Wallis", "Allen-Zhu", "Li", "Wang", "Wang", "Chen"], url: "https://arxiv.org/abs/2106.09685" },
+      },
+    },
+    {
+      id: "reward_model",
+      label: "Reward Model",
+      type: "concept",
+      details: {
+        zh_label: "奖励模型",
+        summary: "用人类对模型输出的偏好排序训练出来的打分模型，能给任意回答打一个「人类有多喜欢」的分数，是 RLHF 中强化学习阶段的奖励信号来源。",
+        analogy: "像专门请来的一位「品味评委」：他看过大量「人类觉得哪个回答更好」的案例，于是能替人类给徒弟的每份作业打分，徒弟就照着这个分数去调整自己的做法。",
+        notes: "通常在预训练模型上加一个标量输出头，用偏好对（chosen / rejected）以排序损失训练。是 RLHF 三步（采集人类偏好 → 训练奖励模型 → PPO 优化）的第二步。DPO 等新方法的核心卖点，正是省去这个显式的奖励模型。",
+        key_concepts: ["偏好排序", "标量打分头", "RLHF 第二步", "奖励信号"],
+        source: { type: "paper", title: "Training language models to follow instructions with human feedback", year: 2022, authors: ["Ouyang", "Wu", "Jiang", "Almeida", "Wainwright", "Mishkin", "Zhang", "Agarwal", "Slama", "Ray"], url: "https://arxiv.org/abs/2203.02155" },
+      },
+    },
+    {
+      id: "dpo",
+      label: "DPO",
+      type: "technique",
+      details: {
+        zh_label: "直接偏好优化",
+        summary: "跳过 RLHF 中「训练奖励模型 + 强化学习」两步，直接用人类偏好对（更好/更差）做一个分类式损失来优化语言模型，更简单也更稳定。",
+        analogy: "像师傅纠偏不再先立一套打分表、再让徒弟反复试错，而是直接把「这版比那版好」的成对案例摆给徒弟，让他一步到位地领会偏好，省掉中间一大圈流程。",
+        notes: "DPO = Direct Preference Optimization。论文证明可在不显式训练奖励模型、不做强化学习采样的前提下，优化与 RLHF 等价的目标，工程上更省、更稳，是当前 RLHF 的主流替代之一。相关变体：IPO、KTO。",
+        key_concepts: ["偏好对", "免奖励模型", "免强化学习", "RLHF 替代"],
+        source: { type: "paper", title: "Direct Preference Optimization: Your Language Model is Secretly a Reward Model", year: 2023, authors: ["Rafailov", "Sharma", "Mitchell", "Ermon", "Manning", "Finn"], url: "https://arxiv.org/abs/2305.18290" },
+      },
+    },
+    {
+      id: "scaling_law",
+      label: "Scaling Law",
+      type: "concept",
+      details: {
+        zh_label: "扩展定律",
+        summary: "描述模型性能随参数量、数据量、算力增长而以幂律可预测地提升的经验规律，是「把模型做大」这条路线的理论依据。",
+        analogy: "像发现「团队规模、资料量、预算」三者一起按比例加大，产出质量就会沿一条可预测的曲线稳步上升：于是公司敢于提前下重注扩张，因为心里清楚投入大致能换回多少回报。",
+        notes: "Kaplan et al. 2020 提出 LLM 性能的幂律扩展规律；Chinchilla（Hoffmann et al. 2022）进一步指出在固定算力预算下，参数量与训练数据量应按比例同增（此前的模型普遍「参数过大、数据喂得不够」）。Scaling Law 是大模型军备竞赛和涌现能力讨论的基石。",
+        key_concepts: ["幂律", "参数/数据/算力", "Chinchilla 最优", "可预测提升"],
+        source: { type: "paper", title: "Scaling Laws for Neural Language Models", year: 2020, authors: ["Kaplan", "McCandlish", "Henighan", "Brown", "Chess", "Child", "Gray", "Radford", "Wu", "Amodei"], url: "https://arxiv.org/abs/2001.08361" },
+      },
+    },
+
+    // ═════════════════════════════════════════
+    // 批次 9 — 经典 ML 算法（领域 3）
+    // ═════════════════════════════════════════
+    {
+      id: "linear_regression",
+      label: "Linear Regression",
+      type: "technique",
+      details: {
+        zh_label: "线性回归",
+        summary: "用一条直线（高维时是超平面）拟合输入特征与连续输出之间的线性关系，是最基础的监督学习回归算法。",
+        analogy: "像老员工凭经验总结「房子每多 10 平米、价格大约涨多少」：在一堆成交记录里画一条最贴合的直线，新房子套进去就能估出价。",
+        notes: "通过最小化预测值与真实值的均方误差（最小二乘法）求解权重，可用正规方程闭式解或梯度下降迭代求解。它是理解更复杂模型的基石——逻辑回归、神经网络中的单个神经元都可看作它的延伸。",
+        key_concepts: ["最小二乘", "均方误差", "线性假设", "连续输出"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "logistic_regression",
+      label: "Logistic Regression",
+      type: "technique",
+      details: {
+        zh_label: "逻辑回归",
+        summary: "在线性回归的基础上套一个 Sigmoid 函数，把输出压缩到 0–1 之间当作概率，用于二分类的监督学习算法。",
+        analogy: "像审批员先按各项指标算一个综合分，再用一道「分数→通过概率」的 S 形曲线，把分数换算成「这单批准的可能性有多大」。",
+        notes: "名为「回归」实为分类算法，用交叉熵损失训练。它是神经网络输出层（Sigmoid/Softmax）的前身：单个带 Sigmoid 的神经元本质就是逻辑回归，其多分类推广即 Softmax 回归。",
+        key_concepts: ["Sigmoid", "交叉熵", "二分类", "概率输出"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "decision_tree",
+      label: "Decision Tree",
+      type: "technique",
+      details: {
+        zh_label: "决策树",
+        summary: "通过一连串「是/否」判断把数据层层切分，最终落到叶子节点给出预测的树形模型，可用于分类与回归。",
+        analogy: "像医生问诊：先问「发烧吗」，再问「咳嗽吗」，沿着一路分叉的问题问下去，最后给出诊断结论。",
+        notes: "用信息增益（ID3）、增益率（C4.5）或基尼不纯度（CART）挑选每一步的最优切分特征。优点是可解释性极强，缺点是容易过拟合，常用剪枝控制复杂度。它是随机森林、梯度提升等集成方法的基学习器。",
+        key_concepts: ["信息增益", "基尼不纯度", "剪枝", "可解释性"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "svm",
+      label: "Support Vector Machine",
+      type: "technique",
+      details: {
+        zh_label: "支持向量机",
+        summary: "在特征空间中寻找一个「间隔最大」的超平面来分隔不同类别的监督学习算法，配合核技巧还能处理非线性可分问题。",
+        analogy: "像在两群人之间划一条最公平的分界线：不是随手一画，而是让线离两边最靠近的人都尽量远，留出最宽的「缓冲带」。",
+        notes: "最大化间隔的超平面只由少数贴边的「支持向量」决定；核技巧（如 RBF 核）把数据隐式映射到高维空间，实现非线性分类。深度学习兴起前，SVM 是文本分类、图像识别的主力算法之一。",
+        key_concepts: ["最大间隔", "支持向量", "核技巧", "超平面"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "kmeans",
+      label: "K-Means",
+      type: "technique",
+      details: {
+        zh_label: "K-Means 聚类",
+        summary: "把数据自动划分成 K 个簇的无监督算法，反复执行「把样本分配到最近中心 → 重新计算中心」直到收敛。",
+        analogy: "像在没有名册的会场把人分成 K 桌：先随便定 K 个桌位，让每人坐到最近的桌，再把桌子挪到各组人的中心，来回几轮大家就稳定坐定。",
+        notes: "需预先指定簇数 K（常用肘部法则、轮廓系数辅助选择），对初始中心敏感，K-Means++ 改进了初始化策略。它是无监督学习中最经典、最常用的聚类算法。",
+        key_concepts: ["簇中心", "迭代收敛", "K 值选择", "无监督聚类"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "pca",
+      label: "PCA",
+      type: "technique",
+      details: {
+        zh_label: "主成分分析",
+        summary: "通过线性变换把高维数据投影到方差最大的少数几个方向上，在尽量保留信息的前提下实现降维的无监督方法。",
+        analogy: "像给一个立体物件找最能体现轮廓的拍照角度：用最少的几张照片（主成分）就抓住它的主要形状，把冗余视角全丢掉。",
+        notes: "PCA = Principal Component Analysis。数学上是对协方差矩阵做特征分解（或对数据做 SVD），取最大特征值对应的方向作为主成分。常用于数据压缩、可视化与去噪；与自编码器的「非线性降维」相对，PCA 是线性降维的代表。",
+        key_concepts: ["方差最大化", "特征分解/SVD", "降维", "主成分"],
+        source: { type: "conversation" },
+      },
+    },
+
+    // ═════════════════════════════════════════
+    // 批次 10 — 生成式补充（领域 12）+ autoencoder（领域 4）
+    // ═════════════════════════════════════════
+    {
+      id: "autoencoder",
+      label: "Autoencoder",
+      type: "architecture",
+      details: {
+        zh_label: "自编码器",
+        summary: "由编码器压缩、解码器重建组成的神经网络，通过「让输出尽量还原输入」来无监督地学习数据的紧凑表示。",
+        analogy: "像让员工先把一份长报告浓缩成几句摘要，再仅凭摘要还原出原文——逼他只抓最关键的信息、丢掉所有冗余。",
+        notes: "中间的瓶颈层（latent code）就是学到的低维表示，用重建误差训练、无需标签。变体众多：去噪自编码器、稀疏自编码器；VAE 则把瓶颈层换成概率分布。与 PCA 的线性降维相对，自编码器是非线性降维的代表。",
+        key_concepts: ["编码器-解码器", "瓶颈层", "重建误差", "非线性降维"],
+        source: { type: "paper", title: "Reducing the Dimensionality of Data with Neural Networks", year: 2006, authors: ["Hinton", "Salakhutdinov"], url: "https://www.science.org/doi/10.1126/science.1127647" },
+      },
+    },
+    {
+      id: "gan",
+      label: "GAN",
+      type: "architecture",
+      details: {
+        zh_label: "生成对抗网络",
+        summary: "让「生成器」和「判别器」两个网络相互对抗训练的生成模型：生成器负责造假、判别器负责辨真假，在博弈中生成器越来越能以假乱真。",
+        analogy: "像造假币的和验钞师互相较劲：造假的不断改进让钞票更逼真，验钞师不断提升辨别力，两边水涨船高，最后假币几可乱真。",
+        notes: "GAN = Generative Adversarial Network。生成器与判别器交替优化，理论目标是纳什均衡；训练不稳定、易「模式崩溃」是经典难题。在扩散模型崛起之前，GAN 长期是图像生成的主流路线。",
+        key_concepts: ["生成器/判别器", "对抗博弈", "纳什均衡", "模式崩溃"],
+        source: { type: "paper", title: "Generative Adversarial Networks", year: 2014, authors: ["Goodfellow", "Pouget-Abadie", "Mirza", "Xu", "Warde-Farley", "Ozair", "Courville", "Bengio"], url: "https://arxiv.org/abs/1406.2661" },
+      },
+    },
+    {
+      id: "vae",
+      label: "VAE",
+      type: "architecture",
+      details: {
+        zh_label: "变分自编码器",
+        summary: "把自编码器的瓶颈层换成「概率分布」的生成模型：编码器输出均值与方差，从中采样再解码，从而能生成全新样本。",
+        analogy: "像让员工不只记住每份报告的「一个摘要点」，而是记住「摘要的取值范围」；要新文章时就在这个范围里随机取一点再展开，于是能写出没见过却合理的新版本。",
+        notes: "VAE = Variational Autoencoder。用「重建损失 + KL 散度」训练，KL 项把潜空间约束成接近标准正态分布，使采样可控；重参数化技巧让采样过程可反向传播。它是潜空间扩散（latent diffusion）中编码器思想的来源。",
+        key_concepts: ["潜空间分布", "KL 散度", "重参数化", "可采样生成"],
+        source: { type: "paper", title: "Auto-Encoding Variational Bayes", year: 2013, authors: ["Kingma", "Welling"], url: "https://arxiv.org/abs/1312.6114" },
+      },
+    },
+    {
+      id: "clip",
+      label: "CLIP",
+      type: "architecture",
+      details: {
+        zh_label: "图文对比预训练",
+        summary: "用图像编码器和文本编码器把图、文映射到同一向量空间，通过对比学习让「配对的图文」靠近、「不配对的」远离的多模态模型。",
+        analogy: "像训练一个双语对照员：左手一摞图、右手一摞配文，反复练「哪张图配哪句话」，最后他能把任意图和任意文都摆到同一张「意义地图」上比远近。",
+        notes: "CLIP = Contrastive Language-Image Pre-training。在约 4 亿图文对上用对比损失训练，赋予强大的零样本分类能力；其文本编码器被 Stable Diffusion 等文生图模型用作条件输入。",
+        key_concepts: ["双编码器", "对比学习", "图文对齐", "零样本"],
+        source: { type: "paper", title: "Learning Transferable Visual Models From Natural Language Supervision", year: 2021, authors: ["Radford", "Kim", "Hallacy", "Ramesh", "Goh", "Agarwal", "Sastry", "Askell", "Mishkin", "Clark"], url: "https://arxiv.org/abs/2103.00020" },
+      },
+    },
+    {
+      id: "text_to_image",
+      label: "Text-to-Image",
+      type: "concept",
+      details: {
+        zh_label: "文生图",
+        summary: "输入一段文字描述、输出与之匹配图像的生成任务，是「文生图」类应用（如 Stable Diffusion、DALL·E）的核心能力。",
+        analogy: "像跟一位画师口述「画一只戴礼帽的橘猫坐在月球上」，他就照着你的话，从一张空白画布画出对应的画面。",
+        notes: "当前主流实现是「文本编码器（如 CLIP）提供条件 + 扩散模型逐步去噪生成」；早期也有基于 GAN 的方案。它是文生视频（text_to_video）的静态版前身。",
+        key_concepts: ["文本条件生成", "扩散模型", "文本编码器", "图像合成"],
+        source: { type: "conversation" },
+      },
+    },
+
+    // ═════════════════════════════════════════
+    // 批次 11 — LLM 概念与推理（领域 8）
+    // ═════════════════════════════════════════
+    {
+      id: "in_context_learning",
+      label: "In-Context Learning",
+      type: "concept",
+      details: {
+        zh_label: "上下文学习",
+        summary: "大语言模型无需更新任何参数，仅凭在提示中给出的几个示例，就能即时学会并完成新任务的能力。",
+        analogy: "像给一位老员工临时看几个范例：「喏，这类邮件照这样回」，他当场照着范例的套路就把后面的邮件都处理了，根本不用回炉再培训。",
+        notes: "In-Context Learning（ICL）由 GPT-3 论文系统提出，是少样本/零样本提示能力的根源。它区别于微调：参数完全冻结，「学习」只发生在单次前向推理的上下文里，提示一变能力就变。",
+        key_concepts: ["免参数更新", "示例即学习", "前向推理内", "涌现能力"],
+        source: { type: "paper", title: "Language Models are Few-Shot Learners", year: 2020, authors: ["Brown", "Mann", "Ryder", "Subbiah", "Kaplan", "Dhariwal", "Neelakantan", "Shyam", "Sastry", "Askell"], url: "https://arxiv.org/abs/2005.14165" },
+      },
+    },
+    {
+      id: "temperature_sampling",
+      label: "Temperature & Sampling",
+      type: "technique",
+      details: {
+        zh_label: "温度与采样",
+        summary: "控制大模型生成随机性的解码策略：温度调节概率分布的「陡峭/平缓」，Top-k / Top-p 则限定候选词的范围。",
+        analogy: "像调节员工的「发挥尺度」：温度调低他只挑最稳的标准答案，调高他就敢天马行空；Top-k/Top-p 则相当于规定「只在最靠谱的前几个选项里挑」，防止彻底跑题。",
+        notes: "温度 T 缩放 logits 后再过 softmax：T→0 趋近贪心（最确定），T 越大输出越随机。Top-k 只保留概率最高的 k 个词；Top-p（核采样）保留累积概率达 p 的最小词集。三者常配合使用，平衡生成的连贯性与多样性。",
+        key_concepts: ["温度缩放", "Top-k", "Top-p（核采样）", "随机性控制"],
+        source: { type: "paper", title: "The Curious Case of Neural Text Degeneration", year: 2019, authors: ["Holtzman", "Buys", "Du", "Forbes", "Choi"], url: "https://arxiv.org/abs/1904.09751" },
+      },
+    },
+    {
+      id: "multimodal_llm",
+      label: "Multimodal LLM",
+      type: "concept",
+      details: {
+        zh_label: "多模态大模型",
+        summary: "能同时理解和处理文本、图像、音频、视频等多种模态信息的大模型，把不同模态编码到统一表示空间里联合推理。",
+        analogy: "像一个既能读文件、又能看图、还能听录音的全能助理：你发一张图配一句问话，他能把图看懂、把话听懂，再综合给出回答。",
+        notes: "典型做法是用各模态的编码器（如视觉用 ViT/CLIP）把非文本输入转成 token，对齐后送入 LLM 联合处理。代表：GPT-4V、Gemini、Claude 3、LLaVA。它是从纯文本 LLM 走向通用智能体的关键一步。",
+        key_concepts: ["多模态对齐", "统一表示空间", "视觉编码器", "联合推理"],
+        source: { type: "paper", title: "Flamingo: a Visual Language Model for Few-Shot Learning", year: 2022, authors: ["Alayrac", "Donahue", "Luc", "Miech", "Barr", "Hasson", "Lenc", "Mensch", "Millican", "Reynolds"], url: "https://arxiv.org/abs/2204.14198" },
+      },
+    },
+
+    // ═════════════════════════════════════════
+    // 批次 12 — 经典深度网络剩余（领域 4）
+    // ═════════════════════════════════════════
+    {
+      id: "resnet",
+      label: "ResNet",
+      type: "architecture",
+      details: {
+        zh_label: "残差网络",
+        summary: "通过「跳跃连接」让信号绕过若干层直接相加，从而能稳定训练上百层深网络的卷积网络架构。",
+        analogy: "像在多层审批流程里开一条「直通车道」：原始材料可以跳过中间几道环节直接送到后面，万一中间环节没增益，至少也不会把原始信息搞丢。",
+        notes: "ResNet 的残差块学习的是「相对于输入的残差 F(x)」，输出为 F(x)+x；跳跃连接缓解了梯度消失，让 152 层网络成为可能，并夺得 2015 年 ImageNet 冠军。残差连接思想后来被 Transformer 全盘沿用。",
+        key_concepts: ["残差块", "跳跃连接", "恒等映射", "缓解梯度消失"],
+        source: { type: "paper", title: "Deep Residual Learning for Image Recognition", year: 2015, authors: ["He", "Zhang", "Ren", "Sun"], url: "https://arxiv.org/abs/1512.03385" },
+      },
+    },
+    {
+      id: "seq2seq",
+      label: "Seq2Seq",
+      type: "architecture",
+      details: {
+        zh_label: "序列到序列",
+        summary: "用一个编码器把输入序列压成上下文向量、再用解码器逐步生成输出序列的框架，奠定了机器翻译等序列转换任务的范式。",
+        analogy: "像同传译员：先完整听完一句外语、在脑中凝成「意思」，再用母语一个词一个词地复述出来——「听」和「说」是两个分工明确的阶段。",
+        notes: "Seq2Seq（Sutskever 2014）通常以 RNN/LSTM 作编码器与解码器；但把整句压成单一上下文向量是瓶颈，催生了注意力机制（Bahdanau 2014），后者最终演化为 Transformer。它是从 RNN 时代通往 Transformer 的关键桥梁。",
+        key_concepts: ["编码器-解码器", "上下文向量", "注意力前身", "机器翻译"],
+        source: { type: "paper", title: "Sequence to Sequence Learning with Neural Networks", year: 2014, authors: ["Sutskever", "Vinyals", "Le"], url: "https://arxiv.org/abs/1409.3215" },
+      },
+    },
+    {
+      id: "word_embedding",
+      label: "Word Embedding",
+      type: "technique",
+      details: {
+        zh_label: "词向量",
+        summary: "把词语映射成稠密向量、让语义相近的词在向量空间里也相互靠近的表示方法，是 NLP 走向深度学习的起点。",
+        analogy: "像给每个词发一张「坐标名片」：意思相近的词（如「国王」「女王」）名片上的坐标也挨得近，连「国王 − 男 + 女 ≈ 女王」这种关系都能用坐标加减算出来。",
+        notes: "Word2Vec（Mikolov 2013）用 Skip-gram/CBOW 从上下文中学习词向量，GloVe 则基于全局共现统计。区别于 Transformer 的上下文相关嵌入，Word2Vec 是「静态」词向量（一词一向量）。它是现代 embedding 与向量检索思想的源头。",
+        key_concepts: ["稠密向量", "语义相似", "Word2Vec/GloVe", "静态嵌入"],
+        source: { type: "paper", title: "Efficient Estimation of Word Representations in Vector Space", year: 2013, authors: ["Mikolov", "Chen", "Corrado", "Dean"], url: "https://arxiv.org/abs/1301.3781" },
+      },
+    },
   ],
 
   edges: [
@@ -1051,12 +1911,6 @@ const aiGraphData: GraphData = {
       label: "基于",
     },
     {
-      id: "gpt__改进自__transformer",
-      source: "gpt",
-      target: "transformer",
-      label: "改进自",
-    },
-    {
       id: "llm__包含__gpt",
       source: "llm",
       target: "gpt",
@@ -1081,28 +1935,145 @@ const aiGraphData: GraphData = {
       label: "处理单元",
     },
     {
-      id: "llm__训练阶段__pretraining",
+      id: "tokenizer__切分产出__token",
+      source: "tokenizer",
+      target: "token",
+      label: "切分产出",
+    },
+    {
+      id: "context_window__以token计量__token",
+      source: "context_window",
+      target: "token",
+      label: "以…计量",
+    },
+    {
+      id: "llm__训练始于__pretraining",
       source: "llm",
       target: "pretraining",
-      label: "训练阶段",
+      label: "训练始于",
     },
     {
-      id: "llm__训练阶段__fine_tuning",
-      source: "llm",
+      id: "pretraining__再微调__fine_tuning",
+      source: "pretraining",
       target: "fine_tuning",
-      label: "训练阶段",
+      label: "再微调",
     },
     {
-      id: "llm__训练阶段__rlhf",
-      source: "llm",
+      id: "fine_tuning__再对齐__rlhf",
+      source: "fine_tuning",
       target: "rlhf",
-      label: "训练阶段",
+      label: "再对齐",
     },
     {
       id: "llm__表现出__emergent_ability",
       source: "llm",
       target: "emergent_ability",
       label: "表现出",
+    },
+    {
+      id: "emergent_ability__典型表现__chain_of_thought",
+      source: "emergent_ability",
+      target: "chain_of_thought",
+      label: "典型表现",
+    },
+    {
+      id: "emergent_ability__典型表现__few_shot",
+      source: "emergent_ability",
+      target: "few_shot",
+      label: "典型表现",
+    },
+
+    // ═══ 批次 1.5 — 现代 LLM 内核 ════════════════
+    {
+      id: "decoder_only__变体自__transformer",
+      source: "decoder_only",
+      target: "transformer",
+      label: "变体自",
+    },
+    {
+      id: "gpt__采用__decoder_only",
+      source: "gpt",
+      target: "decoder_only",
+      label: "采用",
+    },
+    {
+      id: "decoder_only__自回归靠__masked_multi_head_attention",
+      source: "decoder_only",
+      target: "masked_multi_head_attention",
+      label: "自回归靠",
+    },
+    {
+      id: "rope__改进自__positional_encoding",
+      source: "rope",
+      target: "positional_encoding",
+      label: "改进自",
+    },
+    {
+      id: "rope__支撑__context_window",
+      source: "rope",
+      target: "context_window",
+      label: "外推支撑",
+    },
+    {
+      id: "rmsnorm__替代__layer_normalization",
+      source: "rmsnorm",
+      target: "layer_normalization",
+      label: "替代",
+    },
+    {
+      id: "swiglu__改进自__feed_forward_network",
+      source: "swiglu",
+      target: "feed_forward_network",
+      label: "改进自",
+    },
+    {
+      id: "gqa__变体自__multi_head_attention",
+      source: "gqa",
+      target: "multi_head_attention",
+      label: "变体自",
+    },
+    {
+      id: "gqa__压缩__kv_cache",
+      source: "gqa",
+      target: "kv_cache",
+      label: "压缩",
+    },
+    {
+      id: "kv_cache__加速__decoder_only",
+      source: "kv_cache",
+      target: "decoder_only",
+      label: "加速",
+    },
+    {
+      id: "kv_cache__占用增长__context_window",
+      source: "kv_cache",
+      target: "context_window",
+      label: "占用随之增长",
+      directed: false,
+    },
+    {
+      id: "flash_attention__优化__scaled_dot_product_attention",
+      source: "flash_attention",
+      target: "scaled_dot_product_attention",
+      label: "优化",
+    },
+    {
+      id: "moe__替代__feed_forward_network",
+      source: "moe",
+      target: "feed_forward_network",
+      label: "替代",
+    },
+    {
+      id: "moe__增强__llm",
+      source: "moe",
+      target: "llm",
+      label: "扩展规模",
+    },
+    {
+      id: "moe__代表实现__gpt",
+      source: "moe",
+      target: "gpt",
+      label: "传闻采用",
     },
 
     // ═══ 批次 2 — Agent 核心簇 ═══════════════════
@@ -1147,6 +2118,24 @@ const aiGraphData: GraphData = {
       source: "ai_agent",
       target: "multi_agent",
       label: "协作形态",
+    },
+    {
+      id: "agent_memory__短期记忆依托__context_window",
+      source: "agent_memory",
+      target: "context_window",
+      label: "短期记忆依托",
+    },
+    {
+      id: "agent_memory__长期记忆存储于__vector_database",
+      source: "agent_memory",
+      target: "vector_database",
+      label: "长期记忆存储于",
+    },
+    {
+      id: "planning__运用__chain_of_thought",
+      source: "planning",
+      target: "chain_of_thought",
+      label: "运用",
     },
 
     // ═══ 批次 3 — Prompt / 指令簇 ════════════════
@@ -1218,6 +2207,12 @@ const aiGraphData: GraphData = {
       target: "vector_database",
       label: "存储于",
     },
+    {
+      id: "rag__突破限制__context_window",
+      source: "rag",
+      target: "context_window",
+      label: "突破限制",
+    },
 
     // ═══ 批次 5 — AI 视频生成簇 ══════════════════
     {
@@ -1250,13 +2245,6 @@ const aiGraphData: GraphData = {
       target: "temporal_consistency",
       label: "质量挑战",
     },
-    {
-      id: "text_to_video__存在问题__hallucination",
-      source: "text_to_video",
-      target: "hallucination",
-      label: "存在问题",
-    },
-
     // ─── 批次 5 扩充 — DiT / 潜空间扩散 ───────────
     {
       id: "transformer__被借鉴于__dit",
@@ -1303,10 +2291,11 @@ const aiGraphData: GraphData = {
       label: "依赖",
     },
     {
-      id: "text_encoder__复用__embedding",
+      id: "text_encoder__同属文本向量化__embedding",
       source: "text_encoder",
       target: "embedding",
-      label: "复用",
+      label: "同属文本向量化",
+      directed: false,
     },
     {
       id: "text_to_video__使用__classifier_free_guidance",
@@ -1323,10 +2312,10 @@ const aiGraphData: GraphData = {
       label: "使用",
     },
     {
-      id: "spacetime_patch__基于__token",
+      id: "spacetime_patch__类比__token",
       source: "spacetime_patch",
       target: "token",
-      label: "基于",
+      label: "类比",
     },
 
     // ─── 批次 5 扩充 — 时间一致性解决方案 ──────────
@@ -1444,6 +2433,592 @@ const aiGraphData: GraphData = {
       label: "对比",
       directed: false,
     },
+
+    // ═══ 批次 0 — 机器学习地基内部骨架 ══════════
+    {
+      id: "machine_learning__深化为__deep_learning",
+      source: "machine_learning",
+      target: "deep_learning",
+      label: "深化为",
+    },
+    {
+      id: "machine_learning__包含__supervised_learning",
+      source: "machine_learning",
+      target: "supervised_learning",
+      label: "包含",
+    },
+    {
+      id: "machine_learning__包含__unsupervised_learning",
+      source: "machine_learning",
+      target: "unsupervised_learning",
+      label: "包含",
+    },
+    {
+      id: "machine_learning__包含__reinforcement_learning",
+      source: "machine_learning",
+      target: "reinforcement_learning",
+      label: "包含",
+    },
+    {
+      id: "machine_learning__包含__self_supervised_learning",
+      source: "machine_learning",
+      target: "self_supervised_learning",
+      label: "包含",
+    },
+    {
+      id: "machine_learning__评估依赖__dataset_split",
+      source: "machine_learning",
+      target: "dataset_split",
+      label: "评估依赖",
+    },
+    {
+      id: "deep_learning__核心是__neural_network",
+      source: "deep_learning",
+      target: "neural_network",
+      label: "核心是",
+    },
+    {
+      id: "neural_network__基本单元__neuron",
+      source: "neural_network",
+      target: "neuron",
+      label: "基本单元",
+    },
+    {
+      id: "neural_network__基础形态__mlp",
+      source: "neural_network",
+      target: "mlp",
+      label: "基础形态",
+    },
+    {
+      id: "neural_network__训练靠__backpropagation",
+      source: "neural_network",
+      target: "backpropagation",
+      label: "训练靠",
+    },
+    {
+      id: "backpropagation__依赖__gradient_descent",
+      source: "backpropagation",
+      target: "gradient_descent",
+      label: "依赖",
+    },
+    {
+      id: "gradient_descent__最小化__loss_function",
+      source: "gradient_descent",
+      target: "loss_function",
+      label: "最小化",
+    },
+    {
+      id: "neuron__使用__activation_function",
+      source: "neuron",
+      target: "activation_function",
+      label: "使用",
+    },
+    {
+      id: "mlp__使用__activation_function",
+      source: "mlp",
+      target: "activation_function",
+      label: "使用",
+    },
+    {
+      id: "dataset_split__用于检测__overfitting",
+      source: "dataset_split",
+      target: "overfitting",
+      label: "用于检测",
+    },
+    {
+      id: "overfitting__缓解靠__regularization",
+      source: "overfitting",
+      target: "regularization",
+      label: "缓解靠",
+    },
+
+    // ═══ 批次 0.5 — 经典神经网络内部边 ══════════
+    {
+      id: "deep_learning__演进出__cnn",
+      source: "deep_learning",
+      target: "cnn",
+      label: "演进出",
+    },
+    {
+      id: "deep_learning__演进出__rnn",
+      source: "deep_learning",
+      target: "rnn",
+      label: "演进出",
+    },
+    {
+      id: "rnn__改进为__lstm",
+      source: "rnn",
+      target: "lstm",
+      label: "改进为",
+    },
+
+    // ═══ 锚定现有节点的跨批次边 ══════════════════
+    {
+      id: "rnn__被取代于__transformer",
+      source: "rnn",
+      target: "transformer",
+      label: "被取代于",
+    },
+    {
+      id: "adam_optimizer__改进自__gradient_descent",
+      source: "adam_optimizer",
+      target: "gradient_descent",
+      label: "改进自",
+    },
+    {
+      id: "mlp__对应__feed_forward_network",
+      source: "mlp",
+      target: "feed_forward_network",
+      label: "对应",
+      directed: false,
+    },
+    {
+      id: "regularization__具体手段__label_smoothing",
+      source: "regularization",
+      target: "label_smoothing",
+      label: "具体手段",
+    },
+    {
+      id: "self_supervised_learning__形式为__pretraining",
+      source: "self_supervised_learning",
+      target: "pretraining",
+      label: "形式为",
+    },
+    {
+      id: "reinforcement_learning__应用于__rlhf",
+      source: "reinforcement_learning",
+      target: "rlhf",
+      label: "应用于",
+    },
+    {
+      id: "cnn__骨干被借鉴于__diffusion_model",
+      source: "cnn",
+      target: "diffusion_model",
+      label: "U-Net骨干被借鉴于",
+    },
+    {
+      id: "supervised_learning__驱动__fine_tuning",
+      source: "supervised_learning",
+      target: "fine_tuning",
+      label: "驱动",
+    },
+
+    // ═══ 批次 7 — Loop Engineering 簇 ════════════
+    // ─── 工程演进链 ──────────────────────────────
+    {
+      id: "prompt_engineering__演进为__context_engineering",
+      source: "prompt_engineering",
+      target: "context_engineering",
+      label: "演进为",
+    },
+    {
+      id: "context_engineering__演进为__harness_engineering",
+      source: "context_engineering",
+      target: "harness_engineering",
+      label: "演进为",
+    },
+    {
+      id: "harness_engineering__演进为__loop_engineering",
+      source: "harness_engineering",
+      target: "loop_engineering",
+      label: "演进为",
+    },
+    {
+      id: "context_engineering__手段包括__rag",
+      source: "context_engineering",
+      target: "rag",
+      label: "手段包括",
+    },
+    {
+      id: "harness_engineering__载体__system_prompt",
+      source: "harness_engineering",
+      target: "system_prompt",
+      label: "载体",
+    },
+
+    // ─── Loop 驱动 Agent 与五大组件 ───────────────
+    {
+      id: "loop_engineering__驱动自治__ai_agent",
+      source: "loop_engineering",
+      target: "ai_agent",
+      label: "驱动自治",
+    },
+    {
+      id: "loop_engineering__组件__loop_trigger",
+      source: "loop_engineering",
+      target: "loop_trigger",
+      label: "组件",
+    },
+    {
+      id: "loop_engineering__组件__worktree_isolation",
+      source: "loop_engineering",
+      target: "worktree_isolation",
+      label: "组件",
+    },
+    {
+      id: "loop_engineering__组件__knowledge_management",
+      source: "loop_engineering",
+      target: "knowledge_management",
+      label: "组件",
+    },
+    {
+      id: "loop_engineering__组件__mcp",
+      source: "loop_engineering",
+      target: "mcp",
+      label: "组件",
+    },
+    {
+      id: "loop_engineering__组件__verifier_agent",
+      source: "loop_engineering",
+      target: "verifier_agent",
+      label: "组件",
+    },
+
+    // ─── 五组件锚定现有节点 ──────────────────────
+    {
+      id: "mcp__扩展__tool_use",
+      source: "mcp",
+      target: "tool_use",
+      label: "扩展",
+    },
+    {
+      id: "mcp__标准化__function_calling",
+      source: "mcp",
+      target: "function_calling",
+      label: "标准化",
+    },
+    {
+      id: "verifier_agent__应用形态__multi_agent",
+      source: "verifier_agent",
+      target: "multi_agent",
+      label: "应用形态",
+    },
+    {
+      id: "worktree_isolation__支撑__multi_agent",
+      source: "worktree_isolation",
+      target: "multi_agent",
+      label: "支撑",
+    },
+    {
+      id: "knowledge_management__沉淀于__agent_memory",
+      source: "knowledge_management",
+      target: "agent_memory",
+      label: "沉淀于",
+    },
+    {
+      id: "knowledge_management__借助__rag",
+      source: "knowledge_management",
+      target: "rag",
+      label: "借助",
+    },
+
+    // ─── 灵魂与陷阱 ──────────────────────────────
+    {
+      id: "loop_engineering__灵魂是__goal_definition",
+      source: "loop_engineering",
+      target: "goal_definition",
+      label: "灵魂是",
+    },
+    {
+      id: "goal_definition__面临陷阱__goodhart_law",
+      source: "goal_definition",
+      target: "goodhart_law",
+      label: "面临陷阱",
+    },
+    {
+      id: "goodhart_law__在Agent上表现为__reward_hacking",
+      source: "goodhart_law",
+      target: "reward_hacking",
+      label: "在 Agent 上表现为",
+    },
+    {
+      id: "harness_engineering__约束__reward_hacking",
+      source: "harness_engineering",
+      target: "reward_hacking",
+      label: "护栏约束",
+    },
+    {
+      id: "verifier_agent__交叉检查__reward_hacking",
+      source: "verifier_agent",
+      target: "reward_hacking",
+      label: "交叉检查防范",
+    },
+    {
+      id: "goal_command__实现__loop_engineering",
+      source: "goal_command",
+      target: "loop_engineering",
+      label: "微观实现",
+    },
+    {
+      id: "goal_command__依赖__goal_definition",
+      source: "goal_command",
+      target: "goal_definition",
+      label: "依赖",
+    },
+
+    // ═══ 批次 8 — LLM 训练与对齐补充 ═════════════
+    {
+      id: "fine_tuning__典型形式__instruction_tuning",
+      source: "fine_tuning",
+      target: "instruction_tuning",
+      label: "典型形式",
+    },
+    {
+      id: "instruction_tuning__对齐前序__rlhf",
+      source: "instruction_tuning",
+      target: "rlhf",
+      label: "对齐前序",
+    },
+    {
+      id: "fine_tuning__参数高效形式__lora",
+      source: "fine_tuning",
+      target: "lora",
+      label: "参数高效形式",
+    },
+    {
+      id: "rlhf__依赖__reward_model",
+      source: "rlhf",
+      target: "reward_model",
+      label: "依赖",
+    },
+    {
+      id: "reward_model__提供奖励给__reinforcement_learning",
+      source: "reward_model",
+      target: "reinforcement_learning",
+      label: "提供奖励给",
+    },
+    {
+      id: "dpo__简化替代__rlhf",
+      source: "dpo",
+      target: "rlhf",
+      label: "简化替代",
+    },
+    {
+      id: "dpo__省去__reward_model",
+      source: "dpo",
+      target: "reward_model",
+      label: "省去",
+    },
+    {
+      id: "scaling_law__指导__pretraining",
+      source: "scaling_law",
+      target: "pretraining",
+      label: "指导规模",
+    },
+    {
+      id: "llm__遵循__scaling_law",
+      source: "llm",
+      target: "scaling_law",
+      label: "遵循",
+    },
+    {
+      id: "scaling_law__催生__emergent_ability",
+      source: "scaling_law",
+      target: "emergent_ability",
+      label: "规模催生",
+    },
+
+    // ═══ 批次 9 — 经典 ML 算法（领域 3） ═════════
+    {
+      id: "supervised_learning__代表算法__linear_regression",
+      source: "supervised_learning",
+      target: "linear_regression",
+      label: "代表算法",
+    },
+    {
+      id: "supervised_learning__代表算法__logistic_regression",
+      source: "supervised_learning",
+      target: "logistic_regression",
+      label: "代表算法",
+    },
+    {
+      id: "supervised_learning__代表算法__decision_tree",
+      source: "supervised_learning",
+      target: "decision_tree",
+      label: "代表算法",
+    },
+    {
+      id: "supervised_learning__代表算法__svm",
+      source: "supervised_learning",
+      target: "svm",
+      label: "代表算法",
+    },
+    {
+      id: "unsupervised_learning__代表算法__kmeans",
+      source: "unsupervised_learning",
+      target: "kmeans",
+      label: "代表算法",
+    },
+    {
+      id: "unsupervised_learning__代表算法__pca",
+      source: "unsupervised_learning",
+      target: "pca",
+      label: "代表算法",
+    },
+    {
+      id: "linear_regression__延伸为__logistic_regression",
+      source: "linear_regression",
+      target: "logistic_regression",
+      label: "加 Sigmoid 延伸为",
+    },
+    {
+      id: "logistic_regression__多分类推广__softmax",
+      source: "logistic_regression",
+      target: "softmax",
+      label: "多分类推广",
+    },
+    {
+      id: "logistic_regression__等价于单个__neuron",
+      source: "logistic_regression",
+      target: "neuron",
+      label: "等价于单个",
+    },
+
+    // ═══ 批次 10 — 生成式补充 + autoencoder ══════
+    {
+      id: "neural_network__经典架构__autoencoder",
+      source: "neural_network",
+      target: "autoencoder",
+      label: "经典架构",
+    },
+    {
+      id: "autoencoder__非线性对应__pca",
+      source: "autoencoder",
+      target: "pca",
+      label: "非线性降维对应",
+      directed: false,
+    },
+    {
+      id: "deep_learning__生成式架构__gan",
+      source: "deep_learning",
+      target: "gan",
+      label: "生成式架构",
+    },
+    {
+      id: "gan__生成路线对比__diffusion_model",
+      source: "gan",
+      target: "diffusion_model",
+      label: "生成路线对比",
+      directed: false,
+    },
+    {
+      id: "vae__概率化扩展__autoencoder",
+      source: "vae",
+      target: "autoencoder",
+      label: "概率化扩展自",
+    },
+    {
+      id: "vae__编码思想用于__latent_diffusion",
+      source: "vae",
+      target: "latent_diffusion",
+      label: "编码思想用于",
+    },
+    {
+      id: "clip__产出__embedding",
+      source: "clip",
+      target: "embedding",
+      label: "产出图文共享嵌入",
+    },
+    {
+      id: "clip__提供文本条件__text_to_image",
+      source: "clip",
+      target: "text_to_image",
+      label: "提供文本条件",
+    },
+    {
+      id: "text_to_image__主流实现__diffusion_model",
+      source: "text_to_image",
+      target: "diffusion_model",
+      label: "主流实现",
+    },
+    {
+      id: "text_to_image__代表实现__stable_diffusion",
+      source: "text_to_image",
+      target: "stable_diffusion",
+      label: "代表实现",
+    },
+
+    // ═══ 批次 11 — LLM 概念与推理 ════════════════
+    {
+      id: "llm__涌现__in_context_learning",
+      source: "llm",
+      target: "in_context_learning",
+      label: "涌现出",
+    },
+    {
+      id: "in_context_learning__机制支撑__few_shot",
+      source: "in_context_learning",
+      target: "few_shot",
+      label: "机制支撑",
+    },
+    {
+      id: "in_context_learning__属于__emergent_ability",
+      source: "in_context_learning",
+      target: "emergent_ability",
+      label: "典型涌现能力",
+    },
+    {
+      id: "llm__解码策略__temperature_sampling",
+      source: "llm",
+      target: "temperature_sampling",
+      label: "解码策略",
+    },
+    {
+      id: "temperature_sampling__调节__softmax",
+      source: "temperature_sampling",
+      target: "softmax",
+      label: "调节输出分布",
+    },
+    {
+      id: "llm__扩展为__multimodal_llm",
+      source: "llm",
+      target: "multimodal_llm",
+      label: "扩展为",
+    },
+    {
+      id: "multimodal_llm__视觉编码常用__clip",
+      source: "multimodal_llm",
+      target: "clip",
+      label: "视觉编码常用",
+    },
+
+    // ═══ 批次 12 — 经典深度网络剩余 ══════════════
+    {
+      id: "cnn__经典深层架构__resnet",
+      source: "cnn",
+      target: "resnet",
+      label: "经典深层架构",
+    },
+    {
+      id: "residual_connection__思想源自__resnet",
+      source: "residual_connection",
+      target: "resnet",
+      label: "思想源自",
+    },
+    {
+      id: "rnn__典型应用__seq2seq",
+      source: "rnn",
+      target: "seq2seq",
+      label: "典型应用",
+    },
+    {
+      id: "seq2seq__演化为__transformer",
+      source: "seq2seq",
+      target: "transformer",
+      label: "演化为",
+    },
+    {
+      id: "word_embedding__发展为__embedding",
+      source: "word_embedding",
+      target: "embedding",
+      label: "发展为上下文嵌入",
+    },
+    {
+      id: "self_supervised_learning__早期代表__word_embedding",
+      source: "self_supervised_learning",
+      target: "word_embedding",
+      label: "早期代表",
+    },
   ],
 };
 
@@ -1501,5 +3076,5 @@ export const aiMap: KnowledgeMap = {
   data: aiGraphData,
   typeStyles: aiTypeStyles,
   typeOrder: aiTypeOrder,
-  preferredSeed: "llm",
+  preferredSeed: "machine_learning",
 };
