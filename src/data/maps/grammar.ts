@@ -1749,4 +1749,5 @@ export const grammarMap: KnowledgeMap = {
   typeStyles: grammarTypeStyles,
   typeOrder: grammarTypeOrder,
   preferredSeed: "predicate",
+  group: "interest",
 };

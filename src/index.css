@@ -146,3 +146,28 @@ body {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* ============================================================
+   双视角翻转卡片（黑神话图谱：C 端正面 / B 端背面）
+   两个面用 grid 叠放在同一格，容器高度取两面较高者，避免塌陷与跳动
+   ============================================================ */
+.akg-flip {
+  perspective: 1600px;
+}
+.akg-flip-inner {
+  display: grid;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.4, 0.1, 0.2, 1);
+}
+.akg-flip-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+.akg-flip-face {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.akg-flip-back {
+  transform: rotateY(180deg);
+}

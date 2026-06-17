@@ -1,14 +1,17 @@
 // ============================================================
-// AI 知识图谱大纲（Taxonomy）— Loop 的「目标锚点」
+// 知识图谱大纲（Taxonomy）— Loop 的「目标锚点」
 //
-// 作用：把「图谱要覆盖完整的 AI 全貌」这个无边界的主观目标，
+// 作用：把「图谱要覆盖完整全貌」这个无边界的主观目标，
 //       坍缩成「对照本清单，每个主题都有对应节点」的可验证目标。
 //
 // 维护：这份清单是人工决策（L2 范围由作者拍板），新增/删减主题即调整目标。
-//       check-coverage.ts 读取本文件，diff 实际图谱，产出缺口清单。
+//       check-coverage.ts 读取本文件，按图 id 取对应大纲，diff 实际图谱，产出缺口清单。
+//
+// 多图谱：每张图一份大纲，统一登记在文件末尾的 TAXONOMY_REGISTRY 里，
+//       check-coverage.ts 凭 `npm run check-coverage <mapId>` 取用。
 //
 // priority 语义（决定 loop 的优先级与完成判定）：
-//   core        - 「从零讲清 AI 全貌」不可或缺，缺失计为硬缺口（阻断完成）
+//   core        - 「从零讲清全貌」不可或缺，缺失计为硬缺口（阻断完成）
 //   recommended - 显著增强完整性，缺失计为软缺口（进待办，不阻断）
 //   optional    - 锦上添花，缺失仅提示
 //
@@ -256,3 +259,246 @@ export const AI_TAXONOMY: TaxonomyDomain[] = [
     ],
   },
 ];
+
+// ============================================================
+// PM 知识图谱大纲（Taxonomy）— Loop 的「目标锚点」
+//
+// 目标：不抄某本书的目录，而是构建「面向小白入门 + 迎合时代的超级产品经理」
+//       课程体系。每个领域/主题由作者拍板（Step 2 填充），书仅作参考来源之一。
+//
+// 已落地（草案）：9 大领域。现有 70 节点归入其中（covered），
+//   面向「小白入门 + AI 时代超级产品经理」的新主题作为待补缺口。
+//   priority 由作者后续微调即调整 loop 目标。
+// ============================================================
+export const PM_TAXONOMY: TaxonomyDomain[] = [
+  {
+    domain: "1. 产品思维与角色认知",
+    topics: [
+      { id: "pm", label: "产品经理", priority: "core" },
+      { id: "everyone_is_pm", label: "人人都是产品经理", priority: "core" },
+      { id: "pm_definition", label: "产品经理是什么", priority: "core" },
+      { id: "product_concept", label: "产品", priority: "core" },
+      { id: "mvp", label: "最小可行产品 MVP", priority: "core" },
+      { id: "why_pm", label: "为什么做产品经理", priority: "recommended" },
+      { id: "influence", label: "影响力", priority: "recommended" },
+      { id: "pm_growth", label: "产品经理成长", priority: "recommended" },
+      { id: "pm_types", label: "产品经理分类（B端/C端/AI产品经理）", priority: "recommended" },
+      { id: "product_lifecycle", label: "产品生命周期", priority: "recommended" },
+    ],
+  },
+  {
+    domain: "2. 用户与需求",
+    topics: [
+      { id: "user_research", label: "用户研究", priority: "core" },
+      { id: "user", label: "用户", priority: "core" },
+      { id: "persona", label: "用户画像", priority: "core" },
+      { id: "requirement_collection", label: "需求采集", priority: "core" },
+      { id: "requirement_analysis", label: "需求分析", priority: "core" },
+      { id: "requirement_filter", label: "需求筛选", priority: "core" },
+      { id: "kano", label: "KANO 模型", priority: "core" },
+      { id: "maslow", label: "马斯洛需求层次", priority: "recommended" },
+      { id: "user_interview", label: "用户访谈", priority: "recommended" },
+      { id: "questionnaire", label: "调查问卷", priority: "recommended" },
+      { id: "usability_test", label: "可用性测试", priority: "recommended" },
+      { id: "y_model", label: "Y 模型", priority: "recommended" },
+      { id: "listen_not_copy", label: "倾听而非照搬", priority: "recommended" },
+      { id: "cost_benefit", label: "成本收益分析", priority: "recommended" },
+      { id: "user_value", label: "用户价值", priority: "recommended" },
+      { id: "business_value", label: "商业价值", priority: "recommended" },
+      { id: "rice", label: "RICE 优先级", priority: "recommended" },
+      { id: "requirement_management", label: "需求管理", priority: "recommended" },
+      { id: "requirement_pool", label: "需求池", priority: "recommended" },
+      { id: "user_journey_map", label: "用户旅程地图", priority: "recommended" },
+      { id: "jobs_to_be_done", label: "JTBD 用户目标达成理论", priority: "recommended" },
+      { id: "focus_group", label: "焦点小组", priority: "optional" },
+      { id: "implementation_cost", label: "实现成本", priority: "optional" },
+      { id: "must_be_need", label: "基本型需求", priority: "optional" },
+      { id: "performance_need", label: "期望型需求", priority: "optional" },
+      { id: "attractive_need", label: "兴奋型需求", priority: "optional" },
+      { id: "indifferent_need", label: "无差异型需求", priority: "optional" },
+      { id: "reverse_need", label: "反向型需求", priority: "optional" },
+      { id: "kano_questionnaire", label: "KANO 问卷", priority: "optional" },
+      { id: "better_worse", label: "Better-Worse 系数", priority: "optional" },
+      { id: "satisfaction_curve", label: "满意度曲线", priority: "optional" },
+    ],
+  },
+  {
+    domain: "3. 市场与竞品",
+    topics: [
+      { id: "market_research", label: "市场调研", priority: "core" },
+      { id: "competitor_analysis", label: "竞品分析", priority: "core" },
+      { id: "positioning", label: "产品定位", priority: "recommended" },
+      { id: "swot", label: "SWOT 分析", priority: "recommended" },
+      { id: "market_segmentation", label: "STP 市场细分", priority: "recommended" },
+    ],
+  },
+  {
+    domain: "4. 产品设计与原型",
+    topics: [
+      { id: "prd", label: "产品需求文档 PRD", priority: "core" },
+      { id: "prototype", label: "原型", priority: "core" },
+      { id: "interaction_design", label: "交互设计", priority: "core" },
+      { id: "ux_design", label: "用户体验设计", priority: "core" },
+      { id: "product_principle", label: "产品设计原则", priority: "recommended" },
+      { id: "brd", label: "商业需求文档 BRD", priority: "recommended" },
+      { id: "mrd", label: "市场需求文档 MRD", priority: "recommended" },
+      { id: "wireframe", label: "线框图", priority: "recommended" },
+      { id: "information_architecture", label: "信息架构", priority: "recommended" },
+      { id: "usability_principles", label: "可用性原则", priority: "optional" },
+    ],
+  },
+  {
+    domain: "5. 数据与增长",
+    topics: [
+      { id: "data_analysis", label: "数据分析", priority: "core" },
+      { id: "data_driven", label: "数据驱动", priority: "core" },
+      { id: "north_star_metric", label: "北极星指标", priority: "core" },
+      { id: "aarrr", label: "AARRR 海盗指标", priority: "core" },
+      { id: "kpi", label: "关键绩效指标 KPI", priority: "recommended" },
+      { id: "ab_testing", label: "A/B 测试", priority: "recommended" },
+      { id: "retention", label: "用户留存", priority: "recommended" },
+      { id: "growth_hacking", label: "增长黑客", priority: "recommended" },
+      { id: "funnel_analysis", label: "漏斗分析", priority: "recommended" },
+    ],
+  },
+  {
+    domain: "6. 项目与协作",
+    topics: [
+      { id: "project", label: "项目", priority: "core" },
+      { id: "project_management", label: "项目管理", priority: "core" },
+      { id: "development", label: "开发", priority: "core" },
+      { id: "testing", label: "测试", priority: "core" },
+      { id: "release", label: "发布", priority: "core" },
+      { id: "team", label: "团队", priority: "core" },
+      { id: "agile", label: "敏捷开发", priority: "core" },
+      { id: "collaboration", label: "协作", priority: "recommended" },
+      { id: "kickoff", label: "项目启动", priority: "recommended" },
+      { id: "risk_schedule", label: "风险与进度", priority: "recommended" },
+      { id: "scrum", label: "Scrum 框架", priority: "recommended" },
+      { id: "business_team", label: "业务团队", priority: "optional" },
+      { id: "tech_team", label: "技术团队", priority: "optional" },
+      { id: "designer", label: "设计师", priority: "optional" },
+      { id: "operation", label: "运营", priority: "optional" },
+      { id: "boss", label: "老板", priority: "optional" },
+      { id: "forgotten_roles", label: "被遗忘的角色", priority: "optional" },
+    ],
+  },
+  {
+    domain: "7. 商业与战略",
+    topics: [
+      { id: "business_model", label: "商业模式", priority: "core" },
+      { id: "product_planning", label: "产品规划", priority: "core" },
+      { id: "product_strategy", label: "产品战略", priority: "core" },
+      { id: "monetization", label: "商业变现/盈利模式", priority: "core" },
+      { id: "product_analysis", label: "产品分析", priority: "recommended" },
+      { id: "pricing", label: "定价策略", priority: "recommended" },
+      { id: "business_canvas", label: "商业模式画布", priority: "recommended" },
+    ],
+  },
+  {
+    domain: "8. AI 时代的产品能力",
+    topics: [
+      { id: "ai_product", label: "人工智能产品", priority: "core" },
+      { id: "ai_product_design", label: "AI 产品设计", priority: "core" },
+      { id: "llm_application", label: "大模型应用", priority: "recommended" },
+      { id: "prompt_design", label: "提示词设计", priority: "recommended" },
+      { id: "ai_evaluation", label: "AI 产品评测与迭代", priority: "recommended" },
+      { id: "human_ai_collaboration", label: "人机协作", priority: "recommended" },
+      { id: "ai_ethics", label: "AI 伦理与边界", priority: "optional" },
+    ],
+  },
+  {
+    domain: "9. 个人修养与成长",
+    topics: [
+      { id: "self_cultivation", label: "自我修养", priority: "core" },
+      { id: "communication_skill", label: "沟通能力", priority: "core" },
+      { id: "logical_thinking", label: "逻辑思维", priority: "core" },
+      { id: "learning_ability", label: "学习能力", priority: "recommended" },
+      { id: "time_management", label: "时间管理", priority: "recommended" },
+      { id: "t_shaped", label: "T 型人才", priority: "recommended" },
+      { id: "product_sense", label: "产品感", priority: "recommended" },
+      { id: "decision_making", label: "决策能力", priority: "recommended" },
+      { id: "pdca", label: "PDCA 循环", priority: "optional" },
+    ],
+  },
+];
+
+export const BLACK_MYTH_TAXONOMY: TaxonomyDomain[] = [
+  {
+    domain: "0. 总览",
+    topics: [
+      { id: "black_myth_wukong", label: "黑神话悟空（总览）", priority: "core" },
+    ],
+  },
+  {
+    domain: "1. 定位与大盘策略",
+    topics: [
+      { id: "category_positioning", label: "品类定位（箱庭 ARPG）", priority: "core" },
+      { id: "target_users", label: "目标用户（硬核 + 泛 IP）", priority: "core" },
+      { id: "marketing_milestones", label: "营销节点（820/MVP）", priority: "recommended" },
+    ],
+  },
+  {
+    domain: "2. 核心玩法循环",
+    topics: [
+      { id: "core_gameplay_loop", label: "核心玩法循环", priority: "core" },
+      { id: "loop_combat", label: "挑战（心流）", priority: "core" },
+      { id: "loop_explore", label: "探索", priority: "recommended" },
+      { id: "loop_progress", label: "养成", priority: "recommended" },
+      { id: "loop_reward", label: "奖励", priority: "recommended" },
+    ],
+  },
+  {
+    domain: "3. 双轨制经济与成长",
+    topics: [
+      { id: "dual_track_economy", label: "双轨制经济", priority: "core" },
+      { id: "lingyun_currency", label: "灵蕴（金币）", priority: "core" },
+      { id: "lingguang_points", label: "灵光点（技能经验）", priority: "core" },
+      { id: "death_no_penalty", label: "死亡零惩罚", priority: "recommended" },
+      { id: "free_respec", label: "无代价洗点", priority: "recommended" },
+      { id: "meditation_cushion", label: "打坐蒲团", priority: "optional" },
+    ],
+  },
+  {
+    domain: "4. 战斗数值与机制",
+    topics: [
+      { id: "combat_system", label: "战斗系统", priority: "core" },
+      { id: "base_resource_gauges", label: "基础资源槽（HP/SP/MP）", priority: "core" },
+      { id: "resolute_strike", label: "识破", priority: "core" },
+      { id: "gunshi_meter", label: "棍势值", priority: "recommended" },
+      { id: "modular_gourd", label: "模块化葫芦", priority: "recommended" },
+    ],
+  },
+  {
+    domain: "5. UI 交互与视觉体验",
+    topics: [
+      { id: "ux_ui_design", label: "UI 交互与视觉", priority: "core" },
+      { id: "combat_hud", label: "战斗 HUD", priority: "recommended" },
+      { id: "micro_feedback", label: "微反馈交互", priority: "recommended" },
+      { id: "system_menu", label: "系统菜单", priority: "optional" },
+    ],
+  },
+  {
+    domain: "6. 中后台能力网（B 端）",
+    topics: [
+      { id: "data_dashboard", label: "用户数据大屏", priority: "core" },
+      { id: "telemetry_platform", label: "行为埋点中台", priority: "core" },
+      { id: "numeric_config_cms", label: "数值配置后台（CMS）", priority: "core" },
+      { id: "asset_pipeline", label: "美术资产管理管线", priority: "core" },
+      { id: "combat_balance_tool", label: "战斗平衡测试工具", priority: "recommended" },
+      { id: "combat_heatmap", label: "战斗行为热力图", priority: "recommended" },
+      { id: "anti_inflation_tool", label: "防通胀测算工具", priority: "optional" },
+      { id: "localization_platform", label: "本地化协作平台", priority: "optional" },
+    ],
+  },
+];
+
+// ============================================================
+// 大纲登记表 — check-coverage.ts 凭 mapId 取用对应图谱的大纲。
+// 新增一张需要覆盖率门禁的图谱时，在这里登记即可。
+// ============================================================
+export const TAXONOMY_REGISTRY: Record<string, TaxonomyDomain[]> = {
+  ai: AI_TAXONOMY,
+  pm: PM_TAXONOMY,
+  "black-myth": BLACK_MYTH_TAXONOMY,
+};

@@ -21,6 +21,16 @@ interface Issue {
 const SNAKE_CASE = /^[a-z0-9]+(_[a-z0-9]+)*$/;
 const MIN_KEY_CONCEPTS = 3;
 
+// 哪些图谱要求「每节点带类比 / 至少 3 个关键概念 / 可溯源 source」的内容风格。
+// 新图谱若想吃同一套内容质量门禁，把它的 id 加进来即可。
+const CONTENT_STYLE_MAPS = new Set(["ai", "pm"]);
+
+// black-myth 专属 L2 门禁（双视角完整性）所需的常量。
+const BLACK_MYTH_ID = "black-myth";
+const BM_SUPPORT_LABEL = "支撑"; // C 端 → B 端中后台 的映射边
+const BM_CONTAIN_LABEL = "包含"; // 层级边
+const BM_MIN_BACKSTAGE_SUMMARY = 10; // backstage.summary 低于该字数视为占位灌水
+
 function checkNodeIds(nodes: KnowledgeNode[]): Issue[] {
   const issues: Issue[] = [];
   const seen = new Set<string>();
@@ -118,11 +128,11 @@ function checkPreferredSeed(map: KnowledgeMap): Issue[] {
   return [{ level: "error", rule: "bad-preferred-seed", message: `preferredSeed「${map.preferredSeed}」不指向任何节点` }];
 }
 
-function checkAiContentStyle(nodes: KnowledgeNode[]): Issue[] {
+function checkContentStyle(nodes: KnowledgeNode[]): Issue[] {
   const issues: Issue[] = [];
   for (const node of nodes) {
     if (!node.details.analogy) {
-      issues.push({ level: "warning", rule: "missing-analogy", message: `节点 ${node.id} 缺少 analogy（ai 图风格要求每节点带类比）` });
+      issues.push({ level: "warning", rule: "missing-analogy", message: `节点 ${node.id} 缺少 analogy（内容图谱风格要求每节点带类比）` });
     }
     const concepts = node.details.key_concepts;
     if (!concepts || concepts.length < MIN_KEY_CONCEPTS) {
@@ -135,6 +145,86 @@ function checkAiContentStyle(nodes: KnowledgeNode[]): Issue[] {
   return issues;
 }
 
+// ============================================================
+// L2 黑神话双视角完整性 — 只对 black-myth 图触发，纳入 npm run validate 门禁。
+//   bm-missing-backstage      error   每个节点必须有非空 backstage.summary
+//   bm-platform-no-support-in error   每个 platform 节点必须有 ≥1 条「支撑」入边
+//   bm-cend-no-mapping        warning C 端业务节点（含其层级父）应有到 platform 的「支撑」映射
+//   bm-backstage-thin         warning backstage.summary 过短，疑似占位灌水
+// 边界：只验证、不改图；允许「父节点已映射」算覆盖，避免逼出硬凑边。
+// ============================================================
+function checkBlackMythRules(map: KnowledgeMap): Issue[] {
+  const issues: Issue[] = [];
+  const { nodes, edges } = map.data;
+  const platformIds = new Set(nodes.filter((n) => n.type === "platform").map((n) => n.id));
+
+  const supportInCount = new Map<string, number>(); // 「支撑」入边计数（按 target）
+  const supportsPlatform = new Set<string>(); // 有「支撑」出边指向 platform 的节点
+  const parentOf = new Map<string, string>(); // 层级父：包含边 target → source
+
+  for (const edge of edges) {
+    if (edge.label === BM_SUPPORT_LABEL) {
+      supportInCount.set(edge.target, (supportInCount.get(edge.target) ?? 0) + 1);
+      if (platformIds.has(edge.target)) {
+        supportsPlatform.add(edge.source);
+      }
+    } else if (edge.label === BM_CONTAIN_LABEL) {
+      parentOf.set(edge.target, edge.source);
+    }
+  }
+
+  for (const node of nodes) {
+    const summary = node.details.backstage?.summary?.trim() ?? "";
+    if (!summary) {
+      issues.push({
+        level: "error",
+        rule: "bm-missing-backstage",
+        message: `节点 ${node.id} 缺少 details.backstage.summary（双视角必须有 B 端支撑说明）`,
+      });
+    } else if (summary.length < BM_MIN_BACKSTAGE_SUMMARY) {
+      issues.push({
+        level: "warning",
+        rule: "bm-backstage-thin",
+        message: `节点 ${node.id} 的 backstage.summary 过短（< ${BM_MIN_BACKSTAGE_SUMMARY} 字），疑似占位灌水`,
+      });
+    }
+  }
+
+  for (const node of nodes) {
+    if (node.type === "platform" && (supportInCount.get(node.id) ?? 0) === 0) {
+      issues.push({
+        level: "error",
+        rule: "bm-platform-no-support-in",
+        message: `中后台节点 ${node.id} 没有任何「支撑」入边（孤立的 B 端能力）`,
+      });
+    }
+  }
+
+  // 节点自身或任一层级祖先映射了 platform，即视为双视角覆盖。
+  const coveredByMapping = (id: string): boolean => {
+    let cur: string | undefined = id;
+    const guard = new Set<string>();
+    while (cur && !guard.has(cur)) {
+      guard.add(cur);
+      if (supportsPlatform.has(cur)) return true;
+      cur = parentOf.get(cur);
+    }
+    return false;
+  };
+  for (const node of nodes) {
+    if (node.type === "platform" || node.type === "overview") continue;
+    if (!coveredByMapping(node.id)) {
+      issues.push({
+        level: "warning",
+        rule: "bm-cend-no-mapping",
+        message: `C 端节点 ${node.id} 及其层级父节点都没有到中后台的「支撑」映射边（双视角可能不完整）`,
+      });
+    }
+  }
+
+  return issues;
+}
+
 function collectIssues(map: KnowledgeMap): Issue[] {
   const { nodes, edges } = map.data;
   const issues: Issue[] = [
@@ -144,8 +234,11 @@ function collectIssues(map: KnowledgeMap): Issue[] {
     ...checkTypeConsistency(map),
     ...checkPreferredSeed(map),
   ];
-  if (map.id === "ai") {
-    issues.push(...checkAiContentStyle(nodes));
+  if (CONTENT_STYLE_MAPS.has(map.id)) {
+    issues.push(...checkContentStyle(nodes));
+  }
+  if (map.id === BLACK_MYTH_ID) {
+    issues.push(...checkBlackMythRules(map));
   }
   return issues;
 }

@@ -1,5 +1,8 @@
-// 站点级常量。部署到自己的 GitHub 仓库后，把下面的地址改成你的仓库链接即可。
-export const GITHUB_URL = "https://github.com/Easin-yx/ai-knowledge-graph";
+// 站点级常量。实际值统一来自单点配置 src/site.config.ts。
+// 这里仅做转发，保持历史 import 路径不变。
+import { siteConfig } from "../site.config";
 
-export const SITE_TITLE = "iXin 知识图谱";
-export const SITE_TITLE_EN = "iXin Knowledge Graph";
+export const GITHUB_URL = siteConfig.githubUrl;
+
+export const SITE_TITLE = siteConfig.title;
+export const SITE_TITLE_EN = siteConfig.titleEn;

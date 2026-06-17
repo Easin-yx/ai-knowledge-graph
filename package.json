@@ -10,7 +10,10 @@
     "preview": "vite preview",
     "lint": "tsc -b --noEmit",
     "validate": "tsx scripts/validate-graph.ts",
-    "check-coverage": "tsx scripts/check-coverage.ts"
+    "check-coverage": "tsx scripts/check-coverage.ts",
+    "check-coverage:ai": "tsx scripts/check-coverage.ts ai",
+    "check-coverage:pm": "tsx scripts/check-coverage.ts pm",
+    "check-coverage:black-myth": "tsx scripts/check-coverage.ts black-myth"
   },
   "dependencies": {
     "react": "^19.1.0",

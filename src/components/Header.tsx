@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 import { GITHUB_URL } from "../constants/site";
+import { siteConfig } from "../site.config";
 import type { Theme } from "../hooks/useTheme";
-import type { KnowledgeMap } from "../types";
+import type { KnowledgeMap, MapGroup } from "../types";
+
+// 切换器下拉的分组展示顺序与中文标题（专业向优先，兴趣向其次）
+const MAP_GROUP_ORDER: MapGroup[] = ["professional", "interest"];
+const MAP_GROUP_LABEL: Record<MapGroup, string> = {
+  professional: "专业向",
+  interest: "兴趣向",
+};
 
 interface HeaderProps {
   theme: Theme;
@@ -89,31 +97,53 @@ export function Header({
               role="menu"
               className="glass glass-highlight absolute left-0 top-full z-50 mt-2 flex w-64 max-w-[80vw] flex-col gap-0.5 rounded-2xl p-1.5"
             >
-              {maps.map((m) => {
-                const active = m.id === activeMapId;
+              {MAP_GROUP_ORDER.map((group, groupIdx) => {
+                const groupMaps = maps.filter((m) => m.group === group);
+                if (groupMaps.length === 0) {
+                  return null;
+                }
                 return (
-                  <button
-                    key={m.id}
-                    type="button"
-                    role="menuitemradio"
-                    aria-checked={active}
-                    onClick={() => handleSwitch(m.id)}
-                    className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left transition active:scale-[0.98] ${
-                      active
-                        ? "bg-white/12 text-[var(--akg-text)]"
-                        : "text-[var(--akg-text)] hover:bg-white/8"
-                    }`}
-                  >
-                    <span className="flex min-w-0 flex-1 flex-col">
-                      <span className="truncate text-sm font-medium">
-                        {m.label}
-                      </span>
-                      <span className="truncate text-xs text-[var(--akg-text-dim)]">
-                        {m.subtitle}
-                      </span>
+                  <div key={group} className="flex flex-col gap-0.5">
+                    {groupIdx > 0 && (
+                      <span
+                        className="mx-2 my-1 h-px bg-[var(--glass-border)]"
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span
+                      role="presentation"
+                      className="px-3 pb-0.5 pt-1.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--akg-text-dim)]"
+                    >
+                      {MAP_GROUP_LABEL[group]}
                     </span>
-                    {active && <CheckIcon />}
-                  </button>
+                    {groupMaps.map((m) => {
+                      const active = m.id === activeMapId;
+                      return (
+                        <button
+                          key={m.id}
+                          type="button"
+                          role="menuitemradio"
+                          aria-checked={active}
+                          onClick={() => handleSwitch(m.id)}
+                          className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left transition active:scale-[0.98] ${
+                            active
+                              ? "bg-white/12 text-[var(--akg-text)]"
+                              : "text-[var(--akg-text)] hover:bg-white/8"
+                          }`}
+                        >
+                          <span className="flex min-w-0 flex-1 flex-col">
+                            <span className="truncate text-sm font-medium">
+                              {m.label}
+                            </span>
+                            <span className="truncate text-xs text-[var(--akg-text-dim)]">
+                              {m.subtitle}
+                            </span>
+                          </span>
+                          {active && <CheckIcon />}
+                        </button>
+                      );
+                    })}
+                  </div>
                 );
               })}
             </div>
@@ -171,12 +201,12 @@ export function Header({
 
 function Wordmark({ theme }: { theme: Theme }) {
   const src = `${import.meta.env.BASE_URL}${
-    theme === "dark" ? "i.xin-light.svg" : "i.xin.svg"
+    theme === "dark" ? siteConfig.logoDark : siteConfig.logo
   }`;
   return (
     <img
       src={src}
-      alt="iXin"
+      alt={siteConfig.titleEn}
       className="h-7 w-[92px] shrink-0 object-cover sm:h-8 sm:w-[110px]"
       style={{ objectPosition: "center 46%" }}
     />

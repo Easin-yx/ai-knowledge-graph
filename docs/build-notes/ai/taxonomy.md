@@ -3,7 +3,7 @@
 > 这是 Loop 的「目标锚点」。把「图谱要覆盖完整 AI 全貌」这个无边界、主观的目标，
 > 坍缩成「对照本大纲，每个主题都有对应节点」的可机器验证目标。
 >
-> **机器可读的真相源是 [`scripts/taxonomy.ts`](../scripts/taxonomy.ts)**；本文件是它的人类可读镜像，供你增删主题、调整优先级（这一步就是"定义目标"本身）。
+> **机器可读的真相源是 [`scripts/taxonomy.ts`](../../scripts/taxonomy.ts) 中的 `AI_TAXONOMY`**；本文件是它的人类可读镜像，供你增删主题、调整优先级（这一步就是"定义目标"本身）。
 >
 > 优先级语义：
 > - `core` — 「从零讲清 AI 全貌」不可或缺；缺失为**硬缺口**，阻断 loop 的"完成"判定。
@@ -12,7 +12,7 @@
 
 ## 当前覆盖快照
 
-运行 `npm run check-coverage` 得到（首次运行于补完 ML 地基 + Loop 簇之后）：
+运行 `npm run check-coverage:ai` 得到（首次运行于补完 ML 地基 + Loop 簇之后）：
 
 - 总覆盖：**99 / 151（65.6%）**
 - 硬缺口（core）：**0**（所有核心主题已覆盖）
@@ -47,10 +47,10 @@
 
 1. **优先级是否同意**：上面哪些 `recommended` 该升 `core`、哪些该降 `optional`？尤其领域 3 整条经典 ML 支线——要不要纳入"全貌"？
 2. **范围边界**：151 个主题是否过宽/过窄？要砍掉哪些领域，或追加哪些（如「AI 安全/伦理」「评测基准」「分布式训练」）？
-3. **改完优先级后**，直接编辑 [`scripts/taxonomy.ts`](../scripts/taxonomy.ts)，再跑 `npm run check-coverage` 即得新缺口清单——这就是 loop 每一轮的输入。
+3. **改完优先级后**，直接编辑 [`scripts/taxonomy.ts`](../../scripts/taxonomy.ts) 中的 `AI_TAXONOMY`，再跑 `npm run check-coverage:ai` 即得新缺口清单——这就是 loop 每一轮的输入。
 
 ## 配套验证机制（已就位）
 
 - `npm run validate` — L0 结构验证器：重复 id / 悬空边 / 孤儿节点 / 类型一致性 / 命名规范 /（ai 图）内容风格。当前 **0 error**。
-- `npm run check-coverage` — L2 缺口检测：本大纲 diff 实际图谱，core 缺口未清零则退出码 1。
-- [`resources/low_confidence.md`](./low_confidence.md) — 失败降级队列：拿不准的事项落这里交人工，不直接进图谱。
+- `npm run check-coverage:ai` — L2 缺口检测：本大纲 diff 实际图谱，core 缺口未清零则退出码 1。
+- [`resources/ai/low_confidence.md`](./low_confidence.md) — 失败降级队列：拿不准的事项落这里交人工，不直接进图谱。

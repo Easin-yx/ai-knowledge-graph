@@ -39,6 +39,13 @@ export interface KnowledgeNode {
     notes?: string;            // 可选：延伸理解、公式、重要细节
     key_concepts?: string[];   // 可选：关键词或子概念列表
     source?: NodeSource;       // 可选：知识来源
+    // 可选：B 端 / 中后台视角（黑神话图谱专用，卡片翻面展示）。
+    // 其它图谱不填，详情卡片不显示翻转控件，渲染保持原状。
+    backstage?: {
+      summary: string;         // 必填（当 backstage 存在时）：背后需要什么中后台能力
+      notes?: string;          // 可选：配置表 / 埋点 / 数据大屏 / 资产管线的产品思考
+      key_concepts?: string[]; // 可选：B 端关键词
+    };
   };
 }
 
@@ -63,10 +70,18 @@ export interface GraphData {
 }
 
 // ============================================================
+// 知识地图分组：用于切换器下拉里的「专业向 / 兴趣向」二分。
+//   professional - 与求职岗位直接相关，面向 HR 的「专业向」展示
+//   interest     - 兴趣/学习类，体现学习力与体系化拆解能力的「加分项」
+// ============================================================
+export type MapGroup = "professional" | "interest";
+
+// ============================================================
 // 知识地图：一张可插拔的图谱（自带数据、类型调色板、默认中心）
 //   typeStyles - 本图专属「类型 → 配色」，type 语义由此解释
 //   typeOrder  - 图例展示顺序；typeOrder[0] 同时作为样式解析的安全兜底
 //   preferredSeed - 开场默认展开的中心节点 id
+//   group      - 切换器下拉中的分组归属（专业向 / 兴趣向）
 // ============================================================
 export interface KnowledgeMap {
   id: string;
@@ -76,4 +91,5 @@ export interface KnowledgeMap {
   typeStyles: Record<string, NodeTypeStyle>;
   typeOrder: string[];
   preferredSeed?: string;
+  group: MapGroup;
 }

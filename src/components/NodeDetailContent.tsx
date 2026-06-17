@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { KnowledgeNode, NodeSource } from "../types";
 import type { NodeTypeStyle } from "../constants/theme";
 
@@ -29,6 +30,15 @@ export function NodeDetailContent({
   const { details } = node;
   const fallbackStyle = typeStyles[typeOrder[0]];
   const style = typeStyles[node.type] ?? fallbackStyle;
+  const backstage = details.backstage;
+
+  // 视角面：front = C 端玩家视角，back = B 端中后台视角
+  const [face, setFace] = useState<"front" | "back">("front");
+  // 切换到另一个节点时，复位为正面（C 端）
+  useEffect(() => {
+    setFace("front");
+  }, [node.id]);
+  const isFlipped = face === "back";
 
   return (
     <div className="flex flex-col gap-5">
@@ -61,45 +71,46 @@ export function NodeDetailContent({
 
       <div className="h-px w-full bg-[var(--glass-border)]" />
 
-      {/* 摘要 */}
-      <Section title="摘要">
-        <p className="text-sm leading-relaxed text-[var(--akg-text)]">
-          {details.summary}
-        </p>
-      </Section>
-
-      {/* 通俗类比 */}
-      {details.analogy && (
-        <Section title="打个比方">
-          <p className="rounded-xl border border-[var(--glass-border)] bg-white/[0.04] px-3 py-2.5 text-sm leading-relaxed text-[var(--akg-text)]">
-            {details.analogy}
-          </p>
-        </Section>
-      )}
-
-      {/* 笔记 */}
-      {details.notes && (
-        <Section title="延伸笔记">
-          <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--akg-text-dim)]">
-            {details.notes}
-          </p>
-        </Section>
-      )}
-
-      {/* 关键概念 */}
-      {details.key_concepts && details.key_concepts.length > 0 && (
-        <Section title="关键概念">
-          <div className="flex flex-wrap gap-1.5">
-            {details.key_concepts.map((c) => (
-              <span
-                key={c}
-                className="rounded-lg border border-[var(--glass-border)] bg-white/5 px-2 py-1 text-xs text-[var(--akg-text)]"
+      {/* 双视角内容：有 backstage 时显示切换控件 + 3D 翻转卡片 */}
+      {backstage ? (
+        <>
+          <PerspectiveToggle face={face} onChange={setFace} accent={style.base} />
+          <div className="akg-flip">
+            <div className={`akg-flip-inner${isFlipped ? " is-flipped" : ""}`}>
+              {/* 正面：C 端玩家视角 */}
+              <div
+                className="akg-flip-face flex flex-col gap-5"
+                aria-hidden={isFlipped}
               >
-                {c}
-              </span>
-            ))}
+                <PerspectiveBody
+                  summary={details.summary}
+                  analogy={details.analogy}
+                  notes={details.notes}
+                  keyConcepts={details.key_concepts}
+                />
+              </div>
+              {/* 背面：B 端中后台视角 */}
+              <div
+                className="akg-flip-face akg-flip-back flex flex-col gap-5"
+                aria-hidden={!isFlipped}
+              >
+                <PerspectiveBody
+                  summary={backstage.summary}
+                  notes={backstage.notes}
+                  keyConcepts={backstage.key_concepts}
+                  backstage
+                />
+              </div>
+            </div>
           </div>
-        </Section>
+        </>
+      ) : (
+        <PerspectiveBody
+          summary={details.summary}
+          analogy={details.analogy}
+          notes={details.notes}
+          keyConcepts={details.key_concepts}
+        />
       )}
 
       {/* 相邻节点 */}
@@ -156,6 +167,106 @@ export function NodeDetailContent({
         </button>
       )}
     </div>
+  );
+}
+
+// 视角切换控件：C 端玩家 / B 端中后台
+function PerspectiveToggle({
+  face,
+  onChange,
+  accent,
+}: {
+  face: "front" | "back";
+  onChange: (face: "front" | "back") => void;
+  accent: string;
+}) {
+  const options: { value: "front" | "back"; label: string; hint: string }[] = [
+    { value: "front", label: "C端", hint: "玩家体验" },
+    { value: "back", label: "B端", hint: "中后台" },
+  ];
+  return (
+    <div className="flex rounded-xl border border-[var(--glass-border)] bg-white/[0.04] p-1">
+      {options.map((opt) => {
+        const active = face === opt.value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            aria-pressed={active}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition active:scale-[0.98] ${
+              active
+                ? "text-white shadow-sm"
+                : "text-[var(--akg-text-dim)] hover:text-[var(--akg-text)]"
+            }`}
+            style={active ? { backgroundColor: accent } : undefined}
+          >
+            <span>{opt.label}</span>
+            <span
+              className={`text-[11px] ${active ? "text-white/75" : "text-[var(--akg-text-dim)]"}`}
+            >
+              {opt.hint}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// 单个视角的正文区块（摘要 / 类比 / 笔记 / 关键概念）
+function PerspectiveBody({
+  summary,
+  analogy,
+  notes,
+  keyConcepts,
+  backstage,
+}: {
+  summary: string;
+  analogy?: string;
+  notes?: string;
+  keyConcepts?: string[];
+  backstage?: boolean;
+}) {
+  return (
+    <>
+      <Section title={backstage ? "中后台支撑" : "摘要"}>
+        <p className="text-sm leading-relaxed text-[var(--akg-text)]">
+          {summary}
+        </p>
+      </Section>
+
+      {analogy && (
+        <Section title="打个比方">
+          <p className="rounded-xl border border-[var(--glass-border)] bg-white/[0.04] px-3 py-2.5 text-sm leading-relaxed text-[var(--akg-text)]">
+            {analogy}
+          </p>
+        </Section>
+      )}
+
+      {notes && (
+        <Section title={backstage ? "中后台思考" : "延伸笔记"}>
+          <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--akg-text-dim)]">
+            {notes}
+          </p>
+        </Section>
+      )}
+
+      {keyConcepts && keyConcepts.length > 0 && (
+        <Section title="关键概念">
+          <div className="flex flex-wrap gap-1.5">
+            {keyConcepts.map((c) => (
+              <span
+                key={c}
+                className="rounded-lg border border-[var(--glass-border)] bg-white/5 px-2 py-1 text-xs text-[var(--akg-text)]"
+              >
+                {c}
+              </span>
+            ))}
+          </div>
+        </Section>
+      )}
+    </>
   );
 }
 
