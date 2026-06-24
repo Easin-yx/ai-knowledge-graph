@@ -353,6 +353,7 @@ export default function App() {
         onHoverNode={setHoveredNode}
         typeStyles={activeMap.typeStyles}
         typeOrder={activeMap.typeOrder}
+        seedIds={seeds}
       />
 
       <Header
@@ -392,6 +393,7 @@ export default function App() {
           canCollapse={canCollapseSelected}
           typeStyles={activeMap.typeStyles}
           typeOrder={activeMap.typeOrder}
+          perspectiveLabels={activeMap.perspectiveLabels}
         />
       ) : (
         <NodeDetailPanel
@@ -403,6 +405,7 @@ export default function App() {
           canCollapse={canCollapseSelected}
           typeStyles={activeMap.typeStyles}
           typeOrder={activeMap.typeOrder}
+          perspectiveLabels={activeMap.perspectiveLabels}
         />
       )}
     </div>

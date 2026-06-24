@@ -2,10 +2,17 @@ import { useEffect, useState } from "react";
 import { GITHUB_URL } from "../constants/site";
 import { siteConfig } from "../site.config";
 import type { Theme } from "../hooks/useTheme";
-import type { KnowledgeMap, MapGroup } from "../types";
+import type { KnowledgeMap, MapGroup, MapDomain } from "../types";
 
-// 切换器下拉的分组展示顺序与中文标题（专业向优先，兴趣向其次）
-const MAP_GROUP_ORDER: MapGroup[] = ["professional", "interest"];
+// 下拉主分区：按「领域」聚类（讲什么主题）
+const MAP_DOMAIN_ORDER: MapDomain[] = ["tech-product", "game-dev", "language"];
+const MAP_DOMAIN_LABEL: Record<MapDomain, string> = {
+  "tech-product": "技术与产品",
+  "game-dev": "游戏研发",
+  language: "语言表达",
+};
+
+// 意图角标：每张图的「为谁看」轴，与领域正交，作为列表项上的小标签
 const MAP_GROUP_LABEL: Record<MapGroup, string> = {
   professional: "专业向",
   interest: "兴趣向",
@@ -97,14 +104,14 @@ export function Header({
               role="menu"
               className="glass glass-highlight absolute left-0 top-full z-50 mt-2 flex w-64 max-w-[80vw] flex-col gap-0.5 rounded-2xl p-1.5"
             >
-              {MAP_GROUP_ORDER.map((group, groupIdx) => {
-                const groupMaps = maps.filter((m) => m.group === group);
-                if (groupMaps.length === 0) {
+              {MAP_DOMAIN_ORDER.map((domain, domainIdx) => {
+                const domainMaps = maps.filter((m) => m.domain === domain);
+                if (domainMaps.length === 0) {
                   return null;
                 }
                 return (
-                  <div key={group} className="flex flex-col gap-0.5">
-                    {groupIdx > 0 && (
+                  <div key={domain} className="flex flex-col gap-0.5">
+                    {domainIdx > 0 && (
                       <span
                         className="mx-2 my-1 h-px bg-[var(--glass-border)]"
                         aria-hidden="true"
@@ -114,9 +121,9 @@ export function Header({
                       role="presentation"
                       className="px-3 pb-0.5 pt-1.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--akg-text-dim)]"
                     >
-                      {MAP_GROUP_LABEL[group]}
+                      {MAP_DOMAIN_LABEL[domain]}
                     </span>
-                    {groupMaps.map((m) => {
+                    {domainMaps.map((m) => {
                       const active = m.id === activeMapId;
                       return (
                         <button
@@ -132,8 +139,11 @@ export function Header({
                           }`}
                         >
                           <span className="flex min-w-0 flex-1 flex-col">
-                            <span className="truncate text-sm font-medium">
-                              {m.label}
+                            <span className="flex min-w-0 items-center gap-1.5">
+                              <span className="truncate text-sm font-medium">
+                                {m.label}
+                              </span>
+                              <IntentBadge group={m.group} />
                             </span>
                             <span className="truncate text-xs text-[var(--akg-text-dim)]">
                               {m.subtitle}
@@ -196,6 +206,22 @@ export function Header({
         )}
       </div>
     </header>
+  );
+}
+
+// 意图角标：专业向偏冷蓝、兴趣向偏暖橙，弱化为低饱和小标签
+function IntentBadge({ group }: { group: MapGroup }) {
+  const isPro = group === "professional";
+  return (
+    <span
+      className={`shrink-0 rounded-md px-1.5 py-px text-[10px] font-medium leading-tight ${
+        isPro
+          ? "bg-[rgba(74,134,196,0.18)] text-[#6ea3d8]"
+          : "bg-[rgba(224,138,60,0.18)] text-[#d4914f]"
+      }`}
+    >
+      {MAP_GROUP_LABEL[group]}
+    </span>
   );
 }
 

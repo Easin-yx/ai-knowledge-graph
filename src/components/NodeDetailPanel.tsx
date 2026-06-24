@@ -11,6 +11,7 @@ interface NodeDetailPanelProps {
   canCollapse: boolean;
   typeStyles: Record<string, NodeTypeStyle>;
   typeOrder: string[];
+  perspectiveLabels?: { front: string; back: string; frontHint?: string; backHint?: string };
 }
 
 export function NodeDetailPanel({
@@ -22,6 +23,7 @@ export function NodeDetailPanel({
   canCollapse,
   typeStyles,
   typeOrder,
+  perspectiveLabels,
 }: NodeDetailPanelProps) {
   const open = node !== null;
 
@@ -54,6 +56,7 @@ export function NodeDetailPanel({
             canCollapse={canCollapse}
             typeStyles={typeStyles}
             typeOrder={typeOrder}
+            perspectiveLabels={perspectiveLabels}
           />
         )}
       </div>

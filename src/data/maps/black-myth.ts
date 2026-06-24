@@ -832,4 +832,5 @@ export const blackMythMap: KnowledgeMap = {
   typeOrder: blackMythTypeOrder,
   preferredSeed: "black_myth_wukong",
   group: "interest",
+  domain: "game-dev",
 };

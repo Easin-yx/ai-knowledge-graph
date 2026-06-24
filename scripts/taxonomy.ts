@@ -497,8 +497,102 @@ export const BLACK_MYTH_TAXONOMY: TaxonomyDomain[] = [
 // 大纲登记表 — check-coverage.ts 凭 mapId 取用对应图谱的大纲。
 // 新增一张需要覆盖率门禁的图谱时，在这里登记即可。
 // ============================================================
+export const GAME_STUDIO_TAXONOMY: TaxonomyDomain[] = [
+  {
+    domain: "0. 总览",
+    topics: [{ id: "studio_platform", label: "游戏研发中台（总览）", priority: "core" }],
+  },
+  {
+    domain: "1. 研发协作底座",
+    topics: [
+      { id: "collab_foundation", label: "研发协作底座", priority: "core" },
+      { id: "project_management", label: "项目管理系统", priority: "core" },
+      { id: "sprint_workboard", label: "迭代看板", priority: "core" },
+      { id: "design_doc_hub", label: "策划文档中枢", priority: "core" },
+      { id: "cross_discipline_review", label: "跨职能评审流程", priority: "recommended" },
+      { id: "vendor_collaboration", label: "外包协同门户", priority: "recommended" },
+    ],
+  },
+  {
+    domain: "2. 资产与内容管线",
+    topics: [
+      { id: "asset_content_pipeline", label: "资产与内容管线", priority: "core" },
+      { id: "asset_pipeline", label: "美术资产管理管线", priority: "core" },
+      { id: "dcc_integration", label: "DCC 工具链集成", priority: "core" },
+      { id: "animation_pipeline", label: "动捕与动画管线", priority: "core" },
+      { id: "level_editor_platform", label: "关卡编辑器中台", priority: "core" },
+      { id: "narrative_cms", label: "叙事任务配置 CMS", priority: "recommended" },
+      { id: "ui_asset_workflow", label: "UI 切图工作流", priority: "optional" },
+    ],
+  },
+  {
+    domain: "3. 数值与配置平台",
+    topics: [
+      { id: "config_platform", label: "数值与配置平台", priority: "core" },
+      { id: "numeric_config_cms", label: "数值配置后台", priority: "core" },
+      { id: "spreadsheet_pipeline", label: "策划表流水线", priority: "core" },
+      { id: "combat_balance_tool", label: "战斗平衡测试工具", priority: "core" },
+      { id: "economy_simulator", label: "经济产消模拟器", priority: "recommended" },
+      { id: "ab_experiment_platform", label: "玩法 A/B 实验平台", priority: "optional" },
+    ],
+  },
+  {
+    domain: "4. 质量与构建基础设施",
+    topics: [
+      { id: "quality_infra", label: "质量与构建基础设施", priority: "core" },
+      { id: "build_farm", label: "构建农场", priority: "core" },
+      { id: "ci_cd_pipeline", label: "持续集成门禁", priority: "core" },
+      { id: "automated_qa", label: "自动化测试", priority: "core" },
+      { id: "crash_analytics", label: "崩溃与性能监控", priority: "recommended" },
+      { id: "certification_toolkit", label: "平台认证检查工具", priority: "optional" },
+    ],
+  },
+  {
+    domain: "5. 数据与洞察中台",
+    topics: [
+      { id: "data_insight", label: "数据与洞察中台", priority: "core" },
+      { id: "telemetry_platform", label: "行为埋点中台", priority: "core" },
+      { id: "playtest_analytics", label: "内部试玩分析", priority: "core" },
+      { id: "combat_heatmap", label: "战斗行为热力图", priority: "recommended" },
+      { id: "funnel_dashboard", label: "关卡漏斗看板", priority: "recommended" },
+      { id: "launch_dashboard", label: "发售后大盘", priority: "optional" },
+    ],
+  },
+  {
+    domain: "6. AI 赋能研发工作流",
+    topics: [
+      { id: "ai_workflow", label: "AI 赋能研发工作流", priority: "core" },
+      { id: "ai_concept_art", label: "AI 概念原画辅助", priority: "recommended" },
+      { id: "ai_npc_dialogue", label: "AI NPC 对话生成", priority: "recommended" },
+      { id: "ai_qa_assistant", label: "AI 辅助测试", priority: "recommended" },
+      { id: "ai_localization", label: "AI 翻译初稿", priority: "optional" },
+      { id: "copilot_for_scripts", label: "脚本/蓝图 Copilot", priority: "recommended" },
+      { id: "procedural_assist", label: "程序化关卡辅助", priority: "optional" },
+    ],
+  },
+  {
+    domain: "7. ARPG 品类特化约束",
+    topics: [
+      { id: "arpg_constraints", label: "ARPG 品类特化", priority: "core" },
+      { id: "combat_data_model", label: "战斗数据模型", priority: "core" },
+      { id: "encounter_design_tool", label: "遭遇战编排工具", priority: "core" },
+      { id: "progression_curve", label: "成长曲线管理", priority: "core" },
+      { id: "hakoniwa_level_ops", label: "箱庭关卡运营", priority: "recommended" },
+      { id: "animation_combat_sync", label: "动作-打击帧对齐", priority: "core" },
+    ],
+  },
+  {
+    domain: "8. 标杆案例",
+    topics: [
+      { id: "benchmark_cases", label: "标杆案例", priority: "core" },
+      { id: "black_myth_wukong", label: "黑神话悟空", priority: "core" },
+    ],
+  },
+];
+
 export const TAXONOMY_REGISTRY: Record<string, TaxonomyDomain[]> = {
   ai: AI_TAXONOMY,
   pm: PM_TAXONOMY,
   "black-myth": BLACK_MYTH_TAXONOMY,
+  "game-studio": GAME_STUDIO_TAXONOMY,
 };

@@ -70,18 +70,28 @@ export interface GraphData {
 }
 
 // ============================================================
-// 知识地图分组：用于切换器下拉里的「专业向 / 兴趣向」二分。
+// 知识地图意图分组：「为谁看」的轴，用作切换器里每张图的角标。
 //   professional - 与求职岗位直接相关，面向 HR 的「专业向」展示
 //   interest     - 兴趣/学习类，体现学习力与体系化拆解能力的「加分项」
 // ============================================================
 export type MapGroup = "professional" | "interest";
 
 // ============================================================
+// 知识地图领域：「讲什么主题」的轴，作为切换器下拉的主分区，
+// 与 group（意图）正交。图谱增多时按领域聚类、用意图做角标，可平滑扩展。
+//   game-dev     - 游戏研发（黑神话案例、研发中台等）
+//   language     - 语言表达（英语语法、逻辑表达力等）
+//   tech-product - 技术与产品（AI、编程语言、产品经理等）
+// ============================================================
+export type MapDomain = "game-dev" | "language" | "tech-product";
+
+// ============================================================
 // 知识地图：一张可插拔的图谱（自带数据、类型调色板、默认中心）
 //   typeStyles - 本图专属「类型 → 配色」，type 语义由此解释
 //   typeOrder  - 图例展示顺序；typeOrder[0] 同时作为样式解析的安全兜底
 //   preferredSeed - 开场默认展开的中心节点 id
-//   group      - 切换器下拉中的分组归属（专业向 / 兴趣向）
+//   group      - 意图角标（专业向 / 兴趣向）
+//   domain     - 切换器下拉的主分区（领域）
 // ============================================================
 export interface KnowledgeMap {
   id: string;
@@ -92,4 +102,7 @@ export interface KnowledgeMap {
   typeOrder: string[];
   preferredSeed?: string;
   group: MapGroup;
+  domain: MapDomain;
+  // 翻转卡片两面标签；不填时默认 C端/B端（黑神话）
+  perspectiveLabels?: { front: string; back: string; frontHint?: string; backHint?: string };
 }

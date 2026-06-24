@@ -2543,4 +2543,5 @@ export const pmMap: KnowledgeMap = {
   typeOrder: pmTypeOrder,
   preferredSeed: "pm",
   group: "professional",
+  domain: "tech-product",
 };

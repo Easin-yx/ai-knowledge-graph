@@ -13,6 +13,7 @@ interface BottomSheetProps {
   canCollapse: boolean;
   typeStyles: Record<string, NodeTypeStyle>;
   typeOrder: string[];
+  perspectiveLabels?: { front: string; back: string; frontHint?: string; backHint?: string };
 }
 
 type Snap = "default" | "full";
@@ -26,6 +27,7 @@ export function BottomSheet({
   canCollapse,
   typeStyles,
   typeOrder,
+  perspectiveLabels,
 }: BottomSheetProps) {
   const open = node !== null;
   const [snap, setSnap] = useState<Snap>("default");
@@ -128,6 +130,7 @@ export function BottomSheet({
               canCollapse={canCollapse}
               typeStyles={typeStyles}
               typeOrder={typeOrder}
+              perspectiveLabels={perspectiveLabels}
             />
           )}
         </div>

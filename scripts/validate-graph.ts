@@ -23,10 +23,12 @@ const MIN_KEY_CONCEPTS = 3;
 
 // 哪些图谱要求「每节点带类比 / 至少 3 个关键概念 / 可溯源 source」的内容风格。
 // 新图谱若想吃同一套内容质量门禁，把它的 id 加进来即可。
-const CONTENT_STYLE_MAPS = new Set(["ai", "pm"]);
+const CONTENT_STYLE_MAPS = new Set(["ai", "pm", "game-studio"]);
 
 // black-myth 专属 L2 门禁（双视角完整性）所需的常量。
 const BLACK_MYTH_ID = "black-myth";
+const GAME_STUDIO_ID = "game-studio";
+const PROGRAMMING_LANGUAGES_ID = "programming-languages";
 const BM_SUPPORT_LABEL = "支撑"; // C 端 → B 端中后台 的映射边
 const BM_CONTAIN_LABEL = "包含"; // 层级边
 const BM_MIN_BACKSTAGE_SUMMARY = 10; // backstage.summary 低于该字数视为占位灌水
@@ -225,6 +227,99 @@ function checkBlackMythRules(map: KnowledgeMap): Issue[] {
   return issues;
 }
 
+// ============================================================
+// L2 编程语言翻转完整性 — 只对 programming-languages 图触发。
+//   pl-missing-backstage  error   叶子节点必须有非空 backstage.summary
+//   pl-backstage-thin     warning backstage.summary 过短
+// 豁免：根节点、模块枢纽、SQL 分支节点（单面卡片）
+// ============================================================
+const PL_NO_BACKSTAGE_IDS = new Set([
+  "programming",
+  "basics", "variables_types", "control_flow", "functions",
+  "data_structures", "oop_modules", "async_api", "dev_tooling", "sql_branch",
+  "what_is_sql", "select_where", "join_group",
+]);
+
+function checkProgrammingLanguagesRules(map: KnowledgeMap): Issue[] {
+  const issues: Issue[] = [];
+  for (const node of map.data.nodes) {
+    if (PL_NO_BACKSTAGE_IDS.has(node.id)) continue;
+    const summary = node.details.backstage?.summary?.trim() ?? "";
+    if (!summary) {
+      issues.push({
+        level: "error",
+        rule: "pl-missing-backstage",
+        message: `节点 ${node.id} 缺少 details.backstage.summary（翻转卡片必须有 TypeScript 面）`,
+      });
+    } else if (summary.length < BM_MIN_BACKSTAGE_SUMMARY) {
+      issues.push({
+        level: "warning",
+        rule: "pl-backstage-thin",
+        message: `节点 ${node.id} 的 backstage.summary 过短（< ${BM_MIN_BACKSTAGE_SUMMARY} 字），疑似占位灌水`,
+      });
+    }
+  }
+  return issues;
+}
+
+// ============================================================
+// L2 游戏研发中台可学性 — 只对 game-studio 图触发。
+//   gs-missing-learning-tier       error   notes 须含【入门】【进阶】【精通】
+//   gs-module-missing-learning-order warning 模块枢纽须含【学习顺序】
+//   gs-novice-too-short            warning 【入门】段过短
+// ============================================================
+const GS_MODULE_HUB_IDS = new Set([
+  "collab_foundation",
+  "asset_content_pipeline",
+  "config_platform",
+  "quality_infra",
+  "data_insight",
+  "ai_workflow",
+  "arpg_constraints",
+  "benchmark_cases",
+]);
+const GS_MIN_NOVICE_LEN = 12;
+
+function extractNoviceSection(notes: string): string {
+  const start = notes.indexOf("【入门】");
+  if (start === -1) return "";
+  const rest = notes.slice(start + "【入门】".length);
+  const end = rest.search(/【进阶】|【精通】/);
+  return (end === -1 ? rest : rest.slice(0, end)).trim();
+}
+
+function checkGameStudioRules(map: KnowledgeMap): Issue[] {
+  const issues: Issue[] = [];
+  for (const node of map.data.nodes) {
+    const notes = node.details.notes?.trim() ?? "";
+    for (const tier of ["【入门】", "【进阶】", "【精通】"] as const) {
+      if (!notes.includes(tier)) {
+        issues.push({
+          level: "error",
+          rule: "gs-missing-learning-tier",
+          message: `节点 ${node.id} 的 notes 缺少 ${tier}（可学性三段式）`,
+        });
+      }
+    }
+    if (GS_MODULE_HUB_IDS.has(node.id) && !notes.includes("【学习顺序】")) {
+      issues.push({
+        level: "warning",
+        rule: "gs-module-missing-learning-order",
+        message: `模块枢纽 ${node.id} 的 notes 缺少【学习顺序】`,
+      });
+    }
+    const novice = extractNoviceSection(notes);
+    if (novice.length > 0 && novice.length < GS_MIN_NOVICE_LEN) {
+      issues.push({
+        level: "warning",
+        rule: "gs-novice-too-short",
+        message: `节点 ${node.id} 的【入门】段过短（< ${GS_MIN_NOVICE_LEN} 字）`,
+      });
+    }
+  }
+  return issues;
+}
+
 function collectIssues(map: KnowledgeMap): Issue[] {
   const { nodes, edges } = map.data;
   const issues: Issue[] = [
@@ -239,6 +334,12 @@ function collectIssues(map: KnowledgeMap): Issue[] {
   }
   if (map.id === BLACK_MYTH_ID) {
     issues.push(...checkBlackMythRules(map));
+  }
+  if (map.id === PROGRAMMING_LANGUAGES_ID) {
+    issues.push(...checkProgrammingLanguagesRules(map));
+  }
+  if (map.id === GAME_STUDIO_ID) {
+    issues.push(...checkGameStudioRules(map));
   }
   return issues;
 }

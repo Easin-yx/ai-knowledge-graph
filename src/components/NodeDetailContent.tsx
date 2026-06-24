@@ -16,6 +16,7 @@ interface NodeDetailContentProps {
   canCollapse?: boolean;
   typeStyles: Record<string, NodeTypeStyle>;
   typeOrder: string[];
+  perspectiveLabels?: { front: string; back: string; frontHint?: string; backHint?: string };
 }
 
 export function NodeDetailContent({
@@ -26,6 +27,7 @@ export function NodeDetailContent({
   canCollapse,
   typeStyles,
   typeOrder,
+  perspectiveLabels,
 }: NodeDetailContentProps) {
   const { details } = node;
   const fallbackStyle = typeStyles[typeOrder[0]];
@@ -74,7 +76,7 @@ export function NodeDetailContent({
       {/* 双视角内容：有 backstage 时显示切换控件 + 3D 翻转卡片 */}
       {backstage ? (
         <>
-          <PerspectiveToggle face={face} onChange={setFace} accent={style.base} />
+          <PerspectiveToggle face={face} onChange={setFace} accent={style.base} labels={perspectiveLabels} />
           <div className="akg-flip">
             <div className={`akg-flip-inner${isFlipped ? " is-flipped" : ""}`}>
               {/* 正面：C 端玩家视角 */}
@@ -99,6 +101,7 @@ export function NodeDetailContent({
                   notes={backstage.notes}
                   keyConcepts={backstage.key_concepts}
                   backstage
+                  sectionLabels={perspectiveLabels}
                 />
               </div>
             </div>
@@ -170,19 +173,21 @@ export function NodeDetailContent({
   );
 }
 
-// 视角切换控件：C 端玩家 / B 端中后台
+// 视角切换控件：默认 C 端/B 端；各地图可通过 perspectiveLabels 覆盖
 function PerspectiveToggle({
   face,
   onChange,
   accent,
+  labels,
 }: {
   face: "front" | "back";
   onChange: (face: "front" | "back") => void;
   accent: string;
+  labels?: { front: string; back: string; frontHint?: string; backHint?: string };
 }) {
   const options: { value: "front" | "back"; label: string; hint: string }[] = [
-    { value: "front", label: "C端", hint: "玩家体验" },
-    { value: "back", label: "B端", hint: "中后台" },
+    { value: "front", label: labels?.front ?? "C端", hint: labels?.frontHint ?? "玩家体验" },
+    { value: "back", label: labels?.back ?? "B端", hint: labels?.backHint ?? "中后台" },
   ];
   return (
     <div className="flex rounded-xl border border-[var(--glass-border)] bg-white/[0.04] p-1">
@@ -221,16 +226,19 @@ function PerspectiveBody({
   notes,
   keyConcepts,
   backstage,
+  sectionLabels,
 }: {
   summary: string;
   analogy?: string;
   notes?: string;
   keyConcepts?: string[];
   backstage?: boolean;
+  sectionLabels?: { front: string; back: string };
 }) {
+  const backLabel = sectionLabels?.back ?? "中后台";
   return (
     <>
-      <Section title={backstage ? "中后台支撑" : "摘要"}>
+      <Section title={backstage ? `${backLabel} 写法` : "摘要"}>
         <p className="text-sm leading-relaxed text-[var(--akg-text)]">
           {summary}
         </p>
@@ -244,13 +252,7 @@ function PerspectiveBody({
         </Section>
       )}
 
-      {notes && (
-        <Section title={backstage ? "中后台思考" : "延伸笔记"}>
-          <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--akg-text-dim)]">
-            {notes}
-          </p>
-        </Section>
-      )}
+      {notes && <NotesSection notes={notes} backstage={backstage} />}
 
       {keyConcepts && keyConcepts.length > 0 && (
         <Section title="关键概念">
@@ -267,6 +269,112 @@ function PerspectiveBody({
         </Section>
       )}
     </>
+  );
+}
+
+function NotesSection({
+  notes,
+  backstage,
+}: {
+  notes: string;
+  backstage?: boolean;
+}) {
+  const tiers = parseLearningTiers(notes);
+  if (tiers) {
+    return <LearningTierNotes sections={tiers} />;
+  }
+  return (
+    <Section title={backstage ? "代码示例与差异" : "延伸笔记"}>
+      <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--akg-text-dim)]">
+        {notes}
+      </p>
+    </Section>
+  );
+}
+
+interface LearningTier {
+  label: string;
+  content: string;
+  defaultOpen: boolean;
+}
+
+function tierSortKey(label: string): number {
+  if (label.startsWith("学习顺序")) return 0;
+  if (label.startsWith("入门")) return 1;
+  if (label.startsWith("进阶")) return 2;
+  if (label.startsWith("精通")) return 3;
+  return 9;
+}
+
+/** 解析 notes 中的【入门】【进阶】【精通】等分层；非分层笔记返回 null */
+function parseLearningTiers(notes: string): LearningTier[] | null {
+  const re = /【([^】]+)】/g;
+  const hits = [...notes.matchAll(re)];
+  const learningHits = hits.filter((h) =>
+    /^(学习顺序|入门|进阶|精通)/.test(h[1]),
+  );
+  if (learningHits.length < 2) return null;
+
+  const sections: LearningTier[] = [];
+  for (let i = 0; i < hits.length; i++) {
+    const label = hits[i][1];
+    if (!/^(学习顺序|入门|进阶|精通)/.test(label)) continue;
+    const start = hits[i].index! + hits[i][0].length;
+    const end = i + 1 < hits.length ? hits[i + 1].index! : notes.length;
+    const content = notes.slice(start, end).trim();
+    if (!content) continue;
+    sections.push({
+      label,
+      content,
+      defaultOpen: label.startsWith("学习顺序") || label.startsWith("入门"),
+    });
+  }
+  if (sections.length < 2) return null;
+  sections.sort((a, b) => tierSortKey(a.label) - tierSortKey(b.label));
+  return sections;
+}
+
+function LearningTierNotes({ sections }: { sections: LearningTier[] }) {
+  return (
+    <Section title="阅读分层">
+      <div className="flex flex-col gap-2">
+        {sections.map((sec) => (
+          <LearningTierDisclosure key={sec.label} section={sec} />
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function LearningTierDisclosure({ section }: { section: LearningTier }) {
+  const [open, setOpen] = useState(section.defaultOpen);
+  const displayLabel = section.label.startsWith("精通")
+    ? "精通"
+    : section.label.startsWith("学习顺序")
+      ? "学习顺序"
+      : section.label;
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-[var(--glass-border)] bg-white/[0.04]">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left transition hover:bg-white/[0.06]"
+      >
+        <span className="text-sm font-medium text-[var(--akg-text)]">
+          {displayLabel}
+        </span>
+        <ChevronIcon className={`shrink-0 transition ${open ? "rotate-90" : ""}`} />
+      </button>
+      {open && (
+        <div className="border-t border-[var(--glass-border)] px-3 py-2.5">
+          <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--akg-text-dim)]">
+            {section.content}
+          </p>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -373,7 +481,7 @@ function CollapseIcon() {
   );
 }
 
-function ChevronIcon() {
+function ChevronIcon({ className = "" }: { className?: string }) {
   return (
     <svg
       width="16"
@@ -384,7 +492,7 @@ function ChevronIcon() {
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="shrink-0 text-[var(--akg-text-dim)] transition group-hover:translate-x-0.5"
+      className={`text-[var(--akg-text-dim)] transition group-hover:translate-x-0.5 ${className}`}
       aria-hidden="true"
     >
       <path d="m9 18 6-6-6-6" />

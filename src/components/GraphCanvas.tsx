@@ -12,7 +12,7 @@ import ForceGraph2D, {
   type NodeObject,
   type LinkObject,
 } from "react-force-graph-2d";
-import { forceCollide } from "d3-force-3d";
+import { forceCollide, forceRadial } from "d3-force-3d";
 import type { KnowledgeNode, GraphData } from "../types";
 import type { Theme } from "../hooks/useTheme";
 import {
@@ -54,6 +54,8 @@ interface GraphCanvasProps {
   typeStyles: Record<string, NodeTypeStyle>;
   /** 类型展示顺序；typeOrder[0] 作为找不到类型时的安全兜底 */
   typeOrder: string[];
+  /** 各连通分量的种子节点 id；用于按「到种子的层级」做径向布局，让任意拓扑都摊成同心环 */
+  seedIds: string[];
 }
 
 function linkEndId(end: GraphLink["source"]): string {
@@ -74,6 +76,7 @@ export const GraphCanvas = forwardRef<GraphCanvasHandle, GraphCanvasProps>(
       onHoverNode,
       typeStyles,
       typeOrder,
+      seedIds,
     },
     ref
   ) {
@@ -98,6 +101,30 @@ export const GraphCanvas = forwardRef<GraphCanvasHandle, GraphCanvasProps>(
       }
       return map;
     }, [data]);
+
+    // ── 到种子的层级（BFS 深度）：径向布局按此把节点摊到同心环上 ──
+    //   稠密/带环的图谱（如游戏研发中台）因此也能像树一样均匀放射，而非挤成团。
+    const depthById = useMemo(() => {
+      const depth = new Map<string, number>();
+      const queue: string[] = [];
+      for (const s of seedIds) {
+        if (adjacency.has(s)) {
+          depth.set(s, 0);
+          queue.push(s);
+        }
+      }
+      while (queue.length) {
+        const cur = queue.shift()!;
+        const d = depth.get(cur)!;
+        for (const nb of adjacency.get(cur) ?? []) {
+          if (!depth.has(nb)) {
+            depth.set(nb, d + 1);
+            queue.push(nb);
+          }
+        }
+      }
+      return depth;
+    }, [adjacency, seedIds]);
 
     // ── 构建力导向图数据：用缓存保留已有节点的 x/y，避免渐进展开时整图重排；
     //    新节点从某个已定位的邻居旁边生成，形成"长出来"的效果 ──
@@ -186,8 +213,19 @@ export const GraphCanvas = forwardRef<GraphCanvasHandle, GraphCanvasProps>(
       link?.distance?.(80);
       // 碰撞力：保护半径 = 节点半径 + 标签缓冲，避免圆与圆/文字重叠
       fg.d3Force("collide", forceCollide(NODE_RADIUS_HOVER + 14).iterations(2));
+      // 径向力：把节点按「到种子的层级」温和地拉到同心环上（种子居中，逐层外扩）。
+      // 强度适中：树状图谱观感几乎不变，稠密带环图谱则被摊匀，不再挤成偏心团块。
+      const RING_STEP = 130;
+      fg.d3Force(
+        "radial",
+        forceRadial(
+          (node: GraphNode) => (depthById.get(String(node.id)) ?? 0) * RING_STEP,
+          0,
+          0
+        ).strength(0.32)
+      );
       fg.d3ReheatSimulation();
-    }, [graphData]);
+    }, [graphData, depthById]);
 
     // 缩放常量：聚焦节点用 FOCUS_ZOOM；自动取景在 MIN/MAX 间夹取，退化情况回退 DEFAULT_ZOOM
     const FOCUS_ZOOM = 2.2;

@@ -1130,4 +1130,5 @@ export const expressionMap: KnowledgeMap = {
   typeOrder: expressionTypeOrder,
   preferredSeed: "expression",
   group: "interest",
+  domain: "language",
 };

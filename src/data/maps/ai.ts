@@ -3839,4 +3839,5 @@ export const aiMap: KnowledgeMap = {
   typeOrder: aiTypeOrder,
   preferredSeed: "machine_learning",
   group: "professional",
+  domain: "tech-product",
 };
