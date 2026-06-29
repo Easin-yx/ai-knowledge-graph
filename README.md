@@ -9,7 +9,20 @@
 
 一个开源的、可视化的**知识图谱模板**。以力导向图（Force-directed Graph）展示一个领域里核心概念之间的关系——并且**用 AI 维护**：改一句话指令 → push → 自动部署上线。
 
-内置 AI、产品经理、英语语法、《黑神话：悟空》四张图谱作为示例，证明同一套架构能跨领域复用。你可以直接浏览学习，也可以 **fork 成自己领域的图谱**。
+内置 **8 张图谱**作为示例，证明同一套架构能跨领域复用：
+
+| 图谱 | 领域 | 定位 |
+|---|---|---|
+| AI 知识图谱 | 技术与产品 | 专业向 |
+| 产品经理 | 技术与产品 | 专业向 |
+| 编程语言 | 技术与产品 | 专业向 |
+| 人形机器人 | 技术与产品 | 专业向 |
+| 英语语法 | 语言表达 | 兴趣向 |
+| 逻辑表达 | 语言表达 | 兴趣向 |
+| 黑神话：悟空 | 游戏研发 | 兴趣向 |
+| 游戏研发中台 | 游戏研发 | 兴趣向 |
+
+你可以直接浏览学习，也可以 **fork 成自己领域的图谱**。
 
 **🔗 在线 Demo：<https://easin-yx.github.io/ai-knowledge-graph/>**
 
@@ -89,38 +102,52 @@ npm run preview
 本项目的核心工作流是 **改数据 → push → 自动部署**。每个领域的图谱数据都是一个类型安全的文件，集中在：
 
 ```
-src/data/maps/        # 每个领域一个文件，如 ai.ts / pm.ts / grammar.ts
+src/data/maps/        # 每个领域一个文件，如 ai.ts / humanoid-robot.ts
 src/data/maps/index.ts  # 在这里注册（增删）一张图谱
 ```
 
-数据结构定义在 `src/types/index.ts`，因此让 AI 修改时不会引入格式错误。改完可用 `npm run validate` 校验结构。推荐的指令格式：
+数据结构定义在 `src/types/index.ts`，因此让 AI 修改时不会引入格式错误。
 
-- `"添加节点 BERT，类型为 architecture，关联到 transformer，关系是'改进自'"`
-- `"更新 self_attention 节点的 notes 字段，补充 Q/K/V 的计算细节"`
-- `"添加 GPT 节点，来源是 AI 对话"`
+### 工具链
+
+```bash
+npm run validate                        # L0 结构验证：无重复 id、无悬挂边、无孤儿节点
+npm run check-coverage:<mapId>          # L1 大纲覆盖：对照 taxonomy 找缺口
+# 例：npm run check-coverage:humanoid-robot
+```
 
 ### 节点结构速览
 
 ```ts
 {
-  id: "self_attention",        // snake_case 唯一标识
-  label: "Self-Attention",     // Title Case 显示名
-  type: "concept",             // concept | architecture | technique | dataset | framework
+  id: "self_attention",     // snake_case 唯一标识
+  label: "自注意力",         // 显示名
+  type: "concept",          // 由各图自定义，见该图的 typeStyles
   details: {
-    zh_label: "自注意力",        // 可选：中文名
-    summary: "……",             // 必填：一句话说明
-    notes: "……",               // 可选：延伸笔记
-    key_concepts: ["Q/K/V"],   // 可选：关键概念
+    zh_label: "Self-Attention",          // 可选：英文 / 副标题
+    summary: "……",                       // 必填：一句话说明
+    analogy: "像……",                     // 可选：通俗类比
+    notes: "……",                         // 可选：延伸笔记
+    facts: [{ label: "成立", value: "2015" }], // 可选：实体型属性表
+    key_concepts: ["Q/K/V"],             // 可选：关键词
     source: { type: "paper", title: "…", url: "…" }, // 可选：来源
   },
 }
 ```
 
+### 新建一张图谱
+
+参考 `docs/prompts/generate-knowledge-graph.md`：填写主题参数 → 复制 Prompt 到 Gemini 生成 `.ts` 文件 → Cursor Agent 注册 + validate + 建台账四件套。
+
+### 持续迭代（Loop Engineering）
+
+图谱建成后按 `docs/build-notes/loop-engineering.md` 的流水线迭代：validate（L0）→ check-coverage（L1）→ 内容评分卡（L3）→ 更新 progress.md。每个领域的台账在 `docs/build-notes/<领域>/`。
+
 修改后提交，GitHub Actions 会自动构建并部署：
 
 ```bash
-git add src/data/maps/ai.ts
-git commit -m "data: 添加 BERT 节点"
+git add src/data/maps/
+git commit -m "feat: 新增人形机器人图谱"
 git push
 ```
 
@@ -136,14 +163,21 @@ git push
 ```
 src/
 ├── site.config.ts          # ⭐ 单点站点配置（fork 后主要改这里）
-├── types/index.ts          # TypeScript 类型定义
+├── types/index.ts          # TypeScript 类型定义（KnowledgeNode / KnowledgeEdge / KnowledgeMap）
+├── constants/              # 主题色系、边分类（edgeKind）
 ├── data/maps/              # 各领域图谱数据 + index.ts 注册 ← 主要维护这里
-├── constants/              # 主题色系、站点常量（转发 site.config）
-├── hooks/                  # useTheme / useMediaQuery
-├── components/             # Header / GraphCanvas / 详情面板 / 抽屉 / 图例
+├── components/             # GraphCanvas / 详情面板 / 抽屉 / CodeBlock
+├── lib/                    # 代码高亮等工具
 ├── App.tsx                 # 组合装配与全局状态
 └── main.tsx
-docs/                       # 原作者构建图谱的过程文档（可删，不影响运行）
+scripts/
+├── validate-graph.ts       # L0 结构验证（npm run validate）
+└── check-coverage.ts       # L1 大纲覆盖检测（npm run check-coverage:<mapId>）
+docs/
+├── prompts/                # Gemini 生成图谱的 Prompt 模板
+├── build-notes/            # 各领域工作台账：taxonomy / progress / low_confidence
+│   └── loop-engineering.md # 用 AI 持续迭代图谱的总方法论
+└── OWNER_VISION.md         # 项目整体设计思路
 ```
 
 ## 📄 License
