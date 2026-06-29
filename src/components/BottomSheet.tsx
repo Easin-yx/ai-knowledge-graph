@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
-import type { KnowledgeNode } from "../types";
+import type { CardArchetype, KnowledgeNode } from "../types";
 import type { NodeTypeStyle } from "../constants/theme";
-import { NodeDetailContent, type Neighbor } from "./NodeDetailContent";
+import { NodeDetailContent, type Neighbor, type LearningOrder } from "./NodeDetailContent";
 
 interface BottomSheetProps {
   node: KnowledgeNode | null;
@@ -13,10 +13,16 @@ interface BottomSheetProps {
   canCollapse: boolean;
   typeStyles: Record<string, NodeTypeStyle>;
   typeOrder: string[];
+  typeArchetypes?: Record<string, CardArchetype>;
   perspectiveLabels?: { front: string; back: string; frontHint?: string; backHint?: string };
+  learningOrder?: LearningOrder;
+  /** 当前抽屉占据的底部高度（px），供图谱聚焦偏移 */
+  onBottomInsetChange?: (insetPx: number) => void;
 }
 
 type Snap = "default" | "full";
+
+const MOBILE_SHEET_DEFAULT_VH = 60;
 
 export function BottomSheet({
   node,
@@ -27,7 +33,10 @@ export function BottomSheet({
   canCollapse,
   typeStyles,
   typeOrder,
+  typeArchetypes,
   perspectiveLabels,
+  learningOrder,
+  onBottomInsetChange,
 }: BottomSheetProps) {
   const open = node !== null;
   const [snap, setSnap] = useState<Snap>("default");
@@ -73,6 +82,17 @@ export function BottomSheet({
 
   const heightVh = snap === "full" ? 92 : 60;
   const translate = open ? Math.max(0, dragY) : window.innerHeight;
+
+  useEffect(() => {
+    if (!onBottomInsetChange) return;
+    const vh = window.innerHeight;
+    if (!open) {
+      onBottomInsetChange(Math.round(vh * (MOBILE_SHEET_DEFAULT_VH / 100)));
+      return;
+    }
+    const sheetPx = vh * (heightVh / 100);
+    onBottomInsetChange(Math.round(Math.max(0, sheetPx - translate)));
+  }, [open, heightVh, translate, onBottomInsetChange]);
 
   return (
     <>
@@ -130,7 +150,9 @@ export function BottomSheet({
               canCollapse={canCollapse}
               typeStyles={typeStyles}
               typeOrder={typeOrder}
+              typeArchetypes={typeArchetypes}
               perspectiveLabels={perspectiveLabels}
+              learningOrder={learningOrder}
             />
           )}
         </div>

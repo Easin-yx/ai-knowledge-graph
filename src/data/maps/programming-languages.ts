@@ -18,6 +18,7 @@ const plGraphData: GraphData = {
       id: "programming",
       label: "编程语言",
       type: "overview",
+      order: 0,
       details: {
         zh_label: "Programming Languages",
         summary:
@@ -35,6 +36,7 @@ const plGraphData: GraphData = {
       id: "basics",
       label: "基础概念",
       type: "concept",
+      order: 1,
       details: {
         zh_label: "Basics",
         summary: "写代码之前先搞懂：代码是什么、程序怎么运行、语法和语义有何区别。",
@@ -48,6 +50,7 @@ const plGraphData: GraphData = {
       id: "what_is_code",
       label: "代码是什么",
       type: "concept",
+      order: 1,
       details: {
         zh_label: "What Is Code",
         summary: "代码是用编程语言写下的精确指令序列，告诉计算机逐步完成某项任务。",
@@ -67,12 +70,13 @@ const plGraphData: GraphData = {
       id: "interpreter_vs_compiler",
       label: "解释型 vs 编译型",
       type: "concept",
+      order: 2,
       details: {
         zh_label: "Interpreter vs Compiler",
         summary: "解释型语言边读边执行（如 Python）；编译型先整体翻译再运行（如 C、TypeScript 转 JS）。",
         analogy: "解释型像同声传译：说一句译一句；编译型像先把整本书翻译完再阅读。",
         notes:
-          "Python 是解释型，直接 `python script.py` 运行。\n```python\n# 无需编译步骤\npython hello.py\n```",
+          "Python 是解释型，直接 `python script.py` 运行。\n```bash\n# 无需编译步骤，直接运行\npython hello.py\n```",
         key_concepts: ["解释器", "编译器", "边读边执行", "转译"],
         source: PL_SOURCE,
         backstage: {
@@ -87,12 +91,13 @@ const plGraphData: GraphData = {
       id: "syntax_vs_semantics",
       label: "语法 vs 语义",
       type: "concept",
+      order: 3,
       details: {
         zh_label: "Syntax vs Semantics",
         summary: "语法是写法的规则（标点、关键字）；语义是代码实际表达的意思（做什么）。",
         analogy: "语法像「主谓宾」的句式规则；语义是这句话到底在说什么事。",
         notes:
-          "Python：缩进是语法（必须对齐），循环累加是语义。\n```python\nfor i in range(5):\n    total += i  # 语义：把 0~4 加起来\n```",
+          "Python：缩进是语法（必须对齐），循环累加是语义。\n```python\ntotal = 0\nfor i in range(5):\n    total += i  # 语义：把 0~4 加起来\n```",
         key_concepts: ["写法规则", "实际含义", "缩进", "逻辑"],
         source: PL_SOURCE,
         backstage: {
@@ -107,6 +112,7 @@ const plGraphData: GraphData = {
       id: "hello_world",
       label: "第一个程序",
       type: "syntax",
+      order: 4,
       details: {
         zh_label: "Hello World",
         summary: "传统上第一个程序输出「Hello, World」，验证环境能正常运行代码。",
@@ -129,6 +135,7 @@ const plGraphData: GraphData = {
       id: "variables_types",
       label: "变量与类型",
       type: "concept",
+      order: 2,
       details: {
         zh_label: "Variables & Types",
         summary: "变量是存数据的「盒子」；类型告诉计算机盒子里该放什么格式的数据。",
@@ -142,6 +149,7 @@ const plGraphData: GraphData = {
       id: "variable",
       label: "变量",
       type: "syntax",
+      order: 1,
       details: {
         zh_label: "Variable",
         summary: "给数据起一个名字，方便后续反复使用和修改。",
@@ -162,6 +170,7 @@ const plGraphData: GraphData = {
       id: "data_types",
       label: "基本数据类型",
       type: "data",
+      order: 2,
       details: {
         zh_label: "Data Types",
         summary: "整数、浮点数、字符串、布尔是最常用的基本类型。",
@@ -182,6 +191,7 @@ const plGraphData: GraphData = {
       id: "type_conversion",
       label: "类型转换",
       type: "syntax",
+      order: 3,
       details: {
         zh_label: "Type Conversion",
         summary: "在不同类型之间转换，如把字符串 `\"42\"` 变成数字 `42`。",
@@ -202,6 +212,7 @@ const plGraphData: GraphData = {
       id: "string",
       label: "字符串",
       type: "data",
+      order: 4,
       details: {
         zh_label: "String",
         summary: "表示文本的数据类型，支持拼接、切片、格式化。",
@@ -222,6 +233,7 @@ const plGraphData: GraphData = {
       id: "boolean_logic",
       label: "布尔与逻辑运算",
       type: "syntax",
+      order: 5,
       details: {
         zh_label: "Boolean Logic",
         summary: "布尔值 True/False 配合 and、or、not 做条件判断的基础。",
@@ -244,6 +256,7 @@ const plGraphData: GraphData = {
       id: "control_flow",
       label: "控制流",
       type: "concept",
+      order: 3,
       details: {
         zh_label: "Control Flow",
         summary: "决定代码「先执行谁、后执行谁、是否重复执行」——编程的核心骨架。",
@@ -257,6 +270,7 @@ const plGraphData: GraphData = {
       id: "conditional",
       label: "条件判断",
       type: "syntax",
+      order: 1,
       details: {
         zh_label: "Conditional",
         summary: "根据条件真假选择不同代码路径执行（if / elif / else）。",
@@ -277,6 +291,7 @@ const plGraphData: GraphData = {
       id: "loop_for",
       label: "for 循环",
       type: "syntax",
+      order: 2,
       details: {
         zh_label: "For Loop",
         summary: "遍历序列中每个元素，或对固定次数重复执行。",
@@ -297,6 +312,7 @@ const plGraphData: GraphData = {
       id: "loop_while",
       label: "while 循环",
       type: "syntax",
+      order: 3,
       details: {
         zh_label: "While Loop",
         summary: "只要条件为真就重复执行，适合「不知道要循环几次」的场景。",
@@ -317,6 +333,7 @@ const plGraphData: GraphData = {
       id: "break_continue",
       label: "跳出与跳过",
       type: "syntax",
+      order: 4,
       details: {
         zh_label: "Break & Continue",
         summary: "break 立刻结束整个循环；continue 跳过本次、进入下一次。",
@@ -339,6 +356,7 @@ const plGraphData: GraphData = {
       id: "functions",
       label: "函数",
       type: "concept",
+      order: 4,
       details: {
         zh_label: "Functions",
         summary: "把一段逻辑打包命名，需要时调用——避免重复写相同代码。",
@@ -352,6 +370,7 @@ const plGraphData: GraphData = {
       id: "function_definition",
       label: "函数定义",
       type: "syntax",
+      order: 1,
       details: {
         zh_label: "Function Definition",
         summary: "用 def 关键字定义函数，用 return 返回结果。",
@@ -372,6 +391,7 @@ const plGraphData: GraphData = {
       id: "parameters",
       label: "参数与返回值",
       type: "syntax",
+      order: 2,
       details: {
         zh_label: "Parameters",
         summary: "函数通过参数接收输入，通过 return 把结果交给调用方。",
@@ -392,6 +412,7 @@ const plGraphData: GraphData = {
       id: "scope",
       label: "作用域",
       type: "concept",
+      order: 3,
       details: {
         zh_label: "Scope",
         summary: "变量在哪些地方能被访问——函数内外、块级内外规则不同。",
@@ -412,6 +433,7 @@ const plGraphData: GraphData = {
       id: "lambda",
       label: "匿名函数",
       type: "syntax",
+      order: 4,
       details: {
         zh_label: "Lambda",
         summary: "没有名字的短函数，常用于一次性简单逻辑（如排序、过滤）。",
@@ -434,6 +456,7 @@ const plGraphData: GraphData = {
       id: "data_structures",
       label: "数据结构",
       type: "concept",
+      order: 5,
       details: {
         zh_label: "Data Structures",
         summary: "组织多个数据的方式：列表、字典、元组、集合、JSON。",
@@ -447,6 +470,7 @@ const plGraphData: GraphData = {
       id: "list_array",
       label: "列表 / 数组",
       type: "data",
+      order: 1,
       details: {
         zh_label: "List / Array",
         summary: "有序、可变的元素集合，用索引访问（从 0 开始）。",
@@ -467,6 +491,7 @@ const plGraphData: GraphData = {
       id: "dict_object",
       label: "字典 / 对象",
       type: "data",
+      order: 2,
       details: {
         zh_label: "Dict / Object",
         summary: "键值对集合，通过键（key）快速查找对应的值（value）。",
@@ -487,6 +512,7 @@ const plGraphData: GraphData = {
       id: "tuple",
       label: "元组",
       type: "data",
+      order: 3,
       details: {
         zh_label: "Tuple",
         summary: "不可变的有序序列，适合表示固定结构的数据（如坐标、RGB）。",
@@ -507,6 +533,7 @@ const plGraphData: GraphData = {
       id: "set",
       label: "集合",
       type: "data",
+      order: 4,
       details: {
         zh_label: "Set",
         summary: "无序、不重复的元素集合，适合去重和集合运算。",
@@ -527,6 +554,7 @@ const plGraphData: GraphData = {
       id: "json",
       label: "JSON 数据格式",
       type: "bridge",
+      order: 5,
       details: {
         zh_label: "JSON",
         summary: "轻量级文本格式，用于程序之间交换数据（API、配置文件）。",
@@ -549,6 +577,7 @@ const plGraphData: GraphData = {
       id: "oop_modules",
       label: "面向对象与模块",
       type: "concept",
+      order: 6,
       details: {
         zh_label: "OOP & Modules",
         summary: "用「类」组织数据和行为；用「模块」拆分大项目为可复用文件。",
@@ -562,6 +591,7 @@ const plGraphData: GraphData = {
       id: "class_object",
       label: "类与对象",
       type: "pattern",
+      order: 1,
       details: {
         zh_label: "Class & Object",
         summary: "类是模板，对象是按模板创建的具体实例。",
@@ -582,6 +612,7 @@ const plGraphData: GraphData = {
       id: "inheritance",
       label: "继承",
       type: "pattern",
+      order: 2,
       details: {
         zh_label: "Inheritance",
         summary: "子类继承父类的属性和方法，并可扩展或覆盖。",
@@ -602,6 +633,7 @@ const plGraphData: GraphData = {
       id: "import_module",
       label: "模块导入",
       type: "syntax",
+      order: 3,
       details: {
         zh_label: "Import Module",
         summary: "把其他文件里的函数/类引入当前文件，避免一个文件写几千行。",
@@ -622,20 +654,15 @@ const plGraphData: GraphData = {
       id: "package_manager",
       label: "包管理器",
       type: "ecosystem",
+      order: 4,
       details: {
         zh_label: "Package Manager",
-        summary: "从中央仓库下载别人写好的库（包），不用重复造轮子。",
+        summary: "从中央仓库下载别人写好的库（包），不用重复造轮子。Python 用 pip（仓库 PyPI），Node 生态用 npm / pnpm / yarn（配置文件 package.json）——是两套生态，不是同一语法的两种写法。",
         analogy: "像应用商店：一键安装别人做好的工具。",
         notes:
-          "```bash\npip install requests    # Python\npip list\n```\n【衔接】本项目的 `package.json` + `npm install` 就是 Node 生态的包管理——你正在用的 React、Vite 都是这样装进来的。",
-        key_concepts: ["pip", "PyPI", "install", "依赖"],
+          "Python：\n```bash\npip install requests\npip list\n```\nNode（本项目）：\n```bash\nnpm install react\nnpm run dev    # 读 package.json 里的 scripts\n```\n打开本项目根目录的 `package.json` 就能看到 `react`、`vite` 等依赖——你正在用的它们都是这样装进来的。",
+        key_concepts: ["pip / PyPI", "npm", "package.json", "依赖"],
         source: PL_SOURCE,
-        backstage: {
-          summary: "Node 生态用 npm / pnpm / yarn，配置文件是 `package.json`。",
-          notes:
-            "```bash\nnpm install react\nnpm run dev    # 读 package.json 里的 scripts\n```\n打开本项目根目录的 `package.json` 可看到 `react`、`vite` 等依赖。",
-          key_concepts: ["npm", "package.json", "dependencies", "scripts"],
-        },
       },
     },
 
@@ -644,6 +671,7 @@ const plGraphData: GraphData = {
       id: "async_api",
       label: "异步与 API",
       type: "concept",
+      order: 7,
       details: {
         zh_label: "Async & API",
         summary: "网络请求不会立刻返回结果，需要异步等待；API 是程序之间约定的接口。",
@@ -657,6 +685,7 @@ const plGraphData: GraphData = {
       id: "sync_vs_async",
       label: "同步 vs 异步",
       type: "concept",
+      order: 1,
       details: {
         zh_label: "Sync vs Async",
         summary: "同步：一件事做完才做下一件；异步：发起等待时可去做别的。",
@@ -677,6 +706,7 @@ const plGraphData: GraphData = {
       id: "async_await",
       label: "async/await",
       type: "syntax",
+      order: 2,
       details: {
         zh_label: "Async/Await",
         summary: "用 async 标记异步函数，用 await 等待结果——写起来像同步代码。",
@@ -697,6 +727,7 @@ const plGraphData: GraphData = {
       id: "http_request",
       label: "HTTP 请求",
       type: "syntax",
+      order: 3,
       details: {
         zh_label: "HTTP Request",
         summary: "浏览器/程序通过 HTTP 协议向服务器发请求、拿响应。",
@@ -717,6 +748,7 @@ const plGraphData: GraphData = {
       id: "rest_api",
       label: "REST API",
       type: "bridge",
+      order: 4,
       details: {
         zh_label: "REST API",
         summary: "用 URL + HTTP 方法（GET/POST 等）操作资源的通用接口风格。",
@@ -739,6 +771,7 @@ const plGraphData: GraphData = {
       id: "dev_tooling",
       label: "开发环境与工具链",
       type: "concept",
+      order: 8,
       details: {
         zh_label: "Dev Tooling",
         summary: "编辑器、Git、调试器、AI 辅助——让写代码更高效的基础设施。",
@@ -752,80 +785,60 @@ const plGraphData: GraphData = {
       id: "dev_environment",
       label: "开发环境",
       type: "ecosystem",
+      order: 1,
       details: {
         zh_label: "Dev Environment",
         summary: "写代码需要的编辑器、终端、运行时、包管理器组成的本地环境。",
         analogy: "像画家的画室：画架、颜料、画笔缺一不可。",
         notes:
-          "Python 环境：安装 Python → 用 VS Code / Cursor → 终端跑 `python`。\n本项目环境：Node.js → `npm install` → `npm run dev`。",
-        key_concepts: ["编辑器", "终端", "运行时", "扩展"],
+          "Python 环境：安装 Python → 用 VS Code / Cursor → 终端跑 `python`。\n本项目（TypeScript）环境用 Node.js + Vite 开发服务器：\n```bash\ncd ai-knowledge-graph\nnpm install\nnpm run dev\n```\n浏览器打开 localhost 即可看到本知识图谱项目，改代码保存即热更新。",
+        key_concepts: ["编辑器", "终端", "运行时", "Vite"],
         source: PL_SOURCE,
-        backstage: {
-          summary: "TypeScript 项目通常用 VS Code/Cursor + Vite 开发服务器。",
-          notes:
-            "```bash\ncd ai-knowledge-graph\nnpm install\nnpm run dev\n```\n浏览器打开 localhost 即可看到本知识图谱项目。",
-          key_concepts: ["Cursor", "Vite", "localhost", "热更新"],
-        },
       },
     },
     {
       id: "version_control",
       label: "版本控制 Git",
       type: "ecosystem",
+      order: 2,
       details: {
         zh_label: "Git",
-        summary: "记录代码每次修改的历史，可回退、可协作、可分支实验。",
+        summary: "记录代码每次修改的历史，可回退、可协作、可分支实验。Git 与语言无关，Python / TypeScript 项目都用它。",
         analogy: "像文档的「修订记录」：谁何时改了什么，随时可恢复到旧版。",
         notes:
-          "```bash\ngit init\ngit add .\ngit commit -m \"第一次提交\"\ngit log\n```",
-        key_concepts: ["commit", "分支", "回退", "协作"],
+          "```bash\ngit init\ngit add .\ngit commit -m \"第一次提交\"\ngit log\n```\n本项目就是个 Git 仓库：`git status` 看改动，`git diff` 看具体变化——vibe coding 后务必检查 AI 改了什么再 commit。",
+        key_concepts: ["commit", "git status", "git diff", "协作"],
         source: PL_SOURCE,
-        backstage: {
-          summary: "Git 与语言无关，TypeScript 项目同样用 Git 管理。",
-          notes:
-            "本项目就是 Git 仓库。`git status` 看改动，`git diff` 看具体变化——vibe coding 后务必检查 AI 改了什么再 commit。",
-          key_concepts: ["git status", "git diff", "仓库", "协作"],
-        },
       },
     },
     {
       id: "debugging",
       label: "调试",
       type: "ecosystem",
+      order: 3,
       details: {
         zh_label: "Debugging",
         summary: "程序出错时定位原因：打印变量、断点暂停、读报错信息。",
         analogy: "像汽车故障灯亮了：先看仪表盘（报错），再打开引擎盖（断点）排查。",
         notes:
-          "```python\nx = 10\nprint(f\"debug: x={x}\")  # 打印调试\n# 或用 IDE 断点\n```",
-        key_concepts: ["print 调试", "断点", "报错栈", "复现"],
+          "Python 打印调试：\n```python\nx = 10\nprint(f\"debug: x={x}\")  # 打印调试\n# 或用 IDE 断点\n```\nTypeScript 用 console.log + 浏览器 DevTools（F12）+ 编辑器断点：\n```typescript\nconst x = 10;\nconsole.log(\"debug:\", x);\n```\nTS 的额外优势：类型错误在保存时就被标红，比运行时报错更早发现。",
+        key_concepts: ["print 调试", "console.log", "断点", "DevTools"],
         source: PL_SOURCE,
-        backstage: {
-          summary: "TypeScript 用 console.log、浏览器 DevTools、VS Code 断点。",
-          notes:
-            "```typescript\nconst x = 10;\nconsole.log(\"debug:\", x);\n// F12 打开浏览器控制台看输出\n```\n类型错误在保存时就会被 TypeScript 标红——比运行时报错更早发现。",
-          key_concepts: ["console.log", "DevTools", "类型错误", "断点"],
-        },
       },
     },
     {
       id: "vibe_coding",
       label: "Vibe Coding",
       type: "bridge",
+      order: 4,
       details: {
         zh_label: "Vibe Coding",
         summary: "用自然语言描述意图，让 AI 生成代码，你负责审阅、测试、迭代。",
         analogy: "像请了一位实习生写初稿：快，但你得审稿改错。",
         notes:
-          "工作流：① 描述需求 → ② AI 生成代码 → ③ 读懂关键行 → ④ 跑起来验证 → ⑤ 小步迭代。\n【衔接 AI 图谱】你其实在用 LLM（见 `llm` / `gpt` 节点）当编程助手。\n【衔接 PM 图谱】「用户价值 vs 实现成本」的权衡，在 vibe coding 里体现为：什么交给 AI、什么自己把关。",
-        key_concepts: ["自然语言驱动", "审阅代码", "迭代", "LLM 助手"],
+          "工作流：① 描述需求 → ② AI 生成代码 → ③ 读懂关键行 → ④ 跑起来验证 → ⑤ 小步迭代。\n本图谱项目本身就是 vibe coding 产物。建议：每次 AI 改完跑 `npm run lint`，看懂 diff 再接受——培养「能读代码」比「能写代码」更重要。\n【衔接 AI 图谱】你其实在用 LLM（见 `llm` / `gpt` 节点）当编程助手。\n【衔接 PM 图谱】「用户价值 vs 实现成本」的权衡，在 vibe coding 里体现为：什么交给 AI、什么自己把关。",
+        key_concepts: ["自然语言驱动", "审阅代码", "npm run lint", "小步迭代"],
         source: PL_SOURCE,
-        backstage: {
-          summary: "在 Cursor 等 IDE 里对 TS/React 项目 vibe coding 是最高频场景。",
-          notes:
-            "本图谱项目本身就是 vibe coding 产物。建议：每次 AI 改完跑 `npm run lint`，看懂 diff 再接受——培养「能读代码」比「能写代码」更重要。",
-          key_concepts: ["Cursor", "npm run lint", "读 diff", "小步提交"],
-        },
       },
     },
 
@@ -834,6 +847,7 @@ const plGraphData: GraphData = {
       id: "sql_branch",
       label: "数据查询 SQL",
       type: "concept",
+      order: 9,
       details: {
         zh_label: "SQL Branch",
         summary: "SQL 是专门查数据库的语言，不是通用编程语言，但和数据思维紧密相关。",
@@ -847,6 +861,7 @@ const plGraphData: GraphData = {
       id: "what_is_sql",
       label: "SQL 是什么",
       type: "data",
+      order: 1,
       details: {
         zh_label: "What Is SQL",
         summary: "Structured Query Language，用声明式语句查询和操作关系型数据库中的表。",
@@ -861,6 +876,7 @@ const plGraphData: GraphData = {
       id: "select_where",
       label: "查询与筛选",
       type: "syntax",
+      order: 2,
       details: {
         zh_label: "SELECT & WHERE",
         summary: "SELECT 指定要哪些列，WHERE 筛选满足条件的行。",
@@ -875,6 +891,7 @@ const plGraphData: GraphData = {
       id: "join_group",
       label: "关联与聚合",
       type: "syntax",
+      order: 3,
       details: {
         zh_label: "JOIN & GROUP BY",
         summary: "JOIN 把多张表按关联键拼在一起；GROUP BY 按维度汇总统计。",
@@ -945,26 +962,10 @@ const plGraphData: GraphData = {
     { id: "sql_branch__包含__select_where", source: "sql_branch", target: "select_where", label: "包含" },
     { id: "sql_branch__包含__join_group", source: "sql_branch", target: "join_group", label: "包含" },
 
-    // ─── 模块间：前置 ─────────────────────────────────────────
-    { id: "basics__前置__variables_types", source: "basics", target: "variables_types", label: "前置" },
-    { id: "variables_types__前置__control_flow", source: "variables_types", target: "control_flow", label: "前置" },
-    { id: "control_flow__前置__functions", source: "control_flow", target: "functions", label: "前置" },
-    { id: "functions__前置__data_structures", source: "functions", target: "data_structures", label: "前置" },
-    { id: "data_structures__前置__oop_modules", source: "data_structures", target: "oop_modules", label: "前置" },
-    { id: "oop_modules__前置__async_api", source: "oop_modules", target: "async_api", label: "前置" },
-    { id: "async_api__前置__dev_tooling", source: "async_api", target: "dev_tooling", label: "前置" },
-    { id: "data_structures__前置__sql_branch", source: "data_structures", target: "sql_branch", label: "前置" },
-
-    // ─── 模块内：前置 ─────────────────────────────────────────
-    { id: "what_is_code__前置__hello_world", source: "what_is_code", target: "hello_world", label: "前置" },
-    { id: "variable__前置__data_types", source: "variable", target: "data_types", label: "前置" },
-    { id: "data_types__前置__type_conversion", source: "data_types", target: "type_conversion", label: "前置" },
-    { id: "conditional__前置__loop_for", source: "conditional", target: "loop_for", label: "前置" },
+    // ─── 真·概念依赖的前置边（纯顺序型已由 order 属性承载，不再占用边）──
     { id: "function_definition__前置__parameters", source: "function_definition", target: "parameters", label: "前置" },
-    { id: "list_array__前置__dict_object", source: "list_array", target: "dict_object", label: "前置" },
     { id: "sync_vs_async__前置__async_await", source: "sync_vs_async", target: "async_await", label: "前置" },
     { id: "async_await__前置__http_request", source: "async_await", target: "http_request", label: "前置" },
-    { id: "dev_environment__前置__version_control", source: "dev_environment", target: "version_control", label: "前置" },
     { id: "what_is_sql__前置__select_where", source: "what_is_sql", target: "select_where", label: "前置" },
     { id: "select_where__前置__join_group", source: "select_where", target: "join_group", label: "前置" },
 
@@ -1001,6 +1002,15 @@ export const programmingLanguagesMap: KnowledgeMap = {
   data: plGraphData,
   typeStyles: plTypeStyles,
   typeOrder: plTypeOrder,
+  typeArchetypes: {
+    overview: "category",
+    concept: "concept",
+    syntax: "mechanism",
+    data: "mechanism",
+    bridge: "concept",
+    pattern: "mechanism",
+    ecosystem: "entity",
+  },
   preferredSeed: "programming",
   group: "professional",
   domain: "tech-product",

@@ -2,6 +2,7 @@
 
 > 本文档是本项目「如何用 AI 系统化地构建与打磨知识图谱」的**总方法论**。
 > 具体领域的执行手册见 `docs/build-notes/<领域>/LOOP.md` 或 `progress.md`。
+> 图谱成型后的自驱动巡检维护见 [`maintenance-loop.md`](maintenance-loop.md)。
 
 ---
 
@@ -258,6 +259,7 @@ AI 图谱（`ai`）、PM 图谱（`pm`）走的是**补全模式**，已达 100%
 
 ## 附录 A · 参考文件索引
 
+- 自维护循环手册（图谱成型后的常态化巡检）：`docs/build-notes/maintenance-loop.md`
 - 黑神话打磨手册（L2/L3 最完整范例）：`docs/build-notes/black-myth/LOOP.md`
 - AI 补全进度：`docs/build-notes/ai/progress.md`
 - PM 补全进度：`docs/build-notes/pm/progress.md`
@@ -278,4 +280,12 @@ AI 图谱（`ai`）、PM 图谱（`pm`）走的是**补全模式**，已达 100%
 ```
 读 docs/build-notes/<领域>/LOOP.md 与 progress.md，按 L3 评分卡执行打磨 loop，
 从「下一步」模块开始。验证子 Agent 只评不改；拿不准进 low_confidence.md。
+```
+
+**维护（自驱动巡检）：**
+```
+读 docs/build-notes/maintenance-loop.md，对 <领域/all> 执行维护 loop：
+每轮先跑 validate + lint (+ check-coverage:<id>)，巡检 C/L/N 三类问题，
+锁定一个 → 确认 → 最小修法 → 改 → 自验全绿 → 记 progress，再回到巡检。
+拿不准进 low_confidence.md；上下文将满或零新问题时按收尾流程退出。
 ```

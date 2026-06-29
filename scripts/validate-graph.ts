@@ -1,5 +1,6 @@
 import { KNOWLEDGE_MAPS } from "../src/data/maps/index";
 import type { KnowledgeMap, KnowledgeNode, KnowledgeEdge } from "../src/types";
+import { inferEdgeKind } from "../src/constants/edgeKind";
 
 // ============================================================
 // L0 结构验证器 — Loop Engineering 的「反馈机制」
@@ -95,6 +96,76 @@ function checkOrphans(nodes: KnowledgeNode[], edges: KnowledgeEdge[]): Issue[] {
     }
   }
   return issues;
+}
+
+// ============================================================
+// 养护机制校验（PLAN §7）——全图通用，warning 级（不阻断门禁）。
+//   high-fanout         中心/枢纽扇出 > 9，提示「收一层」（§5 中心收敛）
+//   skeleton-fragmented 仅用骨架边时图不连通，提示主干树不完整（§3.3 / §4.2）
+// 边界：只读不改、只预警；布局已用全边兜底连通，这里只暴露「主干树质量」。
+// ============================================================
+const HIGH_DEGREE_THRESHOLD = 9;
+
+function nodeDegrees(nodes: KnowledgeNode[], edges: KnowledgeEdge[]): Map<string, number> {
+  const degree = new Map<string, number>();
+  for (const node of nodes) degree.set(node.id, 0);
+  for (const edge of edges) {
+    degree.set(edge.source, (degree.get(edge.source) ?? 0) + 1);
+    degree.set(edge.target, (degree.get(edge.target) ?? 0) + 1);
+  }
+  return degree;
+}
+
+function checkFanout(nodes: KnowledgeNode[], edges: KnowledgeEdge[]): Issue[] {
+  const degree = nodeDegrees(nodes, edges);
+  const issues: Issue[] = [];
+  for (const node of nodes) {
+    const d = degree.get(node.id) ?? 0;
+    if (d > HIGH_DEGREE_THRESHOLD) {
+      issues.push({
+        level: "warning",
+        rule: "high-fanout",
+        message: `节点 ${node.id} 度数 ${d} > ${HIGH_DEGREE_THRESHOLD}（扇出超载，建议收一层，见 PLAN §5）`,
+      });
+    }
+  }
+  return issues;
+}
+
+function checkSkeletonConnectivity(nodes: KnowledgeNode[], edges: KnowledgeEdge[]): Issue[] {
+  const hierAdj = new Map<string, Set<string>>();
+  for (const node of nodes) hierAdj.set(node.id, new Set());
+  for (const edge of edges) {
+    if (inferEdgeKind(edge.label, edge.kind) !== "hierarchy") continue;
+    hierAdj.get(edge.source)?.add(edge.target);
+    hierAdj.get(edge.target)?.add(edge.source);
+  }
+  const noHier = nodes.filter((n) => (hierAdj.get(n.id)?.size ?? 0) === 0);
+  const visited = new Set<string>();
+  let components = 0;
+  for (const node of nodes) {
+    if (visited.has(node.id)) continue;
+    components++;
+    const queue = [node.id];
+    visited.add(node.id);
+    while (queue.length) {
+      const cur = queue.shift()!;
+      for (const nb of hierAdj.get(cur) ?? []) {
+        if (!visited.has(nb)) {
+          visited.add(nb);
+          queue.push(nb);
+        }
+      }
+    }
+  }
+  if (components > 1) {
+    return [{
+      level: "warning",
+      rule: "skeleton-fragmented",
+      message: `仅用骨架边时分裂为 ${components} 块（${noHier.length} 个节点无任何骨架边）；布局已用全边兜底连通，主干树偏弱，可在 P3/P4 补「包含/分为」类骨架边`,
+    }];
+  }
+  return [];
 }
 
 function checkTypeConsistency(map: KnowledgeMap): Issue[] {
@@ -229,15 +300,20 @@ function checkBlackMythRules(map: KnowledgeMap): Issue[] {
 
 // ============================================================
 // L2 编程语言翻转完整性 — 只对 programming-languages 图触发。
-//   pl-missing-backstage  error   叶子节点必须有非空 backstage.summary
+//   pl-missing-backstage  error   代码构件类叶子节点必须有非空 backstage.summary
 //   pl-backstage-thin     warning backstage.summary 过短
-// 豁免：根节点、模块枢纽、SQL 分支节点（单面卡片）
+// 豁免（单面卡片，按节点角色不适合 Py/TS 双面，见 OPTIMIZE_PLAN §1/§9）：
+//   - 根节点、模块枢纽（分类节点，无代码）
+//   - SQL 分支节点（单语言）
+//   - 工具链 / 流程节点（dev_environment / version_control / debugging /
+//     package_manager / vibe_coding）：是「两套生态或语言无关」，而非「同一概念两种语法」
 // ============================================================
 const PL_NO_BACKSTAGE_IDS = new Set([
   "programming",
   "basics", "variables_types", "control_flow", "functions",
   "data_structures", "oop_modules", "async_api", "dev_tooling", "sql_branch",
   "what_is_sql", "select_where", "join_group",
+  "dev_environment", "version_control", "debugging", "package_manager", "vibe_coding",
 ]);
 
 function checkProgrammingLanguagesRules(map: KnowledgeMap): Issue[] {
@@ -328,6 +404,8 @@ function collectIssues(map: KnowledgeMap): Issue[] {
     ...checkOrphans(nodes, edges),
     ...checkTypeConsistency(map),
     ...checkPreferredSeed(map),
+    ...checkFanout(nodes, edges),
+    ...checkSkeletonConnectivity(nodes, edges),
   ];
   if (CONTENT_STYLE_MAPS.has(map.id)) {
     issues.push(...checkContentStyle(nodes));
@@ -352,11 +430,22 @@ function typeBreakdown(nodes: KnowledgeNode[]): string {
   return [...counts.entries()].map(([t, c]) => `${t}=${c}`).join(", ");
 }
 
+function kindBreakdown(edges: KnowledgeEdge[]): string {
+  let hierarchy = 0;
+  let association = 0;
+  for (const edge of edges) {
+    if (inferEdgeKind(edge.label, edge.kind) === "hierarchy") hierarchy++;
+    else association++;
+  }
+  return `骨架=${hierarchy}, 关联=${association}`;
+}
+
 function printMapReport(map: KnowledgeMap, issues: Issue[]): { errors: number; warnings: number } {
   const errors = issues.filter((i) => i.level === "error");
   const warnings = issues.filter((i) => i.level === "warning");
   console.log(`\n━━━ 图：${map.id}（${map.label}）━━━`);
   console.log(`节点 ${map.data.nodes.length} · 边 ${map.data.edges.length} · 类型分布：${typeBreakdown(map.data.nodes)}`);
+  console.log(`边分类：${kindBreakdown(map.data.edges)}`);
   for (const issue of errors) {
     console.log(`  ✗ [${issue.rule}] ${issue.message}`);
   }

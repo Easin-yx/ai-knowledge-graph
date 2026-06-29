@@ -124,6 +124,19 @@ const grammarGraphData: GraphData = {
     // 五大句型 + 及物性 (structure + concept)
     // ═════════════════════════════════════════
     {
+      id: "sentence_pattern",
+      label: "Five Sentence Patterns",
+      type: "structure",
+      details: {
+        zh_label: "五大句型",
+        summary: "英语句子按谓语动词的及物性与搭配成分归纳出的五种基本骨架（SV/SVO/SVC/SVOO/SVOC），是所有复杂句子的底层模板。",
+        analogy: "五种最基本的舞台调度脚本——主角和核心动作怎么站位、要不要配角、配角几个、有没有人设标签，归根到底就这五种排兵布阵，再复杂的演出都是在这五张底图上加布景。",
+        notes: "由谓语动词的及物性决定：不及物→SV，单宾及物→SVO，系动词→SVC，双宾→SVOO，宾语+补语→SVOC。掌握五大句型是分析长难句的第一步：先剥掉定语状语，再判断主干属于哪种句型。",
+        key_concepts: ["五种基本骨架", "由及物性决定", "长难句分析起点", "可扩展不改型"],
+        source: { type: "conversation" },
+      },
+    },
+    {
       id: "sv_pattern",
       label: "SV Pattern",
       type: "structure",
@@ -203,8 +216,25 @@ const grammarGraphData: GraphData = {
     },
 
     // ═════════════════════════════════════════
-    // 时态体系 — 两大概念 Hub + 12 具体时态
-    // (concept × 2 + tense × 12)
+    // 谓语三大变化 Hub（收编 时态/语态/语气）
+    // ═════════════════════════════════════════
+    {
+      id: "predicate_variation",
+      label: "Predicate Variations",
+      type: "concept",
+      details: {
+        zh_label: "谓语三大变化",
+        summary: "谓语动词承载的三种语法变化——时态（什么时间）、语态（聚光灯打给谁）、语气（真实性态度），是谓语区别于其他句子成分的核心特征。",
+        analogy: "核心动作出场前必须调好的三个旋钮——这场戏发生在什么时间（时态）、镜头打给施动者还是受动者（语态）、是真事还是假想（语气）。三个旋钮一拨，同一个动作就能演出千变万化。",
+        notes: "三大变化都只在限定动词（谓语）上体现，非谓语动词没有这些变化。这也是判断一个动词是不是谓语的标志：能随时态/语态/语气变形的才是谓语。",
+        key_concepts: ["时态/语态/语气", "谓语专属", "限定动词标志", "三个旋钮"],
+        source: { type: "conversation" },
+      },
+    },
+
+    // ═════════════════════════════════════════
+    // 时态体系 — 时态 Hub → 三个「时」分组 → 12 具体时态 + 体
+    // (concept × 2 + group × 3 + tense × 12)
     // ═════════════════════════════════════════
     {
       id: "tense",
@@ -229,6 +259,45 @@ const grammarGraphData: GraphData = {
         analogy: "同一时间坐标上动作的「镜头形态」——简单体是交代「发生过」的平铺直叙；进行体是镜头怼着动作直播「正在进行中」；完成体是倒叙字幕「此前已发生，影响延续」；完成进行体是「既有倒叙又在直播」的双重画面，强调持续时间。",
         notes: "四种体与三个时结合，构成 12 种核心时态。进行体由「be + 现在分词」构成，完成体由「have/has/had + 过去分词」构成，完成进行体由「have been + 现在分词」构成。体是理解英语时态的核心：背时态不如理解体的内在逻辑。",
         key_concepts: ["四种动作形态", "时态矩阵纵轴", "简单/进行/完成/完成进行", "与时结合"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "present_tense_group",
+      label: "Present Tenses",
+      type: "concept",
+      details: {
+        zh_label: "现在时态",
+        summary: "以「现在」为时间基准的四种时态：一般现在、现在进行、现在完成、现在完成进行，分别对应简单/进行/完成/完成进行四种体。",
+        analogy: "时间坐标轴上「此刻」这一列的四档镜头——平铺直叙（一般）、正在直播（进行）、倒叙留痕（完成）、倒叙加直播（完成进行）。",
+        notes: "现在时态组是「时（现在）× 体（四种）」的交叉。学习要点：现在完成时与一般过去时的区分（是否与当下有关联）是高频考点。",
+        key_concepts: ["现在为基准", "四种体", "现完 vs 过去", "时体交叉"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "past_tense_group",
+      label: "Past Tenses",
+      type: "concept",
+      details: {
+        zh_label: "过去时态",
+        summary: "以「过去」为时间基准的四种时态：一般过去、过去进行、过去完成、过去完成进行。",
+        analogy: "时间坐标轴上「回忆」这一列的四档镜头——切到回忆画面（一般）、回忆里的直播（进行）、回忆里更早的回忆（完成）、回忆里的持续直播（完成进行）。",
+        notes: "过去完成时（had + PP）专门厘清「两个过去事件谁先谁后」；过去进行时常作「当…时正在…」的背景铺垫。",
+        key_concepts: ["过去为基准", "四种体", "过去的过去", "背景与突发"],
+        source: { type: "conversation" },
+      },
+    },
+    {
+      id: "future_tense_group",
+      label: "Future Tenses",
+      type: "concept",
+      details: {
+        zh_label: "将来时态",
+        summary: "以「将来」为时间基准的时态：一般将来、将来进行、将来完成，以及在过去视角中表将来的过去将来时。",
+        analogy: "时间坐标轴上「预告片」这一列的镜头——预告将发生（一般将来）、预告届时正在进行（将来进行）、预告届时已完成（将来完成），以及回忆里的预告片（过去将来）。",
+        notes: "将来时态多由情态助动词 will/would 或 be going to 表达，并非纯形态变化。过去将来时（would do）主要出现在间接引语和时态呼应中。",
+        key_concepts: ["将来为基准", "will/would 表达", "过去将来呼应", "非纯形态"],
         source: { type: "conversation" },
       },
     },
@@ -489,8 +558,21 @@ const grammarGraphData: GraphData = {
     },
 
     // ═════════════════════════════════════════
-    // 谓语实现机制 (part_of_speech × 3 + rule × 2)
+    // 谓语实现机制 — 功能动词 Hub + 主谓一致 (concept + part_of_speech × 3 + rule × 2)
     // ═════════════════════════════════════════
+    {
+      id: "function_verb",
+      label: "Function Verbs",
+      type: "concept",
+      details: {
+        zh_label: "功能动词",
+        summary: "本身语义较弱、主要起语法功能作用的动词，包括助动词、情态动词、系动词，是谓语实现各种变化和句型的「幕后班底」。",
+        analogy: "谓语的幕后班底——助动词管换装（时态/语态/疑问否定），情态动词管情绪说明书（主观态度），系动词管贴人设标签（连接主表）。他们很少自己当主角，却是主演完成各种表演的关键支持团队。",
+        notes: "三类功能动词分工：助动词（be/have/do）构成时态、语态、疑问否定；情态动词（can/must/should…）表主观态度、实现语气；系动词（be/become/seem…）连接主语与表语构成 SVC。",
+        key_concepts: ["助动词/情态/系动词", "语义弱功能强", "谓语幕后班底", "实现变化与句型"],
+        source: { type: "conversation" },
+      },
+    },
     {
       id: "auxiliary_verb",
       label: "Auxiliary Verb",
@@ -1045,36 +1127,42 @@ const grammarGraphData: GraphData = {
       label: "源于",
     },
 
-    // ─── 谓语 → 五大句型 ──────────────────────────
+    // ─── 谓语 → 五大句型（收一层：经 sentence_pattern 大类下挂）──
     {
-      id: "predicate__决定__sv_pattern",
+      id: "predicate__决定__sentence_pattern",
       source: "predicate",
+      target: "sentence_pattern",
+      label: "决定",
+    },
+    {
+      id: "sentence_pattern__包含__sv_pattern",
+      source: "sentence_pattern",
       target: "sv_pattern",
-      label: "决定",
+      label: "包含",
     },
     {
-      id: "predicate__决定__svo_pattern",
-      source: "predicate",
+      id: "sentence_pattern__包含__svo_pattern",
+      source: "sentence_pattern",
       target: "svo_pattern",
-      label: "决定",
+      label: "包含",
     },
     {
-      id: "predicate__决定__svc_pattern",
-      source: "predicate",
+      id: "sentence_pattern__包含__svc_pattern",
+      source: "sentence_pattern",
       target: "svc_pattern",
-      label: "决定",
+      label: "包含",
     },
     {
-      id: "predicate__决定__svoo_pattern",
-      source: "predicate",
+      id: "sentence_pattern__包含__svoo_pattern",
+      source: "sentence_pattern",
       target: "svoo_pattern",
-      label: "决定",
+      label: "包含",
     },
     {
-      id: "predicate__决定__svoc_pattern",
-      source: "predicate",
+      id: "sentence_pattern__包含__svoc_pattern",
+      source: "sentence_pattern",
       target: "svoc_pattern",
-      label: "决定",
+      label: "包含",
     },
     {
       id: "verb_transitivity__决定__svo_pattern",
@@ -1113,13 +1201,7 @@ const grammarGraphData: GraphData = {
       label: "包含",
     },
 
-    // ─── 谓语 → 时态 ──────────────────────────────
-    {
-      id: "predicate__承载__tense",
-      source: "predicate",
-      target: "tense",
-      label: "承载",
-    },
+    // ─── 时态体系：tense → 三个「时」分组 → 12 时态（收一层）──
     {
       id: "tense__结合__aspect",
       source: "tense",
@@ -1128,76 +1210,94 @@ const grammarGraphData: GraphData = {
       directed: false,
     },
     {
-      id: "present_simple__属于__tense",
-      source: "present_simple",
-      target: "tense",
-      label: "属于",
+      id: "tense__包含__present_tense_group",
+      source: "tense",
+      target: "present_tense_group",
+      label: "包含",
     },
     {
-      id: "present_continuous__属于__tense",
-      source: "present_continuous",
-      target: "tense",
-      label: "属于",
+      id: "tense__包含__past_tense_group",
+      source: "tense",
+      target: "past_tense_group",
+      label: "包含",
     },
     {
-      id: "present_perfect__属于__tense",
-      source: "present_perfect",
-      target: "tense",
-      label: "属于",
+      id: "tense__包含__future_tense_group",
+      source: "tense",
+      target: "future_tense_group",
+      label: "包含",
     },
     {
-      id: "present_perfect_continuous__属于__tense",
-      source: "present_perfect_continuous",
-      target: "tense",
-      label: "属于",
+      id: "present_tense_group__包含__present_simple",
+      source: "present_tense_group",
+      target: "present_simple",
+      label: "包含",
     },
     {
-      id: "past_simple__属于__tense",
-      source: "past_simple",
-      target: "tense",
-      label: "属于",
+      id: "present_tense_group__包含__present_continuous",
+      source: "present_tense_group",
+      target: "present_continuous",
+      label: "包含",
     },
     {
-      id: "past_continuous__属于__tense",
-      source: "past_continuous",
-      target: "tense",
-      label: "属于",
+      id: "present_tense_group__包含__present_perfect",
+      source: "present_tense_group",
+      target: "present_perfect",
+      label: "包含",
     },
     {
-      id: "past_perfect__属于__tense",
-      source: "past_perfect",
-      target: "tense",
-      label: "属于",
+      id: "present_tense_group__包含__present_perfect_continuous",
+      source: "present_tense_group",
+      target: "present_perfect_continuous",
+      label: "包含",
     },
     {
-      id: "past_perfect_continuous__属于__tense",
-      source: "past_perfect_continuous",
-      target: "tense",
-      label: "属于",
+      id: "past_tense_group__包含__past_simple",
+      source: "past_tense_group",
+      target: "past_simple",
+      label: "包含",
     },
     {
-      id: "future_simple__属于__tense",
-      source: "future_simple",
-      target: "tense",
-      label: "属于",
+      id: "past_tense_group__包含__past_continuous",
+      source: "past_tense_group",
+      target: "past_continuous",
+      label: "包含",
     },
     {
-      id: "future_continuous__属于__tense",
-      source: "future_continuous",
-      target: "tense",
-      label: "属于",
+      id: "past_tense_group__包含__past_perfect",
+      source: "past_tense_group",
+      target: "past_perfect",
+      label: "包含",
     },
     {
-      id: "future_perfect__属于__tense",
-      source: "future_perfect",
-      target: "tense",
-      label: "属于",
+      id: "past_tense_group__包含__past_perfect_continuous",
+      source: "past_tense_group",
+      target: "past_perfect_continuous",
+      label: "包含",
     },
     {
-      id: "past_future__属于__tense",
-      source: "past_future",
-      target: "tense",
-      label: "属于",
+      id: "future_tense_group__包含__future_simple",
+      source: "future_tense_group",
+      target: "future_simple",
+      label: "包含",
+    },
+    {
+      id: "future_tense_group__包含__future_continuous",
+      source: "future_tense_group",
+      target: "future_continuous",
+      label: "包含",
+    },
+    {
+      id: "future_tense_group__包含__future_perfect",
+      source: "future_tense_group",
+      target: "future_perfect",
+      label: "包含",
+    },
+    {
+      id: "future_tense_group__包含__past_future",
+      source: "future_tense_group",
+      target: "past_future",
+      label: "包含",
     },
     {
       id: "present_simple__对比__present_continuous",
@@ -1220,13 +1320,33 @@ const grammarGraphData: GraphData = {
       label: "实现",
     },
 
-    // ─── 谓语 → 语态 ──────────────────────────────
+    // ─── 谓语三大变化（收一层：经 predicate_variation 大类下挂 时态/语态/语气）──
     {
-      id: "predicate__承载__voice",
+      id: "predicate__承载__predicate_variation",
       source: "predicate",
-      target: "voice",
+      target: "predicate_variation",
       label: "承载",
     },
+    {
+      id: "predicate_variation__分为__tense",
+      source: "predicate_variation",
+      target: "tense",
+      label: "分为",
+    },
+    {
+      id: "predicate_variation__分为__voice",
+      source: "predicate_variation",
+      target: "voice",
+      label: "分为",
+    },
+    {
+      id: "predicate_variation__分为__mood",
+      source: "predicate_variation",
+      target: "mood",
+      label: "分为",
+    },
+
+    // ─── 语态 ─────────────────────────────────────
     {
       id: "voice__分为__active_voice",
       source: "voice",
@@ -1259,13 +1379,7 @@ const grammarGraphData: GraphData = {
       label: "使用",
     },
 
-    // ─── 谓语 → 语气 ──────────────────────────────
-    {
-      id: "predicate__承载__mood",
-      source: "predicate",
-      target: "mood",
-      label: "承载",
-    },
+    // ─── 语气 ─────────────────────────────────────
     {
       id: "mood__分为__indicative_mood",
       source: "mood",
@@ -1291,18 +1405,30 @@ const grammarGraphData: GraphData = {
       label: "使用",
     },
 
-    // ─── 谓语实现机制 ──────────────────────────────
+    // ─── 谓语实现机制（收一层：经 function_verb 大类下挂 助动词/情态/系动词）──
     {
-      id: "predicate__靠...实现__auxiliary_verb",
+      id: "predicate__靠...实现__function_verb",
       source: "predicate",
-      target: "auxiliary_verb",
+      target: "function_verb",
       label: "靠...实现",
     },
     {
-      id: "predicate__靠...实现__modal_verb",
-      source: "predicate",
+      id: "function_verb__包含__auxiliary_verb",
+      source: "function_verb",
+      target: "auxiliary_verb",
+      label: "包含",
+    },
+    {
+      id: "function_verb__包含__modal_verb",
+      source: "function_verb",
       target: "modal_verb",
-      label: "靠...实现",
+      label: "包含",
+    },
+    {
+      id: "function_verb__包含__linking_verb",
+      source: "function_verb",
+      target: "linking_verb",
+      label: "包含",
     },
     {
       id: "modal_verb__表达__mood",
@@ -1748,6 +1874,14 @@ export const grammarMap: KnowledgeMap = {
   data: grammarGraphData,
   typeStyles: grammarTypeStyles,
   typeOrder: grammarTypeOrder,
+  typeArchetypes: {
+    part_of_speech: "category",
+    tense: "mechanism",
+    rule: "mechanism",
+    sentence_element: "mechanism",
+    concept: "concept",
+    structure: "mechanism",
+  },
   preferredSeed: "predicate",
   group: "interest",
   domain: "language",

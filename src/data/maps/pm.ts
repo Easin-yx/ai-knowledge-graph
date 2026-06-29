@@ -2060,12 +2060,7 @@ const pmGraphData: GraphData = {
     },
 
     // ─── 批次 1（领域 8：AI 时代的产品能力）────────────────────
-    {
-      id: "pm__延伸出__ai_product",
-      source: "pm",
-      target: "ai_product",
-      label: "延伸出",
-    },
+    // 注：弱化中心直连，ai_product 经 pm_types__包含__ai_product 归属（见 PLAN §5.2）。
     {
       id: "ai_product__创造__user_value",
       source: "ai_product",
@@ -2128,11 +2123,12 @@ const pmGraphData: GraphData = {
     },
 
     // ─── 批次 2（领域 5：数据与增长）──────────────────────────
+    // 收编：aarrr 增长分析框架归到「产品分析/数据」枝下，不再直挂中心（见 PLAN §5.2）。
     {
-      id: "pm__关注__aarrr",
-      source: "pm",
+      id: "product_analysis__包含__aarrr",
+      source: "product_analysis",
       target: "aarrr",
-      label: "关注",
+      label: "包含",
     },
     {
       id: "aarrr__包含__retention",
@@ -2191,12 +2187,7 @@ const pmGraphData: GraphData = {
     },
 
     // ─── 批次 3（领域 4：产品设计与原型）──────────────────────
-    {
-      id: "pm__重视__ux_design",
-      source: "pm",
-      target: "ux_design",
-      label: "重视",
-    },
+    // 收编：ux_design 并入「需求→设计链」，经 user_journey_map__支撑__ux_design 归属，不再直挂中心（见 PLAN §5.2）。
     {
       id: "designer__负责__ux_design",
       source: "designer",
@@ -2253,9 +2244,10 @@ const pmGraphData: GraphData = {
     },
 
     // ─── 批次 4（core 收尾簇：领域 1/3/6/7）───────────────────
+    // 收编：mvp 验证手段归到「战略」枝下，不再直挂中心（见 PLAN §5.2）。
     {
-      id: "pm__善用__mvp",
-      source: "pm",
+      id: "product_strategy__善用__mvp",
+      source: "product_strategy",
       target: "mvp",
       label: "善用",
     },
@@ -2541,6 +2533,18 @@ export const pmMap: KnowledgeMap = {
   data: pmGraphData,
   typeStyles: pmTypeStyles,
   typeOrder: pmTypeOrder,
+  typeArchetypes: {
+    structure: "concept",
+    mindset: "concept",
+    skill: "practice",
+    product: "concept",
+    role: "concept",
+    platform: "entity",
+    deliverable: "entity",
+    ux: "mechanism",
+    strategy: "concept",
+    overview: "category",
+  },
   preferredSeed: "pm",
   group: "professional",
   domain: "tech-product",

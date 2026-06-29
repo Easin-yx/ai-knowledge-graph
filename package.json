@@ -14,12 +14,14 @@
     "check-coverage:ai": "tsx scripts/check-coverage.ts ai",
     "check-coverage:pm": "tsx scripts/check-coverage.ts pm",
     "check-coverage:black-myth": "tsx scripts/check-coverage.ts black-myth",
-    "check-coverage:game-studio": "tsx scripts/check-coverage.ts game-studio"
+    "check-coverage:game-studio": "tsx scripts/check-coverage.ts game-studio",
+    "check-coverage:humanoid-robot": "tsx scripts/check-coverage.ts humanoid-robot"
   },
   "dependencies": {
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-force-graph-2d": "^1.27.0"
+    "react-force-graph-2d": "^1.27.0",
+    "shiki": "^4.3.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.0",

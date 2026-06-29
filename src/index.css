@@ -148,6 +148,36 @@ body {
 }
 
 /* ============================================================
+   代码块（Shiki 高亮）
+   shiki 在 <pre.shiki> 上写内联 background-color（随主题），这里只补排版
+   ============================================================ */
+.akg-shiki pre.shiki {
+  margin: 0;
+  padding: 12px 14px;
+  font-family: "SF Mono", "JetBrains Mono", "Fira Code", ui-monospace,
+    SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  tab-size: 2;
+}
+.akg-shiki pre.shiki code {
+  font-family: inherit;
+  background: none;
+  white-space: pre;
+}
+/* 高亮未就绪 / 失败时的等宽纯文本兜底 */
+.akg-shiki-fallback {
+  margin: 0;
+  padding: 12px 14px;
+  font-family: "SF Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
+    Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--akg-text);
+  background: var(--glass-bg-strong);
+}
+
+/* ============================================================
    双视角翻转卡片（黑神话图谱：C 端正面 / B 端背面）
    两个面用 grid 叠放在同一格，容器高度取两面较高者，避免塌陷与跳动
    ============================================================ */

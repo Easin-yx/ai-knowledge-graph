@@ -28,16 +28,44 @@
 
 ## ④ 战斗数值与机制 (combat)
 - `combat_system` 战斗系统
+  - `combat_skill_system` 战斗技能体系
+    - `staff_stance_system` 棍法体系总览
+      - `smash_stance` 劈棍法
+      - `pillar_stance` 立棍法
+      - `thrust_stance` 戳棍法
+      - `focus_point_progression` 棍势段位成长
+      - `varied_combo` 轻重衔接（切手技）
+      - `resolute_counterflow` 识破链路
+      - `skyfall_followup` 识破后追击（斩棍式）
+      - `staff_build_path` 棍法加点路径
+    - `stance_switch_tactics` 切棍策略
+    - `spell_system` 法术体系
+      - `mysticism_spells` 奇术（定身 / 画地为牢）
+      - `alteration_spells` 身法（聚形散气 / 铜头铁臂）
+      - `strand_spells` 毫毛（身外身法）
+    - `transformation_system` 变化/化身体系
+      - `red_tides` 赤潮（变化示例）
+      - `ebon_flow` 黯雷（变化示例）
+    - `vessel_system` 法宝体系
+      - `wind_tamer` 定风珠（法宝示例）
+      - `weavers_needle` 绣花针（法宝示例）
+    - `summon_spirit_system` 召唤与精魄体系
+      - `pluck_of_many` 身外身法（召唤示例）
+      - `spirit_skills` 精魄技能位
   - `base_resource_gauges` 基础资源槽（HP/SP/MP）
   - `gunshi_meter` 棍势值
   - `resolute_strike` 识破
   - `modular_gourd` 模块化葫芦
 
-## ⑤ UI 交互与视觉体验 (ux)
-- `ux_ui_design` UI 交互与视觉
+## ⑤ 用户体验（交互+内容）(ux)
+- `ux_ui_design` 用户体验（交互+内容）
   - `combat_hud` 战斗 HUD
   - `system_menu` 系统菜单
   - `micro_feedback` 微反馈交互
+  - `narrative_worldview` 叙事与世界观
+  - `chapter_journey` 章节旅程与关卡体验
+  - `audiovisual_immersion` 视听沉浸
+  - `build_expression` 能力表达（玩家打法）
 
 ## ⑥ 中后台能力网（B 端独立节点 · platform）
 - `data_dashboard` 用户数据大屏 ← 目标用户 / 营销节点
@@ -48,6 +76,7 @@
 - `combat_balance_tool` 战斗平衡测试工具 ← 战斗系统 / 棍势 / 识破
 - `combat_heatmap` 战斗行为热力图 ← 挑战 / 识破
 - `asset_pipeline` 美术资产管理管线 ← UI 视觉 / 系统菜单 / 微反馈
+- `level_perf_toolchain` 关卡与性能工具链 ← 品类定位 / 章节旅程
 
 ## 关系类型
 - `包含`：层级归属（根 → 模块 → 子节点）

@@ -18,8 +18,13 @@ export interface NodeTypeStyle {
 // 图谱画布配色 — 按主题区分
 // ============================================================
 export interface GraphColors {
+  /** 静息态骨架边（hierarchy）：主干，需清晰可见 */
   link: string;
+  /** 静息态关联边（association）：次级，比骨架弱但仍要看得清 */
+  linkAssociation: string;
+  /** 激活态（hover/选中相关）：最显眼 */
   linkHighlight: string;
+  /** 有焦点时压暗的「其余无关边」：刻意压到很低以突出焦点 */
   linkDim: string;
   linkLabel: string;
   linkLabelBg: string;
@@ -30,9 +35,10 @@ export interface GraphColors {
 
 // 暖色浅色主题（默认）
 export const GRAPH_COLORS_LIGHT: GraphColors = {
-  link: "rgba(100, 80, 50, 0.18)",
-  linkHighlight: "rgba(100, 80, 50, 0.70)",
-  linkDim: "rgba(100, 80, 50, 0.07)",
+  link: "rgba(92, 70, 42, 0.42)",
+  linkAssociation: "rgba(92, 70, 42, 0.24)",
+  linkHighlight: "rgba(92, 70, 42, 0.78)",
+  linkDim: "rgba(92, 70, 42, 0.08)",
   linkLabel: "#2d2215",
   linkLabelBg: "rgba(250, 247, 242, 0.92)",
   nodeLabel: "#2d2215",
@@ -42,8 +48,9 @@ export const GRAPH_COLORS_LIGHT: GraphColors = {
 
 // 深色主题
 export const GRAPH_COLORS_DARK: GraphColors = {
-  link: "rgba(148, 163, 196, 0.28)",
-  linkHighlight: "rgba(226, 235, 255, 0.85)",
+  link: "rgba(160, 174, 205, 0.48)",
+  linkAssociation: "rgba(160, 174, 205, 0.28)",
+  linkHighlight: "rgba(226, 235, 255, 0.9)",
   linkDim: "rgba(148, 163, 196, 0.1)",
   linkLabel: "#dbe4f7",
   linkLabelBg: "rgba(10, 14, 26, 0.78)",

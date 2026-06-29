@@ -1,12 +1,32 @@
 import { useEffect, useState } from "react";
-import type { KnowledgeNode, NodeSource } from "../types";
+import type { CardArchetype, CodeSample, KnowledgeNode, NodeSource } from "../types";
 import type { NodeTypeStyle } from "../constants/theme";
+import { CodeBlock } from "./CodeBlock";
+import { normalizeLang, type CodeLang } from "../lib/highlighter";
 
 interface Neighbor {
   node: KnowledgeNode;
   relation: string;
   direction: "out" | "in";
 }
+
+export interface LearningOrder {
+  current: number;
+  total: number;
+  next?: { id: string; label: string };
+}
+
+type ArchetypeBlock = "summary" | "analogy" | "code" | "facts" | "steps" | "contrast" | "key_concepts" | "notes";
+
+const DEFAULT_BLOCKS: ArchetypeBlock[] = ["summary", "analogy", "notes", "key_concepts"];
+
+const ARCHETYPE_BLOCKS: Record<CardArchetype, ArchetypeBlock[]> = {
+  category: ["summary", "key_concepts", "notes"],
+  concept: ["summary", "analogy", "key_concepts", "notes"],
+  mechanism: ["summary", "code", "key_concepts", "notes", "analogy"],
+  entity: ["summary", "facts", "key_concepts", "notes"],
+  practice: ["summary", "steps", "contrast", "notes"],
+};
 
 interface NodeDetailContentProps {
   node: KnowledgeNode;
@@ -16,7 +36,9 @@ interface NodeDetailContentProps {
   canCollapse?: boolean;
   typeStyles: Record<string, NodeTypeStyle>;
   typeOrder: string[];
+  typeArchetypes?: Record<string, CardArchetype>;
   perspectiveLabels?: { front: string; back: string; frontHint?: string; backHint?: string };
+  learningOrder?: LearningOrder;
 }
 
 export function NodeDetailContent({
@@ -27,12 +49,15 @@ export function NodeDetailContent({
   canCollapse,
   typeStyles,
   typeOrder,
+  typeArchetypes,
   perspectiveLabels,
+  learningOrder,
 }: NodeDetailContentProps) {
   const { details } = node;
   const fallbackStyle = typeStyles[typeOrder[0]];
   const style = typeStyles[node.type] ?? fallbackStyle;
   const backstage = details.backstage;
+  const archetype = node.card ?? typeArchetypes?.[node.type];
 
   // 视角面：front = C 端玩家视角，back = B 端中后台视角
   const [face, setFace] = useState<"front" | "back">("front");
@@ -71,6 +96,22 @@ export function NodeDetailContent({
         )}
       </div>
 
+      {learningOrder && (
+        <div className="flex items-center gap-2 rounded-xl border border-[var(--glass-border)] bg-white/[0.04] px-3 py-2">
+          <span className="text-xs font-medium text-[var(--akg-text-dim)]">
+            学习顺序 {learningOrder.current} / {learningOrder.total}
+          </span>
+          {learningOrder.next && (
+            <>
+              <span className="text-[var(--akg-text-dim)]">·</span>
+              <span className="text-xs text-[var(--akg-text-dim)]">
+                下一步：{learningOrder.next.label}
+              </span>
+            </>
+          )}
+        </div>
+      )}
+
       <div className="h-px w-full bg-[var(--glass-border)]" />
 
       {/* 双视角内容：有 backstage 时显示切换控件 + 3D 翻转卡片 */}
@@ -87,8 +128,13 @@ export function NodeDetailContent({
                 <PerspectiveBody
                   summary={details.summary}
                   analogy={details.analogy}
+                  code={details.code}
+                  facts={details.facts}
+                  steps={details.steps}
+                  contrast={details.contrast}
                   notes={details.notes}
                   keyConcepts={details.key_concepts}
+                  archetype={archetype}
                 />
               </div>
               {/* 背面：B 端中后台视角 */}
@@ -98,8 +144,13 @@ export function NodeDetailContent({
               >
                 <PerspectiveBody
                   summary={backstage.summary}
+                  code={backstage.code}
+                  facts={backstage.facts}
+                  steps={backstage.steps}
+                  contrast={backstage.contrast}
                   notes={backstage.notes}
                   keyConcepts={backstage.key_concepts}
+                  archetype={archetype}
                   backstage
                   sectionLabels={perspectiveLabels}
                 />
@@ -111,8 +162,13 @@ export function NodeDetailContent({
         <PerspectiveBody
           summary={details.summary}
           analogy={details.analogy}
+          code={details.code}
+          facts={details.facts}
+          steps={details.steps}
+          contrast={details.contrast}
           notes={details.notes}
           keyConcepts={details.key_concepts}
+          archetype={archetype}
         />
       )}
 
@@ -223,52 +279,151 @@ function PerspectiveToggle({
 function PerspectiveBody({
   summary,
   analogy,
+  code,
+  facts,
+  steps,
+  contrast,
   notes,
   keyConcepts,
+  archetype,
   backstage,
   sectionLabels,
 }: {
   summary: string;
   analogy?: string;
+  code?: CodeSample[];
+  facts?: { label: string; value: string }[];
+  steps?: string[];
+  contrast?: { wrong: string; right: string };
   notes?: string;
   keyConcepts?: string[];
+  archetype?: CardArchetype;
   backstage?: boolean;
   sectionLabels?: { front: string; back: string };
 }) {
   const backLabel = sectionLabels?.back ?? "中后台";
+  const blocks = archetype ? ARCHETYPE_BLOCKS[archetype] : DEFAULT_BLOCKS;
+
+  const renderBlock = (block: ArchetypeBlock) => {
+    switch (block) {
+      case "summary":
+        return (
+          <Section key={block} title={backstage ? `${backLabel} 写法` : "摘要"}>
+            <p className="text-sm leading-relaxed text-[var(--akg-text)]">
+              {summary}
+            </p>
+          </Section>
+        );
+      case "analogy":
+        return analogy ? (
+          <Section key={block} title="打个比方">
+            <p className="rounded-xl border border-[var(--glass-border)] bg-white/[0.04] px-3 py-2.5 text-sm leading-relaxed text-[var(--akg-text)]">
+              {analogy}
+            </p>
+          </Section>
+        ) : null;
+      case "code":
+        return code && code.length > 0 ? <CodeSamplesBlock key={block} samples={code} /> : null;
+      case "facts":
+        return facts && facts.length > 0 ? <FactsBlock key={block} facts={facts} /> : null;
+      case "steps":
+        return steps && steps.length > 0 ? <StepsBlock key={block} steps={steps} /> : null;
+      case "contrast":
+        return contrast ? <ContrastBlock key={block} contrast={contrast} /> : null;
+      case "notes":
+        return notes ? <NotesSection key={block} notes={notes} backstage={backstage} /> : null;
+      case "key_concepts":
+        return keyConcepts && keyConcepts.length > 0 ? (
+          <Section key={block} title="关键概念">
+            <div className="flex flex-wrap gap-1.5">
+              {keyConcepts.map((c) => (
+                <span
+                  key={c}
+                  className="rounded-lg border border-[var(--glass-border)] bg-white/5 px-2 py-1 text-xs text-[var(--akg-text)]"
+                >
+                  {c}
+                </span>
+              ))}
+            </div>
+          </Section>
+        ) : null;
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
-      <Section title={backstage ? `${backLabel} 写法` : "摘要"}>
-        <p className="text-sm leading-relaxed text-[var(--akg-text)]">
-          {summary}
-        </p>
-      </Section>
-
-      {analogy && (
-        <Section title="打个比方">
-          <p className="rounded-xl border border-[var(--glass-border)] bg-white/[0.04] px-3 py-2.5 text-sm leading-relaxed text-[var(--akg-text)]">
-            {analogy}
-          </p>
-        </Section>
-      )}
-
-      {notes && <NotesSection notes={notes} backstage={backstage} />}
-
-      {keyConcepts && keyConcepts.length > 0 && (
-        <Section title="关键概念">
-          <div className="flex flex-wrap gap-1.5">
-            {keyConcepts.map((c) => (
-              <span
-                key={c}
-                className="rounded-lg border border-[var(--glass-border)] bg-white/5 px-2 py-1 text-xs text-[var(--akg-text)]"
-              >
-                {c}
-              </span>
-            ))}
-          </div>
-        </Section>
-      )}
+      {blocks.map((block) => renderBlock(block))}
     </>
+  );
+}
+
+function CodeSamplesBlock({ samples }: { samples: CodeSample[] }) {
+  return (
+    <Section title="代码示例">
+      <div className="flex flex-col gap-2.5">
+        {samples.map((sample, idx) => (
+          <div key={`${sample.lang}-${idx}`} className="flex flex-col gap-1.5">
+            {sample.caption && (
+              <p className="text-xs text-[var(--akg-text-dim)]">{sample.caption}</p>
+            )}
+            <CodeBlock code={sample.content} lang={normalizeLang(sample.lang)} />
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function FactsBlock({ facts }: { facts: { label: string; value: string }[] }) {
+  return (
+    <Section title="属性事实">
+      <div className="overflow-hidden rounded-xl border border-[var(--glass-border)] bg-white/[0.04]">
+        {facts.map((fact, idx) => (
+          <div
+            key={`${fact.label}-${idx}`}
+            className={`grid grid-cols-[96px,1fr] gap-3 px-3 py-2.5 ${
+              idx > 0 ? "border-t border-[var(--glass-border)]" : ""
+            }`}
+          >
+            <span className="text-xs font-medium text-[var(--akg-text-dim)]">{fact.label}</span>
+            <span className="text-sm leading-relaxed text-[var(--akg-text)]">{fact.value}</span>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function StepsBlock({ steps }: { steps: string[] }) {
+  return (
+    <Section title="实践步骤">
+      <ol className="flex list-decimal flex-col gap-2 pl-5 text-sm leading-relaxed text-[var(--akg-text)]">
+        {steps.map((step, idx) => (
+          <li key={`${idx}-${step}`} className="marker:text-[var(--akg-text-dim)]">
+            {step}
+          </li>
+        ))}
+      </ol>
+    </Section>
+  );
+}
+
+function ContrastBlock({ contrast }: { contrast: { wrong: string; right: string } }) {
+  return (
+    <Section title="正误对照">
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+        <div className="rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2.5">
+          <p className="mb-1 text-xs font-medium text-red-200">常见误区</p>
+          <p className="text-sm leading-relaxed text-[var(--akg-text)]">{contrast.wrong}</p>
+        </div>
+        <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-3 py-2.5">
+          <p className="mb-1 text-xs font-medium text-emerald-200">推荐做法</p>
+          <p className="text-sm leading-relaxed text-[var(--akg-text)]">{contrast.right}</p>
+        </div>
+      </div>
+    </Section>
   );
 }
 
@@ -285,10 +440,63 @@ function NotesSection({
   }
   return (
     <Section title={backstage ? "代码示例与差异" : "延伸笔记"}>
-      <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--akg-text-dim)]">
-        {notes}
-      </p>
+      <NotesBody text={notes} />
     </Section>
+  );
+}
+
+type NotesSegment =
+  | { type: "text"; text: string }
+  | { type: "code"; lang: CodeLang; code: string };
+
+/** 把 notes 字符串按 ``` 围栏切成「文本段 / 代码段」交替序列 */
+function parseNotesSegments(notes: string): NotesSegment[] {
+  const segments: NotesSegment[] = [];
+  const fence = /```([\w+-]*)\r?\n([\s\S]*?)```/g;
+  let cursor = 0;
+  let match: RegExpExecArray | null;
+  const pushText = (raw: string) => {
+    const text = raw.replace(/^\s*\n/, "").replace(/\n\s*$/, "");
+    if (text.trim()) segments.push({ type: "text", text });
+  };
+  while ((match = fence.exec(notes)) !== null) {
+    if (match.index > cursor) pushText(notes.slice(cursor, match.index));
+    segments.push({
+      type: "code",
+      lang: normalizeLang(match[1]),
+      code: match[2].replace(/\n$/, ""),
+    });
+    cursor = fence.lastIndex;
+  }
+  if (cursor < notes.length) pushText(notes.slice(cursor));
+  return segments;
+}
+
+/** 渲染 notes：散文段落用文本，``` 围栏代码用 Shiki 代码块 */
+function NotesBody({ text }: { text: string }) {
+  const segments = parseNotesSegments(text);
+  if (segments.length === 0) {
+    return (
+      <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--akg-text-dim)]">
+        {text}
+      </p>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-2.5">
+      {segments.map((seg, i) =>
+        seg.type === "text" ? (
+          <p
+            key={i}
+            className="whitespace-pre-line text-sm leading-relaxed text-[var(--akg-text-dim)]"
+          >
+            {seg.text}
+          </p>
+        ) : (
+          <CodeBlock key={i} code={seg.code} lang={seg.lang} />
+        )
+      )}
+    </div>
   );
 }
 
@@ -369,9 +577,7 @@ function LearningTierDisclosure({ section }: { section: LearningTier }) {
       </button>
       {open && (
         <div className="border-t border-[var(--glass-border)] px-3 py-2.5">
-          <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--akg-text-dim)]">
-            {section.content}
-          </p>
+          <NotesBody text={section.content} />
         </div>
       )}
     </div>

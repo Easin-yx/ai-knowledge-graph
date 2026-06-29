@@ -1,4 +1,5 @@
 import type { NodeTypeStyle } from "../constants/theme";
+import type { EdgeKind } from "../constants/edgeKind";
 
 // ============================================================
 // 节点类型语义由每张知识地图自己的调色板（typeStyles）解释，
@@ -23,6 +24,14 @@ export type NodeSource =
   | { type: "conversation" }
   | { type: "doc"; title: string; url?: string };
 
+export type CardArchetype = "category" | "concept" | "mechanism" | "entity" | "practice";
+
+export interface CodeSample {
+  lang: "python" | "typescript" | "bash" | "sql";
+  content: string;
+  caption?: string;
+}
+
 // ============================================================
 // 节点结构
 // id 规范：snake_case 英文小写，如 "self_attention"
@@ -32,17 +41,27 @@ export interface KnowledgeNode {
   id: string;
   label: string;       // 节点上显示的名称（AI 图英文、PM 图中文，由各地图约定）
   type: string;        // 类型语义由所属地图的 typeStyles 解释
+  order?: number;      // 同一父节点下的学习序号（驱动布局排序与面板提示，不占用边）
+  card?: CardArchetype; // 可选：节点卡片原型；缺省时由所属地图 typeArchetypes 推断
   details: {
     zh_label?: string;         // 可选：中文名，详情卡片副标题，如 "多头注意力"
     summary: string;           // 必填：一句话说明这是什么（中文）
     analogy?: string;          // 可选：通俗类比，"打个比方"区块展示
     notes?: string;            // 可选：延伸理解、公式、重要细节
+    code?: CodeSample[];       // 可选：结构化代码示例（优先于 notes 围栏）
+    facts?: { label: string; value: string }[]; // 可选：实体型节点属性表
+    steps?: string[];          // 可选：实践型节点步骤
+    contrast?: { wrong: string; right: string }; // 可选：实践型节点正误对照
     key_concepts?: string[];   // 可选：关键词或子概念列表
     source?: NodeSource;       // 可选：知识来源
     // 可选：B 端 / 中后台视角（黑神话图谱专用，卡片翻面展示）。
     // 其它图谱不填，详情卡片不显示翻转控件，渲染保持原状。
     backstage?: {
       summary: string;         // 必填（当 backstage 存在时）：背后需要什么中后台能力
+      code?: CodeSample[];     // 可选：B 端视角下的结构化代码示例
+      facts?: { label: string; value: string }[]; // 可选：B 端属性事实
+      steps?: string[];        // 可选：B 端实践步骤
+      contrast?: { wrong: string; right: string }; // 可选：B 端正误对照
       notes?: string;          // 可选：配置表 / 埋点 / 数据大屏 / 资产管线的产品思考
       key_concepts?: string[]; // 可选：B 端关键词
     };
@@ -59,6 +78,9 @@ export interface KnowledgeEdge {
   target: string;
   label: string;
   directed?: boolean;
+  // 可选：显式标注骨架边（hierarchy，管层级/归属）或关联边（association，管交叉关系）。
+  // 缺省时由 inferEdgeKind() 按 label 推断（见 src/constants/edgeKind.ts）。
+  kind?: EdgeKind;
 }
 
 // ============================================================
@@ -100,6 +122,7 @@ export interface KnowledgeMap {
   data: GraphData;
   typeStyles: Record<string, NodeTypeStyle>;
   typeOrder: string[];
+  typeArchetypes?: Record<string, CardArchetype>;
   preferredSeed?: string;
   group: MapGroup;
   domain: MapDomain;

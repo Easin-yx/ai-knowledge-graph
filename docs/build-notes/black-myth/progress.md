@@ -73,10 +73,62 @@
 - 仅 `category_positioning` 保留 1 条 L2 warning（作者决定接受）。
 - 遗留人工裁决项见 `low_confidence.md`（推断口径已采纳做法二、单机 vs 全服数据张力、子机制是否再拆）。
 
+## 已完成（维护 Loop · 轮 1 · 2026-06-24）
+> 按 `docs/build-notes/maintenance-loop.md` 自驱动巡检执行。
+- 类别：L（逻辑缜密性 / 双视角完整性）
+- 问题：`bm-cend-no-mapping` warning —— `category_positioning`（及父节点 `black_myth_wukong`）是唯一无「支撑」映射边的 C 端业务节点，双视角不完整。
+- 确认依据：`npm run validate` black-myth 段唯一 warning；该节点 `backstage` 已点名其中后台支撑（关卡编辑器 / 资源加载 / 性能预算），但图中无对应 platform。
+- 修法（非硬凑）：补一个 backstage 已点名的真实中后台 platform 节点 `level_perf_toolchain`（关卡与性能工具链）+ 边 `category_positioning__支撑__level_perf_toolchain`。
+  - 区别于第 6 批「保留 warning 不补硬凑边」：彼时无合适 platform、硬连现有节点才算硬凑；本轮是新建该节点 backstage 本就描述的合法中后台，属补全而非硬凑。
+- 自验：`validate` 0 error / **0 warning**（33 节点/42 边，platform 9）· `lint` 干净 · `check-coverage:black-myth` 32/32 core 0。
+- 残留：无（无新增 low_confidence 项）。
+
+## 已完成（结构整改批次 · 技能体系重构 + 用户体验补全）
+- 本轮目标：按《黑神话图谱结构整改计划》落实「结构严谨 + 玩家体验补全 + 高可信来源白名单」。
+- 数据面改动（`src/data/maps/black-myth.ts`）：
+  - [x] 新增 `combat_skill_system` Hub，统一承载棍法 / 法术 / 变化 / 法宝 / 召唤与精魄五大分支。
+  - [x] 棍法完成深拆（8+ 子节点）：三棍法、棍势成长、切手技、识破链路、追击链路、切棍策略、加点路径。
+  - [x] 新增技能分支节点：`spell_system`、`transformation_system`、`vessel_system`、`summon_spirit_system` 及其核心示例节点。
+  - [x] `ux_ui_design` 升级为「用户体验（交互+内容）」并补齐 4 个玩家向节点：
+    `narrative_worldview`、`chapter_journey`、`audiovisual_immersion`、`build_expression`。
+  - [x] `build_expression` 与技能体系职责解耦：前者只讲玩家打法表达，机制细节收敛到 `combat_skill_system`。
+- 来源口径（白名单）：
+  - [x] 新增并使用官网 / BWiki / Game8 / Maxroll 的显式 source 常量。
+  - [x] 棍法与全技能分支均写入可追溯 source，避免无依据扩写。
+- 关系治理：
+  - [x] 增补分层 `包含` 边，避免技能节点平铺。
+  - [x] 增补关键 `支撑` 映射边到 `combat_balance_tool` / `numeric_config_cms` / `telemetry_platform` / `asset_pipeline` / `localization_platform`。
+  - [x] 扇出优化：清理冗余映射边，消除黑神话图 `high-fanout` warning。
+- 文档同步：
+  - [x] `taxonomy.md` 同步新结构（技能 Hub + 用户体验子树）。
+  - [x] `low_confidence.md` 更新待定项与来源白名单决策。
+- 验证结果：
+  - [x] `npm run validate`：black-myth **0 error / 1 warning**（仅 `skeleton-fragmented`，与平台节点非骨架挂接策略相关）。
+  - [x] `npm run lint`：通过。
+  - [x] `npm run check-coverage:black-myth`：32/32（100%）通过。
+
+## 已完成（P1 收敛批次 · 类比边界 + 角色模板）
+- 本轮目标：按 `OWNER_VISION` 的 P1 要求收敛内容可读性，降低“硬类比”并减少默认模板触发。
+- 数据面改动（`src/data/maps/black-myth.ts`）：
+  - [x] 清理不适配节点的 `analogy`：
+    - 平台工具节点（`data_dashboard`、`numeric_config_cms`、`combat_heatmap` 等）默认移除类比；
+    - 参数型节点（`base_resource_gauges`、`focus_point_progression`）移除类比并转为更事实化描述。
+  - [x] 补充角色映射，减少默认模板触发：
+    - `strategy -> category`
+    - `gameplay -> concept`
+    - `ux -> practice`
+    - 保留 `combat -> mechanism`、`platform -> entity`、`overview -> category`。
+  - [x] 参数型节点补 `card` 覆盖（如 `base_resource_gauges`、`focus_point_progression`），确保详情卡呈现风格符合节点角色。
+- 结构展示复核：
+  - [x] 复核 `skeleton-fragmented` warning：black-myth 仍为 1 条 warning（平台节点通过映射边挂接导致），本轮接受该设计，不补噪音骨架边。
+- 验证结果：
+  - [x] `npm run validate`：black-myth **0 error / 1 warning**（接受，见上）。
+  - [x] `npm run lint`：通过。
+  - [x] `npm run check-coverage:black-myth`：32/32（100%）通过。
+
 ## 下一步（可选）
 - [ ] 作者终审整版 diff；如认可即视为「这一版严谨」达标（L0/L1/L2 全绿 + L3 全领域走过）。
 - [ ] 如需更深：识破/棍势/葫芦子机制再拆、补运营期 B 端系统（见 low_confidence）。
-- [ ] 可选：评估是否给 `category_positioning` 补一条到 platform 的「支撑」映射，消除 L2 warning
 - [ ] 细化 `识破`/`棍势`/`模块化葫芦` 的子机制（如需更深粒度）
 - [ ] 补充更多 B 端中后台系统（如客服工单、热更新发布、反作弊等，若版本扩展）
 

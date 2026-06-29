@@ -1,6 +1,6 @@
-import type { KnowledgeNode } from "../types";
+import type { CardArchetype, KnowledgeNode } from "../types";
 import type { NodeTypeStyle } from "../constants/theme";
-import { NodeDetailContent, type Neighbor } from "./NodeDetailContent";
+import { NodeDetailContent, type Neighbor, type LearningOrder } from "./NodeDetailContent";
 
 interface NodeDetailPanelProps {
   node: KnowledgeNode | null;
@@ -11,7 +11,9 @@ interface NodeDetailPanelProps {
   canCollapse: boolean;
   typeStyles: Record<string, NodeTypeStyle>;
   typeOrder: string[];
+  typeArchetypes?: Record<string, CardArchetype>;
   perspectiveLabels?: { front: string; back: string; frontHint?: string; backHint?: string };
+  learningOrder?: LearningOrder;
 }
 
 export function NodeDetailPanel({
@@ -23,7 +25,9 @@ export function NodeDetailPanel({
   canCollapse,
   typeStyles,
   typeOrder,
+  typeArchetypes,
   perspectiveLabels,
+  learningOrder,
 }: NodeDetailPanelProps) {
   const open = node !== null;
 
@@ -56,7 +60,9 @@ export function NodeDetailPanel({
             canCollapse={canCollapse}
             typeStyles={typeStyles}
             typeOrder={typeOrder}
+            typeArchetypes={typeArchetypes}
             perspectiveLabels={perspectiveLabels}
+            learningOrder={learningOrder}
           />
         )}
       </div>
