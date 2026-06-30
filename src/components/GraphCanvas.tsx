@@ -399,17 +399,24 @@ export const GraphCanvas = forwardRef<GraphCanvasHandle, GraphCanvasProps>(
     //   等价于给节点拴一根很松的橡皮筋——同时锚定半径与角度（左右/上下），位置稳定成记忆锚点；
     //   拖拽时 react-force-graph 临时写 fx/fy 覆盖锚力，松手后节点会被橡皮筋慢慢拉回原位。
     //   全程不持久写 fx/fy 钉死，所以仍轻晃、可拖。锚定强度调到「晃得动但回得来」。
-    const ANCHOR_STRENGTH = 0.12;
+    //   边分两类（法五）：hierarchy 边用固定弹力维持层级间距；association 边强度为 0，
+    //   纯视觉不参与位置计算，彻底消除展开时被关联边拉离槽位的问题。
+    const ANCHOR_STRENGTH = 0.18;
     useEffect(() => {
       const fg = fgRef.current;
       if (!fg) return;
       const link = fg.d3Force("link") as
         | (ReturnType<NonNullable<typeof fg.d3Force>> & {
             distance?: (d: number) => unknown;
+            strength?: (s: ((link: { kind?: EdgeKind }) => number) | number) => unknown;
           })
         | undefined;
       fg.d3Force("charge")?.strength(-320);
       link?.distance?.(80);
+      // hierarchy 边用 0.5 弹力维持层级间距；association 边强度为 0，纯视觉不拉扯节点
+      link?.strength?.((l: { kind?: EdgeKind }) =>
+        l.kind === "hierarchy" ? 0.5 : 0
+      );
       fg.d3Force("collide", forceCollide(NODE_RADIUS_HOVER + 14).iterations(2));
       // 不再使用只约束半径的 forceRadial；改为同时锚定 x、y 的软橡皮筋。
       fg.d3Force("radial", null);
