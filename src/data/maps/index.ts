@@ -7,5 +7,6 @@ import { expressionMap } from "./expression";
 import { gameStudioMap } from "./game-studio";
 import { programmingLanguagesMap } from "./programming-languages";
 import { humanoidRobotMap } from "./humanoid-robot";
+import { agentMap } from "./agent";
 
-export const KNOWLEDGE_MAPS: KnowledgeMap[] = [humanoidRobotMap, aiMap, pmMap, grammarMap, blackMythMap, expressionMap, gameStudioMap, programmingLanguagesMap];
+export const KNOWLEDGE_MAPS: KnowledgeMap[] = [humanoidRobotMap, agentMap, aiMap, pmMap, grammarMap, blackMythMap, expressionMap, gameStudioMap, programmingLanguagesMap];
