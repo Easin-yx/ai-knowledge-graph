@@ -410,110 +410,113 @@ const agentGraphData: GraphData = {
     // ═════════════════════════════════════════
     // 核心定义 → 特性
     // ═════════════════════════════════════════
-    { source: "ai_agent", target: "agent_autonomy", relation: "核心特征" },
-    { source: "ai_agent", target: "agent_reactivity", relation: "核心特征" },
-    { source: "ai_agent", target: "agent_proactivity", relation: "核心特征" },
-    { source: "ai_agent", target: "agent_social", relation: "核心特征" },
+    { id: "ai_agent__核心特征__agent_autonomy", source: "ai_agent", target: "agent_autonomy", label: "核心特征" },
+    { id: "ai_agent__核心特征__agent_reactivity", source: "ai_agent", target: "agent_reactivity", label: "核心特征" },
+    { id: "ai_agent__核心特征__agent_proactivity", source: "ai_agent", target: "agent_proactivity", label: "核心特征" },
+    { id: "ai_agent__核心特征__agent_social", source: "ai_agent", target: "agent_social", label: "核心特征" },
 
     // ═════════════════════════════════════════
     // Agent → 认知架构
     // ═════════════════════════════════════════
-    { source: "ai_agent", target: "cognitive_architecture", relation: "依赖" },
-    { source: "cognitive_architecture", target: "agent_memory", relation: "包含" },
-    { source: "cognitive_architecture", target: "planning_engine", relation: "包含" },
-    { source: "cognitive_architecture", target: "reasoning_core", relation: "包含" },
+    { id: "ai_agent__依赖__cognitive_architecture", source: "ai_agent", target: "cognitive_architecture", label: "依赖" },
+    { id: "cognitive_architecture__包含__agent_memory", source: "cognitive_architecture", target: "agent_memory", label: "包含" },
+    { id: "cognitive_architecture__包含__planning_engine", source: "cognitive_architecture", target: "planning_engine", label: "包含" },
+    { id: "cognitive_architecture__包含__reasoning_core", source: "cognitive_architecture", target: "reasoning_core", label: "包含" },
 
     // ═════════════════════════════════════════
     // Agent → 感知与交互
     // ═════════════════════════════════════════
-    { source: "ai_agent", target: "perception_layer", relation: "输入" },
-    { source: "ai_agent", target: "action_layer", relation: "输出" },
-    { source: "perception_layer", target: "cognitive_architecture", relation: "输入至" },
-    { source: "cognitive_architecture", target: "action_layer", relation: "输出至" },
+    { id: "ai_agent__输入__perception_layer", source: "ai_agent", target: "perception_layer", label: "输入" },
+    { id: "ai_agent__输出__action_layer", source: "ai_agent", target: "action_layer", label: "输出" },
+    { id: "perception_layer__输入至__cognitive_architecture", source: "perception_layer", target: "cognitive_architecture", label: "输入至" },
+    { id: "cognitive_architecture__输出至__action_layer", source: "cognitive_architecture", target: "action_layer", label: "输出至" },
 
     // ═════════════════════════════════════════
     // Agent → 工具生态
     // ═════════════════════════════════════════
-    { source: "action_layer", target: "tool_ecosystem", relation: "通过…执行" },
-    { source: "tool_ecosystem", target: "tool_types", relation: "分类为" },
+    { id: "action_layer__通过执行__tool_ecosystem", source: "action_layer", target: "tool_ecosystem", label: "通过…执行" },
+    { id: "tool_ecosystem__分类为__tool_types", source: "tool_ecosystem", target: "tool_types", label: "分类为" },
 
     // ═════════════════════════════════════════
     // Agent → 系统拓扑
     // ═════════════════════════════════════════
-    { source: "ai_agent", target: "agent_topology", relation: "组织为" },
-    { source: "agent_topology", target: "single_agent", relation: "基础模式" },
-    { source: "agent_topology", target: "multi_agent", relation: "协作模式" },
-    { source: "agent_topology", target: "human_in_loop", relation: "安全模式" },
-    { source: "single_agent", target: "planning_engine", relation: "使用" },
-    { source: "multi_agent", target: "agent_social", relation: "依赖" },
+    { id: "ai_agent__组织为__agent_topology", source: "ai_agent", target: "agent_topology", label: "组织为" },
+    { id: "agent_topology__基础模式__single_agent", source: "agent_topology", target: "single_agent", label: "基础模式" },
+    { id: "agent_topology__协作模式__multi_agent", source: "agent_topology", target: "multi_agent", label: "协作模式" },
+    { id: "agent_topology__安全模式__human_in_loop", source: "agent_topology", target: "human_in_loop", label: "安全模式" },
+    { id: "single_agent__使用__planning_engine", source: "single_agent", target: "planning_engine", label: "使用" },
+    { id: "multi_agent__依赖__agent_social", source: "multi_agent", target: "agent_social", label: "依赖" },
 
     // ═════════════════════════════════════════
     // Agent → 学习与进化
     // ═════════════════════════════════════════
-    { source: "ai_agent", target: "agent_learning", relation: "持续改进" },
-    { source: "agent_learning", target: "agent_memory", relation: "更新" },
-    { source: "agent_learning", target: "planning_engine", relation: "优化" },
+    { id: "ai_agent__持续改进__agent_learning", source: "ai_agent", target: "agent_learning", label: "持续改进" },
+    { id: "agent_learning__更新__agent_memory", source: "agent_learning", target: "agent_memory", label: "更新" },
+    { id: "agent_learning__优化__planning_engine", source: "agent_learning", target: "planning_engine", label: "优化" },
 
     // ═════════════════════════════════════════
     // Agent → 评估与安全
     // ═════════════════════════════════════════
-    { source: "ai_agent", target: "agent_evaluation", relation: "被评估" },
-    { source: "ai_agent", target: "agent_safety", relation: "被约束" },
-    { source: "ai_agent", target: "agent_observability", relation: "被监控" },
-    { source: "agent_safety", target: "human_in_loop", relation: "通过…实现" },
-    { source: "agent_evaluation", target: "agent_benchmark", relation: "使用" },
+    { id: "ai_agent__被评估__agent_evaluation", source: "ai_agent", target: "agent_evaluation", label: "被评估" },
+    { id: "ai_agent__被约束__agent_safety", source: "ai_agent", target: "agent_safety", label: "被约束" },
+    { id: "ai_agent__被监控__agent_observability", source: "ai_agent", target: "agent_observability", label: "被监控" },
+    { id: "agent_safety__通过实现__human_in_loop", source: "agent_safety", target: "human_in_loop", label: "通过…实现" },
+    { id: "agent_evaluation__使用__agent_benchmark", source: "agent_evaluation", target: "agent_benchmark", label: "使用" },
 
     // ═════════════════════════════════════════
     // 产品经理视角关联
     // ═════════════════════════════════════════
-    { source: "ai_agent", target: "agent_productization", relation: "产品化" },
-    { source: "agent_productization", target: "agent_ux", relation: "涉及" },
-    { source: "agent_productization", target: "agent_business_model", relation: "涉及" },
-    { source: "agent_productization", target: "agent_competitive", relation: "分析" },
-    { source: "agent_productization", target: "agent_requirement", relation: "定义" },
-    { source: "agent_requirement", target: "agent_prompt_engineering", relation: "落地工具" },
-    { source: "agent_ux", target: "agent_observability", relation: "依赖" },
-    { source: "agent_ux", target: "human_in_loop", relation: "设计" },
-    { source: "agent_business_model", target: "agent_evaluation", relation: "定价依据" },
-
-    // ═════════════════════════════════════════
-    // 跨域关联：Agent ↔ 已有 AI 图谱
-    // ═════════════════════════════════════════
-    { source: "ai_agent", target: "deep_learning", relation: "基于" },
-    { source: "ai_agent", target: "transformer", relation: "基于" },
-    { source: "planning_engine", target: "self_attention", relation: "底层机制" },
-    { source: "agent_memory", target: "unsupervised_learning", relation: "利用嵌入技术" },
-    { source: "agent_learning", target: "reinforcement_learning", relation: "利用RLHF" },
+    { id: "ai_agent__产品化__agent_productization", source: "ai_agent", target: "agent_productization", label: "产品化" },
+    { id: "agent_productization__涉及__agent_ux", source: "agent_productization", target: "agent_ux", label: "涉及" },
+    { id: "agent_productization__涉及__agent_business_model", source: "agent_productization", target: "agent_business_model", label: "涉及" },
+    { id: "agent_productization__分析__agent_competitive", source: "agent_productization", target: "agent_competitive", label: "分析" },
+    { id: "agent_productization__定义__agent_requirement", source: "agent_productization", target: "agent_requirement", label: "定义" },
+    { id: "agent_requirement__落地工具__agent_prompt_engineering", source: "agent_requirement", target: "agent_prompt_engineering", label: "落地工具" },
+    { id: "agent_ux__依赖__agent_observability", source: "agent_ux", target: "agent_observability", label: "依赖" },
+    { id: "agent_ux__设计__human_in_loop", source: "agent_ux", target: "human_in_loop", label: "设计" },
+    { id: "agent_business_model__定价依据__agent_evaluation", source: "agent_business_model", target: "agent_evaluation", label: "定价依据" },
   ],
 };
 
+const agentTypeStyles: Record<string, NodeTypeStyle> = {
+  concept: {
+    base: "#8B5CF6",
+    glow: "rgba(139, 92, 246, 0.30)",
+    label: "概念",
+  },
+  architecture: {
+    base: "#3B82F6",
+    glow: "rgba(59, 130, 246, 0.30)",
+    label: "架构",
+  },
+  technique: {
+    base: "#10B981",
+    glow: "rgba(16, 185, 129, 0.30)",
+    label: "技术",
+  },
+  mindset: {
+    base: "#F59E0B",
+    glow: "rgba(245, 158, 11, 0.30)",
+    label: "产品视角",
+  },
+};
+
+const agentTypeOrder: string[] = ["concept", "architecture", "technique", "mindset"];
+
 export const agentMap: KnowledgeMap = {
   id: "agent",
-  name: "AI Agent",
-  nameZh: "AI 智能体",
-  description: "从概念到应用、从认知架构到商业落地的完整 AI Agent 知识图谱，涵盖 7 个技术维度与产品经理视角。",
-  icon: "🤖",
-  graphData: agentGraphData,
-  nodeStyle: {
-    concept: {
-      color: "#8B5CF6",
-      borderColor: "#7C3AED",
-      shape: "ellipse",
-    } as NodeTypeStyle,
-    architecture: {
-      color: "#3B82F6",
-      borderColor: "#2563EB",
-      shape: "box",
-    } as NodeTypeStyle,
-    technique: {
-      color: "#10B981",
-      borderColor: "#059669",
-      shape: "diamond",
-    } as NodeTypeStyle,
-    mindset: {
-      color: "#F59E0B",
-      borderColor: "#D97706",
-      shape: "ellipse",
-    } as NodeTypeStyle,
+  label: "AI Agent",
+  subtitle: "7 大技术维度 + 产品经理视角的 AI 智能体知识图谱",
+  data: agentGraphData,
+  typeStyles: agentTypeStyles,
+  typeOrder: agentTypeOrder,
+  typeArchetypes: {
+    concept: "concept",
+    architecture: "mechanism",
+    technique: "mechanism",
+    mindset: "practice",
   },
+  preferredSeed: "ai_agent",
+  group: "professional",
+  domain: "tech-product",
 };
